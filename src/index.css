@@ -38,7 +38,7 @@
   --radius-control: var(--radius-control);
 }
 
-/* Gradientes assinatura como utilitários: bg-gradient-accent, bg-gradient-streak, text-gradient-accent */
+/* Gradientes como utilitários: bg-gradient-accent, bg-gradient-streak, text-gradient-accent, text-gradient-streak */
 @utility bg-gradient-accent {
   background-image: var(--gradient-accent);
 }
@@ -49,6 +49,13 @@
 
 @utility text-gradient-accent {
   background-image: var(--gradient-accent);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@utility text-gradient-streak {
+  background-image: var(--gradient-streak);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;

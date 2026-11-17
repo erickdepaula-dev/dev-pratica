@@ -14,10 +14,9 @@ import {
 } from 'lucide-react';
 import { UserProgress, Language } from '../types/exercise';
 import { getExercisesByLanguage } from '../data';
-import { calculateEffectiveStreak } from '../services/storage';
-import { getCurrentWeekDays, getFortalezaDateString } from '../utils/dateUtils';
 import { getDifficultyTheme, getExerciseTypeTheme, getLanguageTheme } from '../utils/exerciseTheme';
 import { ProgressRing } from './ProgressRing';
+import { StreakCard } from './StreakCard';
 
 interface DashboardProps {
   progress: UserProgress;
@@ -206,9 +205,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const totalDone = trackStats.reduce((sum, t) => sum + t.done, 0);
   const totalAll = trackStats.reduce((sum, t) => sum + t.total, 0);
 
-  // Ofensiva (America/Fortaleza)
-  const streakInfo = calculateEffectiveStreak(progress.streak);
-  const weekDays = getCurrentWeekDays(progress.streak?.activeDates || []);
   const activeDaysCount = progress.streak?.activeDates?.length ?? 0;
 
   return (
@@ -325,80 +321,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <StatCard icon={CalendarDays} label="Dias de estudo" value={activeDaysCount} hint="com exercício concluído" />
       </motion.div>
 
-      {/* 4. Ofensiva e semana (refinados na tarefa 1.4) */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-        <motion.div
-          variants={itemVariants}
-          className="md:col-span-5 rounded-card border border-streak-from/30 bg-surface bg-[radial-gradient(ellipse_at_top,color-mix(in_srgb,var(--streak-from)_14%,transparent),transparent_70%)] p-5 shadow-card flex flex-col justify-between"
-        >
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-streak-from">Ofensiva de estudos</span>
-              <span className="text-2xl" aria-hidden="true">
-                🔥
-              </span>
-            </div>
-
-            <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-4xl sm:text-5xl font-black text-primary font-mono tabular-nums">
-                {streakInfo.count}
-              </span>
-              <span className="text-sm font-semibold text-streak-from">
-                {streakInfo.count === 1 ? 'dia consecutivo' : 'dias consecutivos'}
-              </span>
-            </div>
-
-            <p className="text-xs leading-relaxed">
-              {streakInfo.isActiveToday ? (
-                <span className="text-success font-medium">✓ Atividade concluída hoje! Sua ofensiva foi mantida.</span>
-              ) : streakInfo.isAtRisk ? (
-                <span className="text-warning font-medium">
-                  ⚡ Sequência de ontem preservada! Conclua um exercício hoje para somar mais 1 dia.
-                </span>
-              ) : (
-                <span className="text-muted">
-                  A ofensiva começa em 1 dia assim que você concluir o seu primeiro exercício.
-                </span>
-              )}
-            </p>
-          </div>
-
-          <div className="pt-4 mt-4 border-t border-subtle text-[11px] text-muted flex items-center justify-between gap-2">
-            <span>Regra: 1 dia por calendário (Fortaleza)</span>
-            <span className="font-mono text-streak-from whitespace-nowrap">Hoje: {getFortalezaDateString()}</span>
-          </div>
-        </motion.div>
-
-        <motion.div variants={itemVariants} className={`${CARD} md:col-span-7 p-5 space-y-3`}>
-          <div className="flex flex-wrap items-center justify-between gap-1 text-xs">
-            <span className="font-bold text-primary">Visão semanal de estudos</span>
-            <span className="text-[11px] text-muted">Dias com pelo menos 1 exercício concluído</span>
-          </div>
-
-          <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
-            {weekDays.map(day => (
-              <div
-                key={day.dateStr}
-                className={`rounded-control py-2.5 text-center flex flex-col items-center justify-center border ${
-                  day.isToday ? 'border-accent-from/60 bg-accent-from/10' : 'border-subtle bg-canvas/60'
-                }`}
-              >
-                <span className="text-[10px] text-muted font-semibold mb-1">{day.dayShort}</span>
-                <span className="text-xs font-bold text-primary mb-1.5">{day.dayNumber}</span>
-                {day.hasActivity ? (
-                  <span className="w-5 h-5 rounded-full bg-success/20 border border-success/40 flex items-center justify-center text-[10px] text-success font-bold">
-                    ✓
-                  </span>
-                ) : (
-                  <span className="w-5 h-5 rounded-full bg-subtle flex items-center justify-center text-[10px] text-muted">
-                    ○
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
+      {/* 4. Ofensiva + semana */}
+      <motion.div variants={itemVariants}>
+        <StreakCard streak={progress.streak} />
+      </motion.div>
 
       {/* 5. Progresso por trilha, lado a lado */}
       <section aria-labelledby="tracks-heading" className="space-y-3">

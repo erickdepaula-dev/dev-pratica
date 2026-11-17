@@ -1,6 +1,6 @@
 # 🎨 Fase 1 — UI Redesign
 
-**Status:** 🟡 Em andamento (1.1 a 1.3 concluídas)
+**Status:** 🟡 Em andamento (1.1 a 1.4 concluídas)
 **Objetivo:** dar ao DevPrática uma identidade visual própria — gradientes, animações e consistência — tendo o coddy.tech como referência.
 
 ---
@@ -78,9 +78,9 @@ move isso para um único lugar reutilizável, mantendo as cores atuais:
 - [x] Grid de progresso por trilha (PHP / JS / TS) lado a lado
 
 ### 1.4 — Card de ofensiva (streak)
-- [ ] Gradiente laranja→vermelho com animação de pulso no ícone de fogo
-- [ ] Linha dos 7 dias da semana com estado preenchido / vazio animado
-- [ ] Contador com animação de incremento ao subir o streak
+- [x] Gradiente laranja→vermelho com animação de pulso no ícone de fogo
+- [x] Linha dos 7 dias da semana com estado preenchido / vazio animado
+- [x] Contador com animação de incremento ao subir o streak
 
 ### 1.5 — Workspace de exercício
 - [ ] Refinar `ExerciseWorkspace.tsx` com os tokens novos
@@ -155,6 +155,13 @@ Badges de modalidade e dificuldade: `getExerciseTypeTheme(type)` e
   É um `Record<Language, ...>`, então a Fase 2 é obrigada (pelo tsc) a cadastrar o tema TS.
 - Lista `TRACKS` no `Dashboard.tsx` define as trilhas do grid; o card "TypeScript — Em breve"
   (`UpcomingTrackCard`) deve ser removido quando a trilha TS existir.
-- Card de ofensiva e visão semanal só migraram para tokens — animações ficam para a 1.4.
+
+### Ofensiva (após a 1.4)
+
+- `src/components/StreakCard.tsx` reúne contador + linha da semana (substitui o antigo card
+  "Visão semanal"). Recebe só `streak` de `UserProgress`.
+- Contador troca de dígito com spring e mostra "+1" apenas quando o valor **sobe**.
+- Dias futuros aparecem com borda tracejada; hoje tem anel laranja.
+- Novo utilitário `text-gradient-streak` em `src/index.css`.
 
 - O dev server roda com `watch: null` — reinicie `npm run dev` para ver alterações.
