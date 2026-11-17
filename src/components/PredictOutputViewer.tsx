@@ -1,7 +1,8 @@
 import React from 'react';
+import { Language } from '../types/exercise';
 
 interface PredictOutputViewerProps {
-  language: 'php' | 'javascript';
+  language: Language;
   code: string;
   userPrediction: string;
   onChangePrediction: (val: string) => void;

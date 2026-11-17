@@ -1,4 +1,4 @@
-export type Language = 'php' | 'javascript';
+export type Language = 'php' | 'javascript' | 'typescript';
 export type Difficulty = 'basico' | 'intermediario' | 'avancado' | 'dev';
 export type ExerciseType =
   | 'lacunas'

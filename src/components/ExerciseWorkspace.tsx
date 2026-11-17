@@ -7,8 +7,7 @@ import { FreeCodeEditor } from './FreeCodeEditor';
 import { PredictOutputViewer } from './PredictOutputViewer';
 import {
   evaluateBlanks,
-  evaluateJavaScriptFreeCode,
-  evaluatePhpFreeCode,
+  evaluateCodeForLanguage,
   evaluateOutputPrediction,
   evaluateBugFix,
   evaluatePracticalChallenge,
@@ -225,11 +224,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     } else if (exercise.type === 'desafio_pratico') {
       result = await evaluatePracticalChallenge(exercise, userCode);
     } else {
-      if (exercise.language === 'javascript') {
-        result = await evaluateJavaScriptFreeCode(exercise, userCode);
-      } else {
-        result = evaluatePhpFreeCode(exercise, userCode);
-      }
+      result = await evaluateCodeForLanguage(exercise, userCode);
     }
 
     setEvaluationResult(result);

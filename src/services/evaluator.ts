@@ -1,4 +1,5 @@
 import { Exercise, Blank } from '../types/exercise';
+import { assertNever } from '../utils/language';
 
 export interface BlankValidationResult {
   blankId: string;
@@ -250,10 +251,7 @@ export async function evaluateBugFix(
   exercise: Exercise,
   userCode: string
 ): Promise<EvaluationResult> {
-  if (exercise.language === 'javascript') {
-    return evaluateJavaScriptFreeCode(exercise, userCode);
-  }
-  return evaluatePhpFreeCode(exercise, userCode);
+  return evaluateCodeForLanguage(exercise, userCode);
 }
 
 /**
@@ -263,10 +261,51 @@ export async function evaluatePracticalChallenge(
   exercise: Exercise,
   userCode: string
 ): Promise<EvaluationResult> {
-  if (exercise.language === 'javascript') {
-    return evaluateJavaScriptFreeCode(exercise, userCode);
+  return evaluateCodeForLanguage(exercise, userCode);
+}
+
+/**
+ * Ponto único de despacho por linguagem para código escrito pelo usuário
+ * ('codigo_livre', 'corrigir_erros', 'desafio_pratico').
+ * O `switch` é exaustivo: uma nova linguagem em `Language` sem avaliador quebra o `tsc`.
+ */
+export async function evaluateCodeForLanguage(
+  exercise: Exercise,
+  userCode: string
+): Promise<EvaluationResult> {
+  switch (exercise.language) {
+    case 'javascript':
+      return evaluateJavaScriptFreeCode(exercise, userCode);
+    case 'php':
+      return evaluatePhpFreeCode(exercise, userCode);
+    case 'typescript':
+      return evaluateTypeScriptCode(exercise, userCode);
+    default:
+      return assertNever(exercise.language, 'Linguagem do exercício');
   }
-  return evaluatePhpFreeCode(exercise, userCode);
+}
+
+/**
+ * Avaliação de TypeScript — PROVISÓRIA (Fase 2, tarefa 2.1).
+ *
+ * Decisão registrada para a tarefa 2.6: compilação real no navegador com o pacote
+ * oficial `typescript` (API JS da linha 5.x), lendo os diagnósticos de sintaxe e de
+ * tipos do compilador — sem regex. Até lá, nenhum exercício TS existe na base e este
+ * stub só garante que código TS nunca caia, por engano, no avaliador de JS ou PHP.
+ */
+export async function evaluateTypeScriptCode(
+  _exercise: Exercise,
+  _userCode: string
+): Promise<EvaluationResult> {
+  return {
+    passed: false,
+    scorePercent: 0,
+    blankResults: [],
+    logs: [],
+    testCaseResults: [],
+    generalFeedback:
+      'A validação de TypeScript ainda não está disponível. Ela chega na tarefa 2.6, com compilação real no navegador.',
+  };
 }
 
 /**

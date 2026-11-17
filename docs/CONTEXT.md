@@ -63,7 +63,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 | Fase | Arquivo | Status |
 | :--- | :--- | :--- |
 | 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ✅ Concluída |
-| 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | ⬜ Não iniciada |
+| 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefa 2.1 concluída |
 | 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | ⬜ Não iniciada |
 | 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefa 4.2 concluída (índice extraído) |
 
@@ -77,38 +77,25 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 
 **Última atualização:** 2026-11-17
 
-**Fase ativa:** nenhuma — Fase 1 concluída; próxima é a Fase 2 (TypeScript).
+**Fase ativa:** Fase 2 — Trilha TypeScript.
 
-**Concluído:**
-- 1.1 — design tokens em `src/styles/tokens.css`, mapeados no `@theme inline` de `src/index.css`
-  (classes `bg-surface`, `text-muted`, `bg-gradient-accent`...) e helper `src/utils/exerciseTheme.ts`.
-- 1.2 — `Header.tsx` redesenhado: indicador animado (`layoutId`) no gradiente assinatura,
-  pills de linguagem, menu hambúrguer no mobile, slot `xpSlot` para a Fase 3.
-  `MotionConfig reducedMotion="user"` adicionado em `src/main.tsx`.
-  Testado em 375 / 768 / 1024 / 1440 px sem overflow horizontal.
-- 1.3 — `Dashboard.tsx` redesenhado: card "Continuar de onde parei" com borda em gradiente e
-  `ProgressRing`, 4 cards de estatística, grid de trilhas PHP / JS / TS ("em breve"),
-  entrada em cascata (`staggerChildren`). Tema por trilha em `getLanguageTheme`.
-- 1.4 — `StreakCard.tsx`: borda em gradiente laranja→vermelho, fogo pulsante, contador
-  animado (+1 ao subir) e linha dos 7 dias com preenchimento animado. Pulso verificado
-  parado com `prefers-reduced-motion`.
-- 1.5 — Workspace e editores migrados para tokens (novos: `text-accent`, `text-syntax-*`),
-  abas com indicador animado e transição, shake no erro, animação de acerto, modal animado,
-  foco visível nos editores. Testado com "prever saída" (erro e acerto) em 375 e 1440 px.
-- 1.6 — `ExerciseList.tsx` reescrito: chips com gradiente, cards com badges do helper,
-  animação de layout ao filtrar, estado vazio ilustrado. `LanguagePills` extraído do Header.
-- 1.7 — `SyncToast` animado (corrige corrida do timer), `PageSkeleton` na carga do Firestore,
-  focus-visible/cursor globais, reduced motion global para CSS. Demais telas migradas para tokens.
-  Todas as abas verificadas em 375 e 1440 px sem overflow.
+**Fase 1:** ✅ concluída (detalhes em `fase-1-ui.md` e no Changelog).
 
-**Próximo passo:** abrir `docs/fase-2-typescript.md` e começar pela tarefa 2.1.
-Pontos de extensão já preparados para a trilha TS: `LANGUAGE_OPTIONS` em `LanguagePills.tsx`,
-`LANGUAGE_THEME` em `exerciseTheme.ts` (o tsc obriga a cadastrar), `TRACKS` e o
-`UpcomingTrackCard` (remover) em `Dashboard.tsx`.
+**Concluído na Fase 2:**
+- 2.1 — `Language` com `'typescript'`; `src/utils/language.ts` (`LANGUAGES`, `isLanguage`,
+  `assertNever`); migração defensiva de `selectedLanguage` no storage e no Firestore
+  (testada com progresso antigo, corrompido e sem o campo); despacho exaustivo
+  `evaluateCodeForLanguage` (antes, TS cairia no avaliador de PHP) com stub para TS;
+  Desafios IA restritos a PHP/JS (`AiChallengeLanguage`); tema/cor da trilha TS.
+
+**Próximo passo:** tarefa `2.2 — Estrutura de arquivos` (`src/data/ts/`).
 
 **Pendências / decisões em aberto:**
 - Paleta da Fase 1: implementada com a proposta inicial; ajustes finos só exigem editar `src/styles/tokens.css`.
-- Fase 2, tarefa 2.6: como validar TypeScript — regex vs transpilar no browser.
+- ~~Fase 2, tarefa 2.6: regex vs transpilar~~ → **decidido:** compilação real no navegador
+  com o pacote oficial `typescript`, em pipeline extensível (compilar → executar → testar).
+  Atenção: o TS 7 do lint é nativo e não tem API JS; a 2.6 usa a linha 5.x via alias npm.
+  Detalhes em `fase-2-typescript.md`.
 - Fase 4, tarefa 4.1: trilha "Lógica" própria vs distribuir nas trilhas de linguagem.
 
 ---
@@ -126,3 +113,5 @@ Pontos de extensão já preparados para a trilha TS: `LANGUAGE_OPTIONS` em `Lang
 | 2026-11-17 | 1 | Tarefa 1.5 concluída: workspace e editores nos tokens, abas animadas, feedback de acerto/erro animado, foco visível. Tokens `--accent-text` e `--syntax-*`. |
 | 2026-11-17 | 1 | Tarefa 1.6 concluída: catálogo com chips em gradiente, cards animados ao filtrar, estado vazio ilustrado; `LanguagePills.tsx` extraído. |
 | 2026-11-17 | 1 | Tarefa 1.7 concluída e **Fase 1 finalizada**: toast animado, skeleton de sync, foco/cursor globais, reduced motion global; Progresso, Guia, Desafios IA e Tutor IA migrados para tokens. |
+| 2026-11-17 | 2 | Decisão da 2.6: validar TS com compilação real no navegador (pacote oficial, linha 5.x — o TS 7 nativo não tem API JS), pipeline extensível. |
+| 2026-11-17 | 2 | Tarefa 2.1 concluída: `Language` com TS, `utils/language.ts`, migração defensiva, avaliador com despacho exaustivo (stub TS), Desafios IA restritos a PHP/JS, tema da trilha TS. |

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Language, UserProgress } from '../../types/exercise';
+import { UserProgress } from '../../types/exercise';
 import {
   AiChallenge,
   AiChallengeDifficulty,
+  AiChallengeLanguage,
+  toAiChallengeLanguage,
 } from '../../types/aiChallenge';
 
 interface AiChallengesHubProps {
@@ -74,8 +76,8 @@ export const AiChallengesHub: React.FC<AiChallengesHubProps> = ({
   progress,
   onSelectChallenge,
 }) => {
-  const [language, setLanguage] = useState<Language>(
-    progress.selectedLanguage || 'php'
+  const [language, setLanguage] = useState<AiChallengeLanguage>(() =>
+    toAiChallengeLanguage(progress.selectedLanguage)
   );
   const [topic, setTopic] = useState<string>('');
   const [difficulty, setDifficulty] = useState<AiChallengeDifficulty>('intermediario');

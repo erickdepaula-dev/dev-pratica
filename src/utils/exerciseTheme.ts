@@ -139,6 +139,15 @@ const LANGUAGE_THEME: Record<Language, LanguageTheme> = {
     barClass: 'bg-amber-500',
     activeClass: 'border-amber-500/70 ring-1 ring-amber-500/30',
   },
+  typescript: {
+    name: 'TypeScript',
+    emoji: '🔷',
+    tag: 'Tipagem',
+    description: 'Tipos, generics, narrowing e utility types',
+    tagClass: 'text-typescript-text bg-typescript/10 border-typescript/30',
+    barClass: 'bg-typescript',
+    activeClass: 'border-typescript/70 ring-1 ring-typescript/30',
+  },
 };
 
 export function getLanguageTheme(language: Language): LanguageTheme {

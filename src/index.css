@@ -31,6 +31,8 @@
   --color-danger: var(--danger);
   --color-streak-from: var(--streak-from);
   --color-streak-to: var(--streak-to);
+  --color-typescript: var(--lang-typescript);
+  --color-typescript-text: var(--lang-typescript-text);
   --color-syntax-keyword: var(--syntax-keyword);
   --color-syntax-variable: var(--syntax-variable);
   --color-syntax-string: var(--syntax-string);

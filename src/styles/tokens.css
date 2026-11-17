@@ -31,6 +31,10 @@
   --streak-from: #f97316;
   --streak-to: #ef4444;
 
+  /* Trilha TypeScript: azul oficial + tom claro legível para texto pequeno */
+  --lang-typescript: #3178c6;
+  --lang-typescript-text: #7fb3ef;
+
   /* Realce de sintaxe dos editores */
   --syntax-keyword: #c084fc;
   --syntax-variable: #7dd3fc;

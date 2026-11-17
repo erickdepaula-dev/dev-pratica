@@ -1,3 +1,5 @@
+import type { AiChallengeLanguage } from '../types/aiChallenge';
+
 export interface FallbackChallengeData {
   title: string;
   topic: string;
@@ -901,7 +903,7 @@ const JS_FALLBACK_CATALOG: Record<number, FallbackChallengeData[]> = {
 
 // Return a curated fallback challenge based on language and level
 export function generateFallbackChallenge(
-  language: 'php' | 'javascript',
+  language: AiChallengeLanguage,
   topic: string,
   level: number,
   difficulty: string

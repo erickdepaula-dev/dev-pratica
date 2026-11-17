@@ -1,6 +1,7 @@
 import { Language, UserProgress, ExerciseAttempt } from '../types/exercise';
 import { AiChallenge, AiChallengeAttempt, AiChallengeEvaluation } from '../types/aiChallenge';
 import { getFortalezaDateString, getDaysDifference } from '../utils/dateUtils';
+import { isLanguage } from '../utils/language';
 
 const STORAGE_KEY = 'devpratica_user_progress_v1';
 
@@ -61,6 +62,11 @@ export function loadUserProgress(): UserProgress {
     const parsed = JSON.parse(raw) as UserProgress;
 
     // Sanitize defaults if corrupted
+    // Migração defensiva (Fase 2): progresso antigo só tem 'php' | 'javascript', que continuam
+    // válidos. Qualquer valor desconhecido (corrompido ou de versão futura) volta para 'php'.
+    if (!isLanguage(parsed.selectedLanguage)) {
+      parsed.selectedLanguage = defaultProgress.selectedLanguage;
+    }
     if (!parsed.streak) {
       parsed.streak = { currentStreak: 0, lastActiveDate: '', activeDates: [] };
     }
@@ -71,7 +77,7 @@ export function loadUserProgress(): UserProgress {
       parsed.attempts = {};
     } else {
       for (const att of Object.values(parsed.attempts)) {
-        if (att.completedAt === undefined) att.completedAt = null as any;
+        if (att.completedAt === undefined) att.completedAt = null;
       }
     }
     if (!parsed.aiChallenges) {

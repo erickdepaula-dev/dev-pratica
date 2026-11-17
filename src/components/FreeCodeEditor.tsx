@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { Language } from '../types/exercise';
 
 interface FreeCodeEditorProps {
-  language: 'php' | 'javascript';
+  language: Language;
   code: string;
   onChangeCode: (code: string) => void;
   onSubmit: () => void;
