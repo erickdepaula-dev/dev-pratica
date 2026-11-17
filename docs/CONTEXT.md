@@ -30,11 +30,11 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 | **Ofensiva** | Streak em dias, timezone `America/Fortaleza` (`src/utils/dateUtils.ts`) |
 | **Persistência** | localStorage + Firebase Firestore, login Google (`src/services/storage.ts`, `firestoreSync.ts`) |
 | **Design system** | Tokens em `src/styles/tokens.css` + `@theme` (`src/index.css`), temas em `src/utils/exerciseTheme.ts`, animações com `motion` e reduced motion global |
+| **Gamificação** | XP congelado por conclusão, 5 níveis de carreira, 11 conquistas, gráfico de XP por dia (`services/xp.ts`, `services/badges.ts`) |
 | **Avaliação** | Validação de lacunas, regex e test cases (`src/services/evaluator.ts`) |
 
 ### Ainda não existe
 
-- 🟡 XP, níveis de carreira e conquistas: modelo e cálculo prontos (Fase 3.1); persistência e UI em andamento
 - ❌ Trilha de lógica pura (material em PDF ainda não convertido)
 
 ---
@@ -62,7 +62,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 | :--- | :--- | :--- |
 | 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ✅ Concluída |
 | 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefas concluídas; 2 critérios aguardam verificação manual |
-| 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | 🟡 Tarefas 3.1 a 3.3 concluídas |
+| 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | 🟡 Tarefas concluídas; sync com Firestore aguarda verificação manual |
 | 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefa 4.2 concluída (índice extraído) |
 
 **Índice de apoio:** [`fase-4-indice-exercicios.md`](./fase-4-indice-exercicios.md) — catálogo dos 160 exercícios.
@@ -136,8 +136,15 @@ Depois da verificação, marcar a Fase 2 como ✅.
   na aba Progresso, toast de conquista. Header reequilibrado (overflow em 1280+). Dicas/critérios
   DEV não consomem mais a "1ª tentativa" (`countAttempt: false`).
 
-**Próximo passo:** 3.4 — integração (XP nos Desafios IA na UI, XP potencial no card do exercício,
-histórico de XP por dia no Progresso).
+- 3.4 — integração: "+N XP" nos Desafios IA, "até +N XP" nos cards do catálogo, gráfico de XP
+  por dia (14 dias, fuso de Fortaleza, com tabela) na aba Progresso. **Todas as tarefas da Fase 3
+  concluídas.**
+
+**Pendente de verificação manual (Fase 3):** logado com Google, concluir um exercício e conferir
+em outro navegador que o XP e as conquistas aparecem (sincronização com o Firestore).
+
+**Próximo passo:** Fase 4 — exercícios dos PDFs (`docs/fase-4-exercicios.md`). A decisão em aberto
+da tarefa 4.1 (trilha "Lógica" própria vs. distribuir nas trilhas de linguagem) é do usuário.
 Lembrete: até a 2.6 a avaliação de TS é um stub — exercícios `lacunas` e `prever_saida`
 já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 `desafio_pratico` em TS só serão avaliados de verdade após a 2.6.
@@ -178,3 +185,4 @@ já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 | 2026-11-17 | 3 | Tarefa 3.1 concluída: tipos de gamificação, `services/xp.ts`, `services/badges.ts` (11 badges declarativas) e `npm run check:xp`. Níveis recalibrados contra o XP real (9.200 base). |
 | 2026-11-17 | 3 | Tarefa 3.2 concluída: XP congelado na conclusão, migração retroativa idempotente (`migrateProgress`), merge no Firestore preservando XP/conclusões, badges sincronizadas. |
 | 2026-11-17 | 3 | Tarefa 3.3 concluída: barra de XP, +XP no acerto, card de carreira, grid e toast de conquistas. Header sem overflow de 375 a 1920 px; botão "Continuar" do Header removido. Dicas não consomem mais a 1ª tentativa. |
+| 2026-11-17 | 3 | Tarefa 3.4 concluída e Fase 3 com todas as tarefas feitas: XP nos Desafios IA e nos cards, gráfico de XP por dia. Pendente: verificação manual da sincronização com o Firestore. |

@@ -1,6 +1,6 @@
 # 🎮 Fase 3 — Gamificação
 
-**Status:** 🟡 Em andamento (3.1 a 3.3 concluídas)
+**Status:** 🟡 Todas as tarefas concluídas — sincronização com o Firestore aguarda verificação manual
 **Depende de:** Fase 1 (tokens visuais) e Fase 2 (trilha TS entra no cálculo de XP)
 **Objetivo:** tornar o progresso visível e recompensador, aproximando a sensação do Coddy.
 
@@ -107,21 +107,21 @@ Condições declarativas para facilitar adicionar novas sem mexer na lógica.
 - [x] Modal/toast ao desbloquear uma badge
 
 ### 3.4 — Integração
-- [ ] Disparar cálculo de XP no fluxo de conclusão do `ExerciseWorkspace.tsx`
-- [ ] Disparar também no `AiChallengeWorkspace.tsx` (desafios de IA valem XP)
-- [ ] Mostrar XP potencial no card do exercício antes de começar
-- [ ] `ProgressReport.tsx`: histórico de XP ganho por dia
+- [x] Disparar cálculo de XP no fluxo de conclusão do `ExerciseWorkspace.tsx` (no `recordExerciseAttempt`, chamado pelo workspace)
+- [x] Disparar também no `AiChallengeWorkspace.tsx` (desafios de IA valem XP) — com "+N XP" no resultado
+- [x] Mostrar XP potencial no card do exercício antes de começar ("até +N XP"; concluídos mostram o XP ganho)
+- [x] `ProgressReport.tsx`: histórico de XP ganho por dia (`XpHistoryChart`, 14 dias, com tabela)
 
 ---
 
 ## Critérios de pronto
 
-- [ ] XP é calculado, persistido e sincronizado
+- [ ] XP é calculado, persistido e sincronizado — cálculo e persistência local **verificados**; sincronização com o Firestore **pendente de verificação manual** (sem login Google no ambiente)
 - [x] Usuário com progresso anterior recebe XP retroativo correto (não zera) — `check:xp`
-- [ ] Badges desbloqueiam nas condições certas
+- [x] Badges desbloqueiam nas condições certas (`check:xp` + navegador)
 - [x] Refazer exercício não acumula XP (testado no navegador e no `check:xp`)
-- [ ] `npm run lint` e `npm run build` passam
-- [ ] `docs/CONTEXT.md` atualizado
+- [x] `npm run lint` e `npm run build` passam (+ `check:xp` com 18 testes e `check:ts`)
+- [x] `docs/CONTEXT.md` atualizado
 
 ---
 
@@ -175,6 +175,18 @@ Condições declarativas para facilitar adicionar novas sem mexer na lógica.
 - **`countAttempt: false`** em `recordExerciseAttempt` para gravações que não são envio de resposta
   (liberar dica, revelar solução, marcar critério DEV). Antes, elas incrementavam `attemptsCount` e
   tiravam o bônus de 1ª tentativa — no DEV, quem seguia o checklist perdia o × 1.5.
+
+## Integração (3.4)
+
+- Desafio IA: "+N XP" no resultado (ou "Já aprovado · sem XP extra").
+- Catálogo: cada card mostra "até +N XP" (máximo: 1ª tentativa, sem dicas) ou o XP ganho.
+- `XpHistoryChart.tsx` na aba Progresso: XP por dia nos últimos 14 dias, agrupado no fuso de
+  Fortaleza (`xpByDay` em `services/xp.ts`, testado no `check:xp`). Seguiu a skill de dataviz:
+  série única sem legenda, cor `--accent-from` validada contra a superfície escura (todas as
+  checagens passam), barras finas (máx. 28 px) com topo de 4 px, grade recessiva, tooltip por
+  coluna (área de hover/foco = coluna inteira) e alternância para tabela.
+- Verificado no navegador com um progresso "antigo" (sem `xpEarned`): XP retroativo por tentativa
+  conferido à mão (total 173), badges retroativas, tooltip e tabela; sem overflow em 375 e 1440 px.
 
 ## Notas de implementação
 

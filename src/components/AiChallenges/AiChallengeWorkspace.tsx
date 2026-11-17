@@ -28,6 +28,8 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
   const [code, setCode] = useState<string>(
     existingAttempt?.userCode ?? challenge.starterCode
   );
+  // XP da última avaliação: número na 1ª aprovação; 0 se já estava aprovado; null se reprovou.
+  const [xpGained, setXpGained] = useState<number | null>(null);
   const [evaluation, setEvaluation] = useState<AiChallengeEvaluation | null>(
     existingAttempt?.evaluation ?? null
   );
@@ -124,12 +126,14 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
 
       // Record attempt and update streak in storage
       try {
+        const wasPassed = existingAttempt?.passed ?? false;
         const updated = recordAiChallengeAttempt(
           challenge,
           code,
           evalData,
           unlockedHintsCount
         );
+        setXpGained(evalData.passed ? (wasPassed ? 0 : (updated.aiChallenges?.[challenge.id]?.xpEarned ?? 0)) : null);
         onProgressUpdated(updated);
       } catch (storageErr) {
         console.warn('Aviso ao registrar progresso local:', storageErr);
@@ -627,6 +631,15 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
                       >
                         {isPassed ? 'Aprovado' : 'Ajustes pendentes'}
                       </span>
+                      {xpGained !== null && (
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            xpGained > 0 ? 'bg-gradient-accent text-white shadow-glow' : 'bg-surface-hover text-muted border border-subtle'
+                          }`}
+                        >
+                          {xpGained > 0 ? '+' + xpGained + ' XP' : 'Já aprovado · sem XP extra'}
+                        </span>
+                      )}
                     </div>
                     <p className="text-xs text-muted mt-0.5">
                       {evaluation.testsPassedPercentage}% dos casos de teste passaram com sucesso.

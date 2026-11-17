@@ -17,7 +17,9 @@ import {
   potentialExerciseXp,
   retroactiveExerciseXp,
   totalXp,
+  xpByDay,
 } from '../src/services/xp';
+import { getFortalezaDateString } from '../src/utils/dateUtils';
 import { BADGES, buildBadgeContext, isConditionMet, longestStreakFromDates, unlockBadges } from '../src/services/badges';
 import { migrateProgress } from '../src/services/storage';
 import type { Exercise, ExerciseAttempt, UserProgress } from '../src/types/exercise';
@@ -172,6 +174,21 @@ test('unlockBadges: só acrescenta as novas e nunca remove', () => {
 
 test('IDs de badge únicos', () => {
   assert.equal(new Set(BADGES.map(b => b.id)).size, BADGES.length);
+});
+
+test('XP por dia usa o fuso de Fortaleza (22h local = 01h UTC do dia seguinte)', () => {
+  const events = [
+    { source: 'exercicio' as const, sourceId: 'a', xp: 10, earnedAt: '2026-11-17T01:00:00Z' }, // 16/11 22h em Fortaleza
+    { source: 'exercicio' as const, sourceId: 'b', xp: 15, earnedAt: '2026-11-17T12:00:00Z' },
+    { source: 'desafio_ia' as const, sourceId: 'c', xp: 5, earnedAt: '2026-11-17T13:00:00Z' },
+    { source: 'exercicio' as const, sourceId: 'd', xp: 99, earnedAt: '2026-10-01T12:00:00Z' }, // fora da janela
+  ];
+  const dias = xpByDay(events, ['2026-11-16', '2026-11-17', '2026-11-18'], iso => getFortalezaDateString(new Date(iso)));
+  assert.deepEqual(dias, [
+    { date: '2026-11-16', xp: 10, count: 1 },
+    { date: '2026-11-17', xp: 20, count: 2 },
+    { date: '2026-11-18', xp: 0, count: 0 },
+  ]);
 });
 
 // ---------------------------------------------------------------- Migração (dados reais)

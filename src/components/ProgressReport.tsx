@@ -3,6 +3,7 @@ import { UserProgress, Language } from '../types/exercise';
 import { allExercises, getExercisesByLanguage } from '../data';
 import { getLanguageTheme } from '../utils/exerciseTheme';
 import { BadgeGrid } from './BadgeGrid';
+import { XpHistoryChart } from './XpHistoryChart';
 import { BADGES } from '../services/badges';
 import { exportProgressJSON, importProgressJSON, resetProgress } from '../services/storage';
 
@@ -176,6 +177,9 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
           </div>
         </div>
       )}
+
+      {/* Histórico de XP por dia (Fase 3) */}
+      <XpHistoryChart progress={progress} />
 
       {/* Conquistas (Fase 3) */}
       <section id="conquistas" aria-labelledby="conquistas-titulo" className="rounded-card border border-subtle bg-surface/40 p-5 space-y-4">

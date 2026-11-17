@@ -140,3 +140,27 @@ export function getCareerProgress(xp: number): CareerProgress {
   const percent = nextLevel ? Math.min(100, Math.round((xpIntoLevel / xpForNextLevel) * 100)) : 100;
   return { xp, level, nextLevel, xpIntoLevel, xpForNextLevel, percent };
 }
+
+export interface XpDay {
+  /** YYYY-MM-DD no fuso America/Fortaleza. */
+  date: string;
+  xp: number;
+  /** Quantas conclusões renderam XP no dia. */
+  count: number;
+}
+
+/**
+ * Soma o XP por dia (fuso de Fortaleza) para a lista de datas pedida, na mesma ordem.
+ * Dias sem ganho aparecem com 0. `toLocalDate` converte o ISO de earnedAt para YYYY-MM-DD.
+ */
+export function xpByDay(events: readonly XpEvent[], dates: readonly string[], toLocalDate: (iso: string) => string): XpDay[] {
+  const totals = new Map<string, XpDay>(dates.map(date => [date, { date, xp: 0, count: 0 }]));
+  for (const event of events) {
+    const day = totals.get(toLocalDate(event.earnedAt));
+    if (day) {
+      day.xp += event.xp;
+      day.count += 1;
+    }
+  }
+  return dates.map(date => totals.get(date) as XpDay);
+}

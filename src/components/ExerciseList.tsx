@@ -5,6 +5,7 @@ import { Exercise, Language, Difficulty, ExerciseType, UserProgress } from '../t
 import { getExercisesByLanguage, getAvailableTopics } from '../data';
 import { getDifficultyTheme, getExerciseTypeTheme, getLanguageTheme } from '../utils/exerciseTheme';
 import { LanguagePills } from './LanguagePills';
+import { potentialExerciseXp } from '../services/xp';
 
 interface ExerciseListProps {
   progress: UserProgress;
@@ -91,12 +92,14 @@ interface ExerciseCardProps {
   exercise: Exercise;
   isCompleted: boolean;
   attemptsCount: number;
+  /** XP congelado na conclusão (só concluídos). */
+  xpEarned?: number;
   onSelect: () => void;
   /** Repassado ao elemento raiz — exigido pelo AnimatePresence mode="popLayout". */
   ref?: React.Ref<HTMLButtonElement>;
 }
 
-const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, isCompleted, attemptsCount, onSelect, ref }) => {
+const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, isCompleted, attemptsCount, xpEarned, onSelect, ref }) => {
   const typeTheme = getExerciseTypeTheme(exercise.type);
   const difficultyTheme = getDifficultyTheme(exercise.difficulty);
 
@@ -143,6 +146,12 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, isCompleted, atte
           {attemptsCount > 0 && !isCompleted && (
             <span className="text-warning text-[11px]">({attemptsCount}x)</span>
           )}
+          <span
+            className="text-[11px] font-mono text-muted"
+            title={isCompleted ? 'XP ganho na conclusão' : 'XP máximo: acertando de primeira e sem dicas'}
+          >
+            {isCompleted ? '+' + (xpEarned ?? 0) + ' XP' : 'até +' + potentialExerciseXp(exercise.difficulty) + ' XP'}
+          </span>
         </div>
         <span className="text-accent font-bold text-xs flex items-center gap-1">
           {isCompleted ? 'Revisar' : 'Resolver'}
@@ -426,6 +435,7 @@ export const ExerciseList: React.FC<ExerciseListProps> = ({ progress, onSelectLa
                   exercise={ex}
                   isCompleted={progress.completedIds.includes(ex.id)}
                   attemptsCount={progress.attempts[ex.id]?.attemptsCount ?? 0}
+                  xpEarned={progress.attempts[ex.id]?.xpEarned}
                   onSelect={() => onSelectExercise(ex.id)}
                 />
               ))}
