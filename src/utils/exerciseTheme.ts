@@ -104,6 +104,8 @@ export function getDifficultyTheme(difficulty: Difficulty | string): BadgeTheme 
 
 export interface LanguageTheme {
   name: string;
+  /** Sigla para espaços compactos (seletor do header). */
+  shortName: string;
   emoji: string;
   /** Selo exibido ao lado do nome (ex.: "Principal"). */
   tag: string;
@@ -123,6 +125,7 @@ export interface LanguageTheme {
 const LANGUAGE_THEME: Record<Language, LanguageTheme> = {
   php: {
     name: 'PHP',
+    shortName: 'PHP',
     emoji: '🐘',
     tag: 'Principal',
     description: 'Backend, PDO, POO, Sessões & CRUD',
@@ -132,6 +135,7 @@ const LANGUAGE_THEME: Record<Language, LanguageTheme> = {
   },
   javascript: {
     name: 'JavaScript',
+    shortName: 'JS',
     emoji: '⚡',
     tag: 'Complementar',
     description: 'ES6+, Promises, Métodos de Array & Async',
@@ -141,6 +145,7 @@ const LANGUAGE_THEME: Record<Language, LanguageTheme> = {
   },
   typescript: {
     name: 'TypeScript',
+    shortName: 'TS',
     emoji: '🔷',
     tag: 'Tipagem',
     description: 'Tipos, generics, narrowing e utility types',

@@ -161,7 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <span aria-hidden="true">🔥</span>
               <span className="tabular-nums font-mono">{streak}</span>
-              <span className="hidden sm:inline text-[11px] font-normal">dias</span>
+              <span className="hidden xl:inline text-[11px] font-normal">dias</span>
             </div>
 
             <div className="hidden sm:block">
@@ -246,8 +246,8 @@ export const Header: React.FC<HeaderProps> = ({
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-accent-from/40 bg-accent-from/10 hover:bg-accent-from/20 text-xs font-semibold text-primary transition-colors cursor-pointer ${FOCUS_RING}`}
                 title="Entrar com Google para salvar seus dias e progresso no Firebase Firestore"
               >
-                <span className="hidden sm:inline">Salvar no Firebase</span>
-                <span className="sm:hidden">Entrar</span>
+                <span className="hidden xl:inline">Salvar no Firebase</span>
+                <span className="xl:hidden">Entrar</span>
               </button>
             )}
 

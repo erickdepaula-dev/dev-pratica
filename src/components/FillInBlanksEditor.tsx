@@ -2,6 +2,21 @@ import React, { useRef } from 'react';
 import { Blank } from '../types/exercise';
 import { BlankValidationResult } from '../services/evaluator';
 
+/** Palavras-chave destacadas (PHP, JavaScript e TypeScript). */
+const KEYWORDS = new Set([
+  // Comuns / PHP / JS
+  'function', 'return', 'if', 'else', 'for', 'foreach', 'while', 'switch', 'case', 'default', 'break',
+  'as', 'class', 'public', 'private', 'protected', 'interface', 'trait', 'use', 'try', 'catch', 'finally',
+  'throw', 'new', 'const', 'let', 'var', 'async', 'await', 'get', 'set', 'static', 'extends', 'implements',
+  'import', 'export', 'from', 'of', 'in', 'instanceof', 'typeof', 'this', 'null', 'true', 'false', 'undefined',
+  // Exclusivas de TypeScript
+  'type', 'enum', 'readonly', 'keyof', 'infer', 'satisfies', 'namespace', 'declare', 'abstract', 'is',
+  'never', 'unknown', 'any', 'string', 'number', 'boolean', 'void', 'object',
+]);
+const KEYWORD_PATTERN = [...KEYWORDS].join('|');
+/** Tokens: tag PHP, comentários, variáveis PHP, strings, palavras-chave e números. */
+const TOKEN_REGEX = new RegExp(`(<\\?php|\\/\\/.*$|\\/\\*[\\s\\S]*?\\*\\/|\\$[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*|"[^"]*"|'[^']*'|\\b(?:${KEYWORD_PATTERN})\\b|\\b[0-9]+(?:\\.[0-9]+)?\\b)`, 'g');
+
 interface FillInBlanksEditorProps {
   templateCode: string;
   blanks: Blank[];
@@ -42,11 +57,11 @@ export const FillInBlanksEditor: React.FC<FillInBlanksEditorProps> = ({
 
   const lines = templateCode.split('\n');
 
-  // Simple token highlighter for surrounding code
+  // Simple token highlighter for surrounding code (PHP, JavaScript e TypeScript)
   const highlightCode = (text: string) => {
     // Escaped HTML text with basic syntax coloring
-    // Highlight PHP tags, comments, keywords, variables, strings
-    const parts = text.split(/(<\?php|\/\/.*$|\/\*[\s\S]*?\*\/|\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*|"[^"]*"|'[^']*'|\b(?:function|return|if|else|foreach|as|class|public|private|protected|interface|trait|use|try|catch|throw|new|const|let|var|async|await|get)\b)/g);
+    // Destaca tag PHP, comentários, palavras-chave, variáveis PHP, strings e números
+    const parts = text.split(TOKEN_REGEX);
 
     return parts.map((part, i) => {
       if (!part) return null;
@@ -63,7 +78,7 @@ export const FillInBlanksEditor: React.FC<FillInBlanksEditorProps> = ({
       if ((part.startsWith('"') && part.endsWith('"')) || (part.startsWith("'") && part.endsWith("'"))) {
         return <span key={i} className="text-syntax-string">{part}</span>;
       }
-      if (/^(function|return|if|else|foreach|as|class|public|private|protected|interface|trait|use|try|catch|throw|new|const|let|var|async|await|get)$/.test(part)) {
+      if (KEYWORDS.has(part)) {
         return <span key={i} className="text-syntax-keyword font-semibold">{part}</span>;
       }
       if (/^[0-9]+(\.[0-9]+)?$/.test(part)) {

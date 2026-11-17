@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UserProgress, Language } from '../types/exercise';
 import { allExercises, getExercisesByLanguage } from '../data';
+import { getLanguageTheme } from '../utils/exerciseTheme';
 import { exportProgressJSON, importProgressJSON, resetProgress } from '../services/storage';
 
 interface ProgressReportProps {
@@ -106,7 +107,7 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
           <div className="flex items-center gap-2 text-xs text-accent font-medium mb-1">
             <span>Relatório Analítico</span>
             <span aria-hidden="true">·</span>
-            <span className="uppercase">{currentLang}</span>
+            <span>{getLanguageTheme(currentLang).name}</span>
             <span aria-hidden="true">·</span>
             <span>Histórico Local Persistente</span>
           </div>
@@ -179,7 +180,7 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
         {/* Topic Breakdown */}
         <div className="rounded-xl border border-subtle bg-surface/40 p-6 space-y-4">
           <div>
-            <h2 className="text-base font-bold text-primary">Domínio por Assunto ({currentLang.toUpperCase()})</h2>
+            <h2 className="text-base font-bold text-primary">Domínio por Assunto ({getLanguageTheme(currentLang).name})</h2>
             <p className="text-xs text-muted">Distribuição do seu avanço em cada tema do dia a dia</p>
           </div>
 
@@ -212,7 +213,7 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
             <div className="space-y-3 pt-4">
               {weakTopics.length === 0 ? (
                 <div className="p-4 rounded-lg bg-success/10 border border-success/30 text-success text-xs text-center">
-                  🎉 Parabéns! Você concluiu todos os tópicos disponíveis de {currentLang.toUpperCase()}.
+                  🎉 Parabéns! Você concluiu todos os tópicos disponíveis de {getLanguageTheme(currentLang).name}.
                 </div>
               ) : (
                 weakTopics.slice(0, 4).map(w => {

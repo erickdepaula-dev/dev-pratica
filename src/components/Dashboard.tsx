@@ -16,6 +16,7 @@ import { UserProgress, Language } from '../types/exercise';
 import { getExercisesByLanguage } from '../data';
 import { getDifficultyTheme, getExerciseTypeTheme, getLanguageTheme } from '../utils/exerciseTheme';
 import { ProgressRing } from './ProgressRing';
+import { LANGUAGES } from '../utils/language';
 import { StreakCard } from './StreakCard';
 
 interface DashboardProps {
@@ -28,8 +29,6 @@ interface DashboardProps {
   onNavigateToAiChallenges?: () => void;
 }
 
-/** Trilhas exibidas no grid de progresso, na ordem. A trilha TS entra aqui na Fase 2. */
-const TRACKS: Language[] = ['php', 'javascript'];
 
 const FOCUS_RING =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-from';
@@ -127,27 +126,6 @@ const TrackCard: React.FC<TrackCardProps> = ({ language, isActive, done, total, 
   );
 };
 
-/** Placeholder da trilha TypeScript até a Fase 2. */
-const UpcomingTrackCard: React.FC = () => (
-  <motion.div
-    variants={itemVariants}
-    className="rounded-card border border-dashed border-subtle bg-surface/50 p-4 flex flex-col justify-between"
-  >
-    <div className="flex items-center gap-2.5 mb-3">
-      <span className="w-8 h-8 rounded-md bg-surface-hover border border-subtle flex items-center justify-center font-mono text-xs font-black text-muted">
-        TS
-      </span>
-      <div>
-        <h3 className="font-bold text-sm text-primary">TypeScript</h3>
-        <span className="text-[11px] text-muted">Tipos, generics e utilitários</span>
-      </div>
-    </div>
-    <span className="self-start text-[10px] uppercase font-bold tracking-wider text-muted bg-surface-hover border border-subtle px-2 py-0.5 rounded">
-      Em breve
-    </span>
-  </motion.div>
-);
-
 interface QuickLinkProps {
   icon: LucideIcon;
   title: string;
@@ -194,7 +172,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   // Próximo exercício não concluído da trilha ativa
   const nextExercise = langExercises.find(ex => !progress.completedIds.includes(ex.id));
 
-  const trackStats = TRACKS.map(language => {
+  const trackStats = LANGUAGES.map(language => {
     const exercises = getExercisesByLanguage(language);
     return {
       language,
@@ -346,7 +324,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
               onSelect={() => onSelectLanguage(track.language)}
             />
           ))}
-          <UpcomingTrackCard />
         </motion.div>
       </section>
 

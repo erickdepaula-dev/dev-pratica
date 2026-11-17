@@ -1,6 +1,6 @@
 # 📘 Fase 2 — Trilha TypeScript
 
-**Status:** 🟡 Em andamento (2.1 a 2.4 concluídas)
+**Status:** 🟡 Em andamento (2.1 a 2.5 concluídas)
 **Depende de:** Fase 1 (usa os tokens de design para o seletor de linguagem e badges)
 **Objetivo:** adicionar TypeScript como terceira trilha, com a mesma profundidade de JS e PHP.
 
@@ -81,9 +81,9 @@ Decidir na tarefa 2.6 se entra nesta fase ou fica para depois.
 - [x] Projetos DEV com `projectBrief` completo (4 projetos, um por tema listado acima)
 
 ### 2.5 — Interface
-- [ ] Seletor de linguagem no `Header.tsx` com a terceira opção
-- [ ] `Dashboard.tsx`: card de progresso da trilha TS
-- [ ] `ExerciseList.tsx`: filtros funcionando para TS
+- [x] Seletor de linguagem no `Header.tsx` com a terceira opção
+- [x] `Dashboard.tsx`: card de progresso da trilha TS
+- [x] `ExerciseList.tsx`: filtros funcionando para TS
 - [x] Ícone / cor própria para a trilha TS (azul TypeScript `#3178C6`)
 
 ### 2.6 — Avaliação e tutor
@@ -214,5 +214,19 @@ disso, o `npm run lint` (TS 7) não tem os tipos da API do compilador.
   `console.error` (hoje: zero duplicados entre os 175 exercícios).
 - IDs antigos de PHP/JS: 56 fogem do padrão (ex.: `php-inter-01`) e **não podem mudar**.
 
-- A trilha **ainda não aparece na UI** (seletor/Dashboard são a 2.5) — sem exercícios, ela
-  ficaria vazia.
+### O que a 2.5 deixou pronto
+
+- **Fonte única das trilhas:** `LanguagePills` e o grid do Dashboard derivam de `LANGUAGES`
+  (`utils/language.ts`) + `getLanguageTheme` (que ganhou `shortName`). Nome, sigla, emoji e cores
+  de cada trilha ficam só em `LANGUAGE_THEME` — uma trilha nova não pode ser esquecida no seletor.
+- Card "Em breve" (`UpcomingTrackCard`) removido; TS aparece no grid com o azul da trilha.
+- `ProgressReport` mostra o nome da trilha ("TypeScript") em vez de `toUpperCase()` do id.
+- Header: com 3 trilhas no seletor, "Salvar no Firebase" e o rótulo "dias" da ofensiva só
+  aparecem a partir de `xl` (antes havia overflow de 56 px em 768 e 11 px em 1024). Abaixo, "Entrar".
+- `FillInBlanksEditor`: realce de palavras-chave de TS (type, interface, enum, readonly, keyof,
+  infer, satisfies, tipos primitivos...) e números (o ramo de números existia mas nunca casava).
+  Regex de tokens montado uma vez no módulo.
+- Testado no navegador: seleção da trilha TS persiste no localStorage; lacuna TS aprovada;
+  exercício de código TS mostra o aviso da 2.6; sem overflow em 375/768/1024/1440.
+
+- (Histórico) Na 2.1 a trilha ficou oculta na UI de propósito; a 2.5 a expôs.

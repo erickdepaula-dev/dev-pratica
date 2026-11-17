@@ -21,7 +21,7 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 
 | Área | Detalhe |
 | :--- | :--- |
-| **Trilhas** | PHP (88), JavaScript (87) e TypeScript (88, ainda oculta na UI até a 2.5) |
+| **Trilhas** | PHP (88), JavaScript (87) e TypeScript (88) — as três selecionáveis |
 | **Níveis** | `basico`, `intermediario`, `avancado`, `dev` |
 | **Modalidades** | `lacunas`, `codigo_livre`, `corrigir_erros`, `prever_saida`, `desafio_pratico` |
 | **Abas** | `dashboard`, `exercicios`, `desafios_ia`, `progresso`, `guia` |
@@ -63,7 +63,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 | Fase | Arquivo | Status |
 | :--- | :--- | :--- |
 | 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ✅ Concluída |
-| 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefas 2.1 a 2.4 concluídas |
+| 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefas 2.1 a 2.5 concluídas |
 | 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | ⬜ Não iniciada |
 | 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefa 4.2 concluída (índice extraído) |
 
@@ -99,8 +99,13 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
   (validação de API a partir de unknown, formulário genérico, reducer exaustivo, cliente HTTP
   tipado por endpoint). **Trilha TS com 88 exercícios**, todos validados com o compilador real.
 
-**Próximo passo:** tarefa `2.5 — Interface` (seletor de linguagem, card no Dashboard, filtros).
-Incluir na 2.5: realce de sintaxe de palavras-chave TS no `FillInBlanksEditor`.
+- 2.5 — Trilha TS na interface: seletor (Header, catálogo, menu mobile), card no Dashboard,
+  Progresso, realce de sintaxe TS. Seletor e grid derivam de `LANGUAGES` + `getLanguageTheme`.
+  Header ajustado para caber 3 trilhas sem overflow.
+
+**Próximo passo:** tarefa `2.6 — Avaliação e tutor` (compilação real de TS no navegador,
+tutor ciente de TS, roteiro TS no Guia, decisão sobre `prever_erro_de_tipo`).
+Até lá, exercícios TS de código (livre, corrigir, desafio) mostram "validação disponível na 2.6".
 Lembrete: até a 2.6 a avaliação de TS é um stub — exercícios `lacunas` e `prever_saida`
 já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 `desafio_pratico` em TS só serão avaliados de verdade após a 2.6.
@@ -134,3 +139,4 @@ já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 | 2026-11-17 | 2 | 2.3 parcial: 28 exercícios TS do nível básico, validados com o compilador TS 5.9.3 (solução compila e passa nos testes, bug é detectável, gabaritos conferidos). Campo `typeAssertions` no `Exercise`. Meta revista para 28 por nível (volume real de JS). |
 | 2026-11-17 | 2 | Tarefa 2.3 concluída: +28 exercícios TS do intermediário (type guards, unknown, generics, utility types, readonly, classes). 56 no total, todos validados com o compilador real. |
 | 2026-11-17 | 2 | Tarefa 2.4 concluída: +28 exercícios TS do avançado e 4 projetos DEV com projectBrief. Trilha TS com 88 exercícios, todos validados com o compilador TS 5.9.3. |
+| 2026-11-17 | 2 | Tarefa 2.5 concluída: trilha TS selecionável no Header, catálogo e Dashboard; seletor derivado de uma fonte única; realce de sintaxe TS; header sem overflow com 3 trilhas. |

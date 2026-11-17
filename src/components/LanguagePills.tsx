@@ -1,20 +1,8 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Language } from '../types/exercise';
-
-interface LanguageOption {
-  id: Language;
-  label: string;
-  fullName: string;
-  emoji: string;
-  title: string;
-}
-
-/** Ordem e rótulos das trilhas. A trilha TypeScript (Fase 2) entra aqui. */
-const LANGUAGE_OPTIONS: LanguageOption[] = [
-  { id: 'php', label: 'PHP', fullName: 'PHP', emoji: '🐘', title: 'PHP - Linguagem Principal de Estudo' },
-  { id: 'javascript', label: 'JS', fullName: 'JavaScript', emoji: '⚡', title: 'JavaScript - Linguagem Secundária' },
-];
+import { LANGUAGES } from '../utils/language';
+import { getLanguageTheme } from '../utils/exerciseTheme';
 
 const FOCUS_RING =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-from';
@@ -42,16 +30,18 @@ export const LanguagePills: React.FC<LanguagePillsProps> = ({
     aria-label="Trilha de linguagem"
     className="flex items-center p-0.5 bg-canvas border border-subtle rounded-full"
   >
-    {LANGUAGE_OPTIONS.map(lang => {
-      const isActive = selectedLanguage === lang.id;
+    {LANGUAGES.map(language => {
+      const theme = getLanguageTheme(language);
+      const isActive = selectedLanguage === language;
       return (
         <button
-          key={lang.id}
+          key={language}
           type="button"
           role="radio"
           aria-checked={isActive}
-          onClick={() => onSelectLanguage(lang.id)}
-          title={lang.title}
+          aria-label={theme.name}
+          onClick={() => onSelectLanguage(language)}
+          title={theme.name + ' — ' + theme.tag}
           className={`relative px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap cursor-pointer transition-colors ${FOCUS_RING} ${
             isActive ? 'text-white' : 'text-muted hover:text-primary'
           }`}
@@ -64,8 +54,8 @@ export const LanguagePills: React.FC<LanguagePillsProps> = ({
             />
           )}
           <span className="relative flex items-center gap-1">
-            <span aria-hidden="true">{lang.emoji}</span>
-            <span>{showFullName ? lang.fullName : lang.label}</span>
+            <span aria-hidden="true">{theme.emoji}</span>
+            <span>{showFullName ? theme.name : theme.shortName}</span>
           </span>
         </button>
       );
