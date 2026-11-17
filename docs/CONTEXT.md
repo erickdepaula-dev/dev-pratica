@@ -82,6 +82,9 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 A tarefa 4.2 (extração dos PDFs) foi feita fora de ordem, por ser pré-requisito de
 informação e depender de acesso à pasta local.
 
+Limpeza: removidos os arquivos legados `src/data/jsExercises.ts` e `src/data/phpExercises.ts`
+(sem imports; as trilhas ativas vêm de `src/data/js/` e `src/data/php/`).
+
 **Próximo passo:** abrir `docs/fase-1-ui.md` e começar pela tarefa `1.1 — Design tokens`.
 
 **Pendências / decisões em aberto:**
@@ -97,3 +100,4 @@ informação e depender de acesso à pasta local.
 | :--- | :--- | :--- |
 | 2026-11-17 | — | Criado `CLAUDE.md` e a documentação de fases (`docs/`). Plano de ação definido. |
 | 2026-11-17 | 4 | Tarefa 4.2 concluída: 160 exercícios extraídos dos PDFs (texto + OCR) e catalogados em `fase-4-indice-exercicios.md`. Decidido não versionar os enunciados originais. |
+| 2026-11-17 | — | Removidos `src/data/jsExercises.ts` e `src/data/phpExercises.ts` (versões legadas sem nenhum import). Trilhas ativas e IDs de exercícios inalterados. `npm run lint` e `npm run build` OK. |
