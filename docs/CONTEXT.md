@@ -63,7 +63,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 
 | Fase | Arquivo | Status |
 | :--- | :--- | :--- |
-| 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | 🟡 Tarefas 1.1 a 1.5 concluídas |
+| 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | 🟡 Tarefas 1.1 a 1.6 concluídas |
 | 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | ⬜ Não iniciada |
 | 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | ⬜ Não iniciada |
 | 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefa 4.2 concluída (índice extraído) |
@@ -96,9 +96,10 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 - 1.5 — Workspace e editores migrados para tokens (novos: `text-accent`, `text-syntax-*`),
   abas com indicador animado e transição, shake no erro, animação de acerto, modal animado,
   foco visível nos editores. Testado com "prever saída" (erro e acerto) em 375 e 1440 px.
+- 1.6 — `ExerciseList.tsx` reescrito: chips com gradiente, cards com badges do helper,
+  animação de layout ao filtrar, estado vazio ilustrado. `LanguagePills` extraído do Header.
 
-**Próximo passo:** tarefa `1.6 — Lista de exercícios`.
-Obs.: `ExerciseList.tsx` ainda tem um `getTypeMeta` duplicado — será trocado pelo helper na tarefa 1.6.
+**Próximo passo:** tarefa `1.7 — Microinterações e estados` (última da Fase 1).
 
 **Pendências / decisões em aberto:**
 - Paleta da Fase 1: implementada com a proposta inicial; ajustes finos só exigem editar `src/styles/tokens.css`.
@@ -118,3 +119,4 @@ Obs.: `ExerciseList.tsx` ainda tem um `getTypeMeta` duplicado — será trocado 
 | 2026-11-17 | 1 | Tarefa 1.3 concluída: Dashboard com card de continuação em destaque, `ProgressRing`, estatísticas, grid de trilhas e animação em cascata. |
 | 2026-11-17 | 1 | Tarefa 1.4 concluída: `StreakCard` com fogo pulsante, contador animado e semana animada; visão semanal unificada no card. |
 | 2026-11-17 | 1 | Tarefa 1.5 concluída: workspace e editores nos tokens, abas animadas, feedback de acerto/erro animado, foco visível. Tokens `--accent-text` e `--syntax-*`. |
+| 2026-11-17 | 1 | Tarefa 1.6 concluída: catálogo com chips em gradiente, cards animados ao filtrar, estado vazio ilustrado; `LanguagePills.tsx` extraído. |

@@ -15,6 +15,7 @@ import {
 import { Language, UserProgress } from '../types/exercise';
 import { User } from 'firebase/auth';
 import { calculateEffectiveStreak } from '../services/storage';
+import { LanguagePills } from './LanguagePills';
 
 export type ActiveTab = 'dashboard' | 'exercicios' | 'desafios_ia' | 'progresso' | 'guia';
 
@@ -31,19 +32,6 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'desafios_ia', label: 'Desafios com IA', shortLabel: 'Desafios IA', icon: Sparkles },
   { id: 'progresso', label: 'Progresso', shortLabel: 'Progresso', icon: ChartNoAxesColumnIncreasing },
   { id: 'guia', label: 'Guia de Estudo', shortLabel: 'Guia', icon: BookOpen },
-];
-
-interface LanguageOption {
-  id: Language;
-  label: string;
-  emoji: string;
-  title: string;
-}
-
-/** Ordem e rótulos das trilhas. A trilha TypeScript (Fase 2) entra aqui. */
-const LANGUAGE_OPTIONS: LanguageOption[] = [
-  { id: 'php', label: 'PHP', emoji: '🐘', title: 'PHP - Linguagem Principal de Estudo' },
-  { id: 'javascript', label: 'JS', emoji: '⚡', title: 'JavaScript - Linguagem Secundária' },
 ];
 
 const FOCUS_RING =
@@ -68,50 +56,6 @@ interface HeaderProps {
   /** Espaço reservado para a barra de XP (Fase 3). Não renderiza nada se omitido. */
   xpSlot?: React.ReactNode;
 }
-
-interface LanguagePillsProps {
-  selectedLanguage: Language;
-  onSelectLanguage: (lang: Language) => void;
-  /** Precisa ser único por instância para não "voar" entre o desktop e o menu mobile. */
-  indicatorId: string;
-}
-
-const LanguagePills: React.FC<LanguagePillsProps> = ({ selectedLanguage, onSelectLanguage, indicatorId }) => (
-  <div
-    role="radiogroup"
-    aria-label="Trilha de linguagem"
-    className="flex items-center p-0.5 bg-canvas border border-subtle rounded-full"
-  >
-    {LANGUAGE_OPTIONS.map(lang => {
-      const isActive = selectedLanguage === lang.id;
-      return (
-        <button
-          key={lang.id}
-          type="button"
-          role="radio"
-          aria-checked={isActive}
-          onClick={() => onSelectLanguage(lang.id)}
-          title={lang.title}
-          className={`relative px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap cursor-pointer transition-colors ${FOCUS_RING} ${
-            isActive ? 'text-white' : 'text-muted hover:text-primary'
-          }`}
-        >
-          {isActive && (
-            <motion.span
-              layoutId={indicatorId}
-              transition={INDICATOR_TRANSITION}
-              className="absolute inset-0 rounded-full bg-gradient-accent shadow-glow"
-            />
-          )}
-          <span className="relative flex items-center gap-1">
-            <span aria-hidden="true">{lang.emoji}</span>
-            <span>{lang.label}</span>
-          </span>
-        </button>
-      );
-    })}
-  </div>
-);
 
 export const Header: React.FC<HeaderProps> = ({
   activeTab,

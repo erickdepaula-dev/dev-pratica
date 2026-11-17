@@ -1,6 +1,6 @@
 # 🎨 Fase 1 — UI Redesign
 
-**Status:** 🟡 Em andamento (1.1 a 1.5 concluídas)
+**Status:** 🟡 Em andamento (1.1 a 1.6 concluídas)
 **Objetivo:** dar ao DevPrática uma identidade visual própria — gradientes, animações e consistência — tendo o coddy.tech como referência.
 
 ---
@@ -90,10 +90,10 @@ move isso para um único lugar reutilizável, mantendo as cores atuais:
 - [x] Estilizar `FillInBlanksEditor` e `FreeCodeEditor` com foco visível nos tokens
 
 ### 1.6 — Lista de exercícios
-- [ ] Cards de exercício com badge de modalidade colorido (helper da 1.1)
-- [ ] Filtros como chips com estado ativo em gradiente
-- [ ] Animação de layout ao filtrar (`AnimatePresence`)
-- [ ] Estado vazio ilustrado quando nenhum filtro casa
+- [x] Cards de exercício com badge de modalidade colorido (helper da 1.1)
+- [x] Filtros como chips com estado ativo em gradiente
+- [x] Animação de layout ao filtrar (`AnimatePresence`)
+- [x] Estado vazio ilustrado quando nenhum filtro casa
 
 ### 1.7 — Microinterações e estados
 - [ ] Skeleton de carregamento para quando o Firestore está sincronizando
@@ -143,8 +143,9 @@ Badges de modalidade e dificuldade: `getExerciseTypeTheme(type)` e
 
 ### Header (após a 1.2)
 
-- Abas e trilhas são listas (`NAV_ITEMS`, `LANGUAGE_OPTIONS`) em `Header.tsx`.
-  **Fase 2:** adicionar a trilha TS em `LANGUAGE_OPTIONS`.
+- Abas são uma lista (`NAV_ITEMS`) em `Header.tsx`. O seletor de trilha virou o componente
+  `LanguagePills.tsx` (usado no Header e no catálogo). **Fase 2:** adicionar a trilha TS em
+  `LANGUAGE_OPTIONS` dentro de `LanguagePills.tsx`.
 - **Fase 3:** a barra de XP entra pela prop opcional `xpSlot` do `Header` (aparece a partir de `lg`).
 - Larguras: `md` só ícones · `lg` rótulos curtos · `xl` ícone + rótulo completo e botão "Continuar".
   Abaixo de `md`, menu hambúrguer (fecha com Esc ou ao escolher uma aba).
@@ -176,5 +177,14 @@ Badges de modalidade e dificuldade: `getExerciseTypeTheme(type)` e
 - Erro: shake via `useAnimate` no botão "Verificar" (pulado se `useReducedMotion()`).
 - Acerto: selo com spring + um anel que se expande uma vez; painel com brilho verde.
 - Editores: `focus-within` com borda accent + `shadow-glow`.
+
+### Catálogo (após a 1.6)
+
+- `ExerciseList.tsx` usa `getExerciseTypeTheme` / `getDifficultyTheme` (o `getTypeMeta`
+  duplicado foi removido) e não tem mais `any`.
+- `ChipGroup` genérico (seleção única, indicador `layoutId` em gradiente) para nível, status e modalidade.
+- Cards são `<button>` com `layout="position"` dentro de `AnimatePresence mode="popLayout"`;
+  como o filho do popLayout precisa repassar `ref`, `ExerciseCard` recebe `ref` como prop (React 19).
+- Estado vazio com ilustração SVG em tokens, lista dos filtros ativos e botão para limpar.
 
 - O dev server roda com `watch: null` — reinicie `npm run dev` para ver alterações.
