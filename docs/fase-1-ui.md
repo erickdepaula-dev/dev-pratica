@@ -1,6 +1,6 @@
 # 🎨 Fase 1 — UI Redesign
 
-**Status:** 🟡 Em andamento (1.1 concluída)
+**Status:** 🟡 Em andamento (1.1 e 1.2 concluídas)
 **Objetivo:** dar ao DevPrática uma identidade visual própria — gradientes, animações e consistência — tendo o coddy.tech como referência.
 
 ---
@@ -64,11 +64,11 @@ move isso para um único lugar reutilizável, mantendo as cores atuais:
 - [x] Substituir `getExerciseTypeBadge` do `Dashboard.tsx` pelo helper novo
 
 ### 1.2 — Header e navegação
-- [ ] Redesenhar `src/components/Header.tsx` com o gradiente assinatura no item ativo
-- [ ] Indicador de aba ativa animado (`layoutId` do motion)
-- [ ] Seletor de linguagem como pills com gradiente no selecionado
-- [ ] Deixar espaço reservado para a barra de XP (Fase 3) — sem implementar ainda
-- [ ] Responsividade: navegação colapsa em menu no mobile
+- [x] Redesenhar `src/components/Header.tsx` com o gradiente assinatura no item ativo
+- [x] Indicador de aba ativa animado (`layoutId` do motion)
+- [x] Seletor de linguagem como pills com gradiente no selecionado
+- [x] Deixar espaço reservado para a barra de XP (Fase 3) — sem implementar ainda
+- [x] Responsividade: navegação colapsa em menu no mobile
 
 ### 1.3 — Dashboard
 - [ ] Cards de estatística com fundo `bg-surface`, borda sutil e brilho no hover
@@ -138,3 +138,14 @@ move isso para um único lugar reutilizável, mantendo as cores atuais:
 Badges de modalidade e dificuldade: `getExerciseTypeTheme(type)` e
 `getDifficultyTheme(difficulty)` em `src/utils/exerciseTheme.ts`
 (retornam `label`, `shortLabel`, `badgeClass`, `textClass`).
+
+### Header (após a 1.2)
+
+- Abas e trilhas são listas (`NAV_ITEMS`, `LANGUAGE_OPTIONS`) em `Header.tsx`.
+  **Fase 2:** adicionar a trilha TS em `LANGUAGE_OPTIONS`.
+- **Fase 3:** a barra de XP entra pela prop opcional `xpSlot` do `Header` (aparece a partir de `lg`).
+- Larguras: `md` só ícones · `lg` rótulos curtos · `xl` ícone + rótulo completo e botão "Continuar".
+  Abaixo de `md`, menu hambúrguer (fecha com Esc ou ao escolher uma aba).
+- `MotionConfig reducedMotion="user"` em `src/main.tsx` faz todas as animações do motion
+  respeitarem `prefers-reduced-motion`. Animações CSS usam `motion-reduce:animate-none`.
+- O dev server roda com `watch: null` — reinicie `npm run dev` para ver alterações.

@@ -63,7 +63,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 
 | Fase | Arquivo | Status |
 | :--- | :--- | :--- |
-| 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | 🟡 Tarefa 1.1 concluída |
+| 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | 🟡 Tarefas 1.1 e 1.2 concluídas |
 | 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | ⬜ Não iniciada |
 | 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | ⬜ Não iniciada |
 | 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefa 4.2 concluída (índice extraído) |
@@ -80,12 +80,15 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 
 **Fase ativa:** Fase 1 — UI Redesign.
 
-**Concluído:** tarefa 1.1 — design tokens em `src/styles/tokens.css`, mapeados no
-`@theme inline` de `src/index.css` (classes `bg-surface`, `text-muted`, `bg-gradient-accent`...),
-e helper `src/utils/exerciseTheme.ts` (modalidade + dificuldade) já usado no `Dashboard.tsx`.
-A paleta aplicada é a proposta original do arquivo da fase.
+**Concluído:**
+- 1.1 — design tokens em `src/styles/tokens.css`, mapeados no `@theme inline` de `src/index.css`
+  (classes `bg-surface`, `text-muted`, `bg-gradient-accent`...) e helper `src/utils/exerciseTheme.ts`.
+- 1.2 — `Header.tsx` redesenhado: indicador animado (`layoutId`) no gradiente assinatura,
+  pills de linguagem, menu hambúrguer no mobile, slot `xpSlot` para a Fase 3.
+  `MotionConfig reducedMotion="user"` adicionado em `src/main.tsx`.
+  Testado em 375 / 768 / 1024 / 1440 px sem overflow horizontal.
 
-**Próximo passo:** tarefa `1.2 — Header e navegação`.
+**Próximo passo:** tarefa `1.3 — Dashboard`.
 Obs.: `ExerciseList.tsx` ainda tem um `getTypeMeta` duplicado — será trocado pelo helper na tarefa 1.6.
 
 **Pendências / decisões em aberto:**
@@ -102,3 +105,4 @@ Obs.: `ExerciseList.tsx` ainda tem um `getTypeMeta` duplicado — será trocado 
 | 2026-11-17 | — | Criado `CLAUDE.md` e a documentação de fases (`docs/`). Plano de ação definido. |
 | 2026-11-17 | 4 | Tarefa 4.2 concluída: 160 exercícios extraídos dos PDFs (texto + OCR) e catalogados em `fase-4-indice-exercicios.md`. Decidido não versionar os enunciados originais. |
 | 2026-11-17 | 1 | Tarefa 1.1 concluída: `tokens.css`, mapeamento `@theme` (+ utilitários de gradiente), `exerciseTheme.ts` e `Dashboard.tsx` migrado para o helper. |
+| 2026-11-17 | 1 | Tarefa 1.2 concluída: Header com indicador animado, pills de linguagem, menu mobile e slot de XP; `MotionConfig` com reduced motion global. |
