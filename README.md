@@ -4,6 +4,24 @@ O **DevPrática** é um ambiente de aprendizado e treinamento prático de progra
 
 ---
 
+## 🧭 Documentação de desenvolvimento
+
+O roadmap do projeto vive em [`docs/`](./docs/):
+
+| Arquivo | Para quê |
+| :--- | :--- |
+| [`CLAUDE.md`](./CLAUDE.md) | Protocolo para sessões de IA: convenções, stack e o que ler antes de codar |
+| [`docs/CONTEXT.md`](./docs/CONTEXT.md) | **Estado atual** — o que já existe, onde paramos, changelog |
+| [`docs/PLANO.md`](./docs/PLANO.md) | Visão geral das 4 fases e ordem de execução |
+| [`docs/fase-1-ui.md`](./docs/fase-1-ui.md) | Fase 1 — UI redesign (design tokens, gradientes, animações) |
+| [`docs/fase-2-typescript.md`](./docs/fase-2-typescript.md) | Fase 2 — Trilha TypeScript |
+| [`docs/fase-3-gamificacao.md`](./docs/fase-3-gamificacao.md) | Fase 3 — XP, níveis e conquistas |
+| [`docs/fase-4-exercicios.md`](./docs/fase-4-exercicios.md) | Fase 4 — Conversão dos exercícios em PDF |
+
+> Ao iniciar uma fase: ler `docs/CONTEXT.md` → `CLAUDE.md` → o arquivo da fase.
+
+---
+
 ## 📌 Sumário
 1. [O que é o DevPrática?](#-o-que-é-o-devprática)
 2. [Estrutura da Plataforma](#-estrutura-da-plataforma)
