@@ -17,6 +17,7 @@ O roadmap do projeto vive em [`docs/`](./docs/):
 | [`docs/fase-2-typescript.md`](./docs/fase-2-typescript.md) | Fase 2 — Trilha TypeScript |
 | [`docs/fase-3-gamificacao.md`](./docs/fase-3-gamificacao.md) | Fase 3 — XP, níveis e conquistas |
 | [`docs/fase-4-exercicios.md`](./docs/fase-4-exercicios.md) | Fase 4 — Conversão dos exercícios em PDF |
+| [`docs/fase-4-indice-exercicios.md`](./docs/fase-4-indice-exercicios.md) | Catálogo dos 160 exercícios do material de apoio |
 
 > Ao iniciar uma fase: ler `docs/CONTEXT.md` → `CLAUDE.md` → o arquivo da fase.
 

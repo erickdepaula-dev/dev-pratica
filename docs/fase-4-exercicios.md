@@ -20,7 +20,12 @@ Pasta local `C:\CURSO\programacao` (não versionada no repositório):
 | `Guia Rápido de Operadores.pdf` | Referência de operadores |
 | `Guia Visual de Teste de Mesa.pdf` | Método de teste de mesa |
 
-**Total estimado:** ~160 exercícios de lógica.
+**Total:** 160 exercícios de lógica, já catalogados em
+**[`fase-4-indice-exercicios.md`](./fase-4-indice-exercicios.md)** — número, módulo e título
+de cada um, com a progressão de tópicos. Comece por ali, não pelos PDFs.
+
+Os PDFs não estão versionados (ficam em `C:\CURSO\programacao`), mas o índice já
+carrega o que a conversão precisa saber.
 
 ---
 
@@ -47,11 +52,15 @@ Mais trabalho na UI, mas reflete melhor a natureza do material.
 - [ ] Definir a convenção de ID (ex.: `logica-001-media-aritmetica`)
 - [ ] Modelar como um exercício aceita solução em mais de uma linguagem
 
-### 4.2 — Extração do conteúdo
-- [ ] Extrair o texto dos PDFs de exercícios
-- [ ] Extrair o gabarito e casar cada resposta com seu enunciado
-- [ ] Revisar a extração — PDFs costumam quebrar formatação de código
-- [ ] Gerar um JSON intermediário com `{ numero, enunciado, gabarito }`
+### 4.2 — Extração do conteúdo ✅ CONCLUÍDA
+- [x] Extrair a estrutura dos PDFs (texto + OCR nos que são imagem)
+- [x] Catalogar os 160 exercícios por módulo e título
+- [x] Revisar os títulos onde o OCR falhou
+- [x] Gerar o índice em [`fase-4-indice-exercicios.md`](./fase-4-indice-exercicios.md)
+
+**Decisão tomada:** os enunciados **não** foram copiados para o repositório. O material
+de origem é uma publicação comercial e o repo é público, então o índice guarda apenas
+títulos e tópicos. Os enunciados são escritos do zero na tarefa 4.3, no tom da plataforma.
 
 ### 4.3 — Conversão: 100 exercícios de lógica
 - [ ] Converter em lotes de 20 para o formato `Exercise`
@@ -92,7 +101,13 @@ Mais trabalho na UI, mas reflete melhor a natureza do material.
 - **Volume:** esta é a fase mais longa. Trabalhar em lotes de 20 exercícios,
   commitando cada lote, e atualizar o `CONTEXT.md` com o número do último lote concluído.
   Assim uma sessão nova sabe exatamente de onde continuar.
-- Os PDFs não estão no repositório (pasta local). Uma sessão sem acesso à pasta
-  não consegue executar a tarefa 4.2 — registrar isso no `CONTEXT.md` se for o caso.
+- **Os PDFs não são necessários para a conversão.** O índice já tem o mapa de tópicos.
+  Uma sessão sem acesso à pasta local consegue executar a Fase 4 inteira a partir dele.
 - Enunciados de exercício de lógica tendem a ser secos ("faça um programa que...").
-  Reescrever com o `realWorldContext` que o resto da plataforma usa, para manter o tom.
+  Escrever com o `realWorldContext` que o resto da plataforma usa — além de manter o tom,
+  é o que evita republicar o texto da apostila.
+- Os exercícios **11, 12 e 13** dos 100 não têm enunciado no material de origem.
+  Escrever do zero a partir do tópico do Módulo 01.
+- Os dois bônus têm numeração própria (1 a 30 cada), independente dos 100. Cuidado
+  ao gerar IDs para não colidir: sugestão `logica-100-NNN-slug`, `logica-cond-NN-slug`,
+  `logica-rep-NN-slug`.
