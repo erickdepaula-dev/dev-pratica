@@ -100,6 +100,30 @@ async function startServer() {
     return null;
   }
 
+  /**
+   * Diretrizes extras quando o exercício é de TypeScript (Fase 2, tarefa 2.6): o foco é o
+   * sistema de tipos, e o tutor recebe os diagnósticos reais do compilador do navegador.
+   */
+  function typeScriptGuidance(language: unknown, exerciseType: unknown, diagnostics: unknown): string {
+    if (language !== 'typescript') return '';
+    const lista = Array.isArray(diagnostics)
+      ? diagnostics.filter((d): d is string => typeof d === 'string').slice(0, 5).map(d => '- ' + d.slice(0, 300))
+      : [];
+    const blocoDiagnosticos = lista.length
+      ? `\nDiagnósticos REAIS do compilador TypeScript (strict) para o código atual do aluno:\n${lista.join('\n')}\nUse-os como fonte de verdade sobre o erro.\n`
+      : '';
+    const modalidade =
+      exerciseType === 'prever_erro_de_tipo'
+        ? '\n- Modalidade "prever_erro_de_tipo": o aluno precisa apontar a linha e o motivo do erro. NÃO revele a linha nem o motivo; sugira comparar, linha a linha, o tipo declarado com o tipo do valor usado.'
+        : '';
+    return `
+DIRETRIZES ESPECÍFICAS DE TYPESCRIPT:
+- O código é compilado em modo strict. O foco do exercício é o SISTEMA DE TIPOS, não só a lógica.
+- Ao comentar um erro de tipo, explique em linguagem simples o que o compilador esperava e o que recebeu, citando o código TSxxxx quando houver.
+- NUNCA sugira any, "as" (type assertion), "!" (non-null assertion) ou @ts-ignore para silenciar o erro: oriente a corrigir o tipo ou a fazer narrowing.${modalidade}
+${blocoDiagnosticos}`;
+  }
+
   // Server-side route for contextual AI hints based on user's current code
   app.post('/api/gemini/hint', async (req, res) => {
     try {
@@ -114,6 +138,7 @@ async function startServer() {
         currentCode,
         userBlanks,
         exerciseType,
+        compilerDiagnostics,
       } = req.body;
 
       // Build pedagogical prompt tailored to the student's exact attempt and modality
@@ -146,8 +171,10 @@ MISSÃO E DIRETRIZES PEDAGÓGICAS ADAPTADAS À MODALIDADE:
    - Se for "prever_saida": explique como o interpretador processa os tipos e operadores sem dizer a resposta pronta do terminal.
    - Se for "desafio_pratico": ajude a decompor os requisitos em etapas menores (guard clauses, validações, retorno).
    - Se for "codigo_livre": oriente sobre a assinatura da função e a próxima etapa lógica.
+   - Se for "prever_erro_de_tipo": ajude o aluno a raciocinar como o compilador, sem apontar a linha.
 3. NUNCA dê a resposta pronta completa nem revele o código final de bandeja. O objetivo é que o aluno exercite a lógica e chegue à conclusão.
-4. Limite sua explicação a 2 ou 3 frases curtas, objetivas e práticas para leitura rápida no editor.`;
+4. Limite sua explicação a 2 ou 3 frases curtas, objetivas e práticas para leitura rápida no editor.
+${typeScriptGuidance(language, exerciseType, compilerDiagnostics)}`;
 
       let hintText = await callGeminiResiliently({
         prompt,
@@ -183,6 +210,8 @@ MISSÃO E DIRETRIZES PEDAGÓGICAS ADAPTADAS À MODALIDADE:
         currentCode,
         userStatement,
         dialogType, // 'doubt' | 'statement_help' | 'check_logic' | 'syntax_help' | 'next_step'
+        exerciseType,
+        compilerDiagnostics,
       } = req.body;
 
       const prompt = `Você é o Tutor IA do DevPrática, um especialista e mentor sênior de desenvolvimento em ${String(language).toUpperCase()}.
@@ -207,7 +236,8 @@ DIRETRIZES DA RESPOSTA:
 2. Se o aluno disse que NÃO entendeu o enunciado: reescreva o problema com um exemplo simples do cotidiano de um desenvolvedor, explicando a entrada, a transformação necessária e a saída esperada.
 3. Se o aluno compartilhou o que ENTENDEU ATÉ O MOMENTO: valide o que está correto para dar confiança, aponte com delicadeza onde está o desvio ou lacuna de raciocínio, e dê uma orientação de próximo passo.
 4. NUNCA forneça a resposta de código pronta integral. Dê exemplos análogos ou perguntas socráticas para o aluno chegar à solução sozinho.
-5. Use parágrafos curtos e objetivos com boa formatação.`;
+5. Use parágrafos curtos e objetivos com boa formatação.
+${typeScriptGuidance(language, exerciseType, compilerDiagnostics)}`;
 
       const tutorAnswer = await callGeminiResiliently({
         prompt,
@@ -266,7 +296,7 @@ ${code}
 Sua missão é explicar CADA linha relevante:
 - "line": número da linha (1-indexed)
 - "code": o trecho exato daquela linha
-- "explanation": o que essa linha faz sintaticamente na linguagem ${language} (ex: declaração de tipo escalar, abertura de tag, condicional if, atribuição de variável, etc.)
+- "explanation": o que essa linha faz sintaticamente na linguagem ${language} (ex: declaração de tipo escalar, abertura de tag, condicional if, atribuição de variável, etc.)${language === 'typescript' ? ' Em TypeScript, destaque o papel dos tipos na linha (anotação, inferência, narrowing, generics) e lembre que eles são apagados no JavaScript gerado.' : ''}
 - "purpose": para que serve essa linha na prática e qual o impacto no fluxo de execução do sistema
 
 Retorne ESTRITAMENTE um objeto JSON válido (sem comentários dentro do JSON), com a estrutura:

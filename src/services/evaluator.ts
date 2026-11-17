@@ -1,4 +1,6 @@
 import { Exercise, Blank } from '../types/exercise';
+import { assertNever } from '../utils/language';
+import type { TsDiagnostic } from '../types/typescriptEvaluation';
 
 export interface BlankValidationResult {
   blankId: string;
@@ -21,6 +23,8 @@ export interface EvaluationResult {
     error?: string;
   }[];
   generalFeedback: string;
+  /** Só TypeScript: diagnósticos do compilador (também enviados ao tutor IA). */
+  diagnostics?: TsDiagnostic[];
 }
 
 /**
@@ -243,6 +247,83 @@ export function evaluateOutputPrediction(
   };
 }
 
+/** Resposta do aluno em 'prever_erro_de_tipo' (null = ainda não escolheu). */
+export interface TypeErrorAnswer {
+  line: number | null;
+  reason: number | null;
+}
+
+/**
+ * Avalia 'prever_erro_de_tipo': linha e motivo vêm do gabarito do exercício (conferido contra
+ * o compilador real por `npm run check:ts`). Depois, carrega o compilador para mostrar ao aluno
+ * a mensagem exata que o TypeScript emite para o trecho — se o carregamento falhar, a nota
+ * não muda.
+ */
+export async function evaluateTypeErrorPrediction(
+  exercise: Exercise,
+  answer: TypeErrorAnswer
+): Promise<EvaluationResult> {
+  const challenge = exercise.typeErrorChallenge;
+  if (!challenge) {
+    return {
+      passed: false,
+      scorePercent: 0,
+      blankResults: [],
+      logs: [],
+      testCaseResults: [],
+      generalFeedback: 'Exercício sem gabarito de erro de tipo.',
+    };
+  }
+
+  const lineOk = answer.line === challenge.errorLine;
+  const reasonOk = answer.reason === challenge.correctReason;
+  const testCaseResults: EvaluationResult['testCaseResults'] = [
+    {
+      description: 'Linha em que o compilador acusa o erro',
+      passed: lineOk,
+      expected: lineOk ? 'Linha ' + challenge.errorLine : undefined,
+      output: answer.line === null ? '(nenhuma linha escolhida)' : 'Linha ' + answer.line,
+    },
+    {
+      description: 'Motivo do erro',
+      passed: reasonOk,
+      output: answer.reason === null ? '(nenhum motivo escolhido)' : challenge.reasonOptions[answer.reason],
+    },
+  ];
+  const passed = lineOk && reasonOk;
+
+  let compilerMessage = '';
+  let diagnostics: EvaluationResult['diagnostics'];
+  if (passed) {
+    try {
+      const { getBrowserCompileFn } = await import('./typescript/browserCompiler');
+      const { formatDiagnostic } = await import('./typescript/compilerCore');
+      const compiled = (await getBrowserCompileFn())(exercise.codeToPredict ?? exercise.templateCode);
+      diagnostics = compiled.diagnostics;
+      const first = compiled.diagnostics[0];
+      if (first) compilerMessage = ' O compilador diz: ' + formatDiagnostic(first);
+    } catch {
+      // Sem o compilador, a correção continua válida; só não exibimos a mensagem literal.
+    }
+  }
+
+  return {
+    passed,
+    scorePercent: (lineOk ? 50 : 0) + (reasonOk ? 50 : 0),
+    blankResults: [],
+    logs: [],
+    testCaseResults,
+    diagnostics,
+    generalFeedback: passed
+      ? 'Exato! Você leu o código como o compilador.' + compilerMessage
+      : lineOk
+        ? 'A linha está certa, mas o motivo não. Releia os tipos envolvidos nessa linha.'
+        : reasonOk
+          ? 'O motivo está certo, mas o compilador acusa outra linha. Em que ponto o tipo deixa de bater?'
+          : 'Ainda não. Procure a primeira linha em que um valor é usado com um tipo incompatível.',
+  };
+}
+
 /**
  * Evaluates code debugging / bug fixing ('corrigir_erros').
  */
@@ -250,10 +331,7 @@ export async function evaluateBugFix(
   exercise: Exercise,
   userCode: string
 ): Promise<EvaluationResult> {
-  if (exercise.language === 'javascript') {
-    return evaluateJavaScriptFreeCode(exercise, userCode);
-  }
-  return evaluatePhpFreeCode(exercise, userCode);
+  return evaluateCodeForLanguage(exercise, userCode);
 }
 
 /**
@@ -263,10 +341,57 @@ export async function evaluatePracticalChallenge(
   exercise: Exercise,
   userCode: string
 ): Promise<EvaluationResult> {
-  if (exercise.language === 'javascript') {
-    return evaluateJavaScriptFreeCode(exercise, userCode);
+  return evaluateCodeForLanguage(exercise, userCode);
+}
+
+/**
+ * Ponto único de despacho por linguagem para código escrito pelo usuário
+ * ('codigo_livre', 'corrigir_erros', 'desafio_pratico').
+ * O `switch` é exaustivo: uma nova linguagem em `Language` sem avaliador quebra o `tsc`.
+ */
+export async function evaluateCodeForLanguage(
+  exercise: Exercise,
+  userCode: string
+): Promise<EvaluationResult> {
+  switch (exercise.language) {
+    case 'javascript':
+      return evaluateJavaScriptFreeCode(exercise, userCode);
+    case 'php':
+      return evaluatePhpFreeCode(exercise, userCode);
+    case 'typescript':
+      return evaluateTypeScriptCode(exercise, userCode);
+    default:
+      return assertNever(exercise.language, 'Linguagem do exercício');
   }
-  return evaluatePhpFreeCode(exercise, userCode);
+}
+
+/**
+ * Avaliação de TypeScript com compilação real no navegador (pacote oficial `typescript`,
+ * linha 5.x via alias `typescript-browser`). Pipeline: compilar → executar → testar → regras.
+ * O compilador é carregado sob demanda na primeira avaliação (ver services/typescript/).
+ */
+export async function evaluateTypeScriptCode(
+  exercise: Exercise,
+  userCode: string
+): Promise<EvaluationResult> {
+  try {
+    const [{ getBrowserCompileFn }, { runPipeline }] = await Promise.all([
+      import('./typescript/browserCompiler'),
+      import('./typescript/pipeline'),
+    ]);
+    const compile = await getBrowserCompileFn();
+    return await runPipeline(exercise, userCode, compile);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return {
+      passed: false,
+      scorePercent: 0,
+      blankResults: [],
+      logs: [],
+      testCaseResults: [{ description: 'Carregamento do compilador TypeScript', passed: false, error: message }],
+      generalFeedback: 'Não foi possível carregar o compilador TypeScript. Verifique a conexão e tente novamente.',
+    };
+  }
 }
 
 /**

@@ -58,7 +58,8 @@ src/
 ### Comandos
 ```bash
 npm run dev     # servidor full-stack (porta 3000)
-npm run lint    # tsc --noEmit — validação de tipos
+npm run lint    # tsc --noEmit (TS 7, por caminho explícito) — validação de tipos
+npm run check:ts # valida os exercícios TS com o compilador real (rodar ao criar/editar exercícios TS)
 npm run build   # build de produção
 npm start       # produção
 ```

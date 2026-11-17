@@ -2,6 +2,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, auth } from './firebase';
 import { UserProgress } from '../types/exercise';
 import { loadUserProgress, saveUserProgress } from './storage';
+import { isLanguage } from '../utils/language';
 
 export enum OperationType {
   CREATE = 'create',
@@ -147,7 +148,7 @@ export async function loadProgressFromFirestore(): Promise<UserProgress | null> 
     };
 
     const merged: UserProgress = {
-      selectedLanguage: (data.selectedLanguage as any) || local.selectedLanguage || 'php',
+      selectedLanguage: isLanguage(data.selectedLanguage) ? data.selectedLanguage : local.selectedLanguage,
       completedIds: mergedCompleted,
       attempts: mergedAttempts,
       aiChallenges: mergedAiChallenges,

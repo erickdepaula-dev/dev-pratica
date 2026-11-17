@@ -1,8 +1,73 @@
 @import "tailwindcss";
+@import "./styles/tokens.css";
 
 @theme {
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/*
+ * Mapeamento dos design tokens (src/styles/tokens.css) para utilitários do Tailwind.
+ * `inline` faz as classes referenciarem a variável diretamente, então alterar
+ * um token em tokens.css propaga para todas as telas.
+ *
+ * Exemplos: bg-canvas (fundo base; não usamos "base" para não colidir com text-base),
+ * bg-surface, bg-surface-hover, border-subtle, text-primary,
+ * text-muted, text-accent (texto de destaque), text-syntax-*, text-success, bg-danger/10, from-accent-from to-accent-to,
+ * shadow-card, shadow-glow, rounded-card, rounded-control.
+ */
+@theme inline {
+  --color-canvas: var(--bg-base);
+  --color-surface: var(--bg-surface);
+  --color-surface-hover: var(--bg-surface-hover);
+  --color-subtle: var(--border-subtle);
+  --color-primary: var(--text-primary);
+  --color-muted: var(--text-muted);
+  --color-accent-from: var(--accent-from);
+  --color-accent-to: var(--accent-to);
+  --color-accent: var(--accent-text);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-streak-from: var(--streak-from);
+  --color-streak-to: var(--streak-to);
+  --color-typescript: var(--lang-typescript);
+  --color-typescript-text: var(--lang-typescript-text);
+  --color-syntax-keyword: var(--syntax-keyword);
+  --color-syntax-variable: var(--syntax-variable);
+  --color-syntax-string: var(--syntax-string);
+  --color-syntax-number: var(--syntax-number);
+  --color-syntax-comment: var(--syntax-comment);
+  --color-syntax-tag: var(--syntax-tag);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-glow: var(--shadow-glow);
+
+  --radius-card: var(--radius-card);
+  --radius-control: var(--radius-control);
+}
+
+/* Gradientes como utilitários: bg-gradient-accent, bg-gradient-streak, text-gradient-accent, text-gradient-streak */
+@utility bg-gradient-accent {
+  background-image: var(--gradient-accent);
+}
+
+@utility bg-gradient-streak {
+  background-image: var(--gradient-streak);
+}
+
+@utility text-gradient-accent {
+  background-image: var(--gradient-accent);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@utility text-gradient-streak {
+  background-image: var(--gradient-streak);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 /* Custom scrollbars for code and sidebars */
@@ -11,12 +76,75 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: color-mix(in srgb, var(--bg-base) 60%, transparent);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(71, 85, 105, 0.5);
+  background: color-mix(in srgb, var(--border-subtle) 80%, transparent);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.8);
+  background: var(--text-muted);
+}
+
+/*
+ * Microinterações globais (Fase 1 — tarefa 1.7).
+ * Ficam em @layer base: utilitários do Tailwind no componente continuam podendo sobrescrever.
+ */
+@layer base {
+  /* Foco visível consistente em qualquer elemento interativo (só para teclado). */
+  :where(button, a, summary, [role='button'], [role='tab'], [role='radio'], [tabindex]):focus-visible {
+    outline: 2px solid var(--accent-from);
+    outline-offset: 2px;
+  }
+
+  :where(button, [role='button'], summary, select):not(:disabled) {
+    cursor: pointer;
+  }
+
+  :where(button):disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* Skeleton: brilho deslizante usando transform (sem reflow). */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--text-primary) 6%, transparent),
+    transparent
+  );
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/*
+ * prefers-reduced-motion: as animações do `motion` já obedecem via
+ * <MotionConfig reducedMotion="user"> (src/main.tsx). Isto cobre o que é CSS
+ * (animate-spin, animate-pulse, transições, shimmer) em todos os componentes.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .skeleton::after {
+    display: none;
+  }
 }

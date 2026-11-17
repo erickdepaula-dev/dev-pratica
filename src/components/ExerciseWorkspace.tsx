@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion, useAnimate, useReducedMotion } from 'motion/react';
+import { Check, X } from 'lucide-react';
 import { Exercise, UserProgress } from '../types/exercise';
 import { FillInBlanksEditor } from './FillInBlanksEditor';
 import { FreeCodeEditor } from './FreeCodeEditor';
 import { PredictOutputViewer } from './PredictOutputViewer';
+import { PredictTypeErrorViewer } from './PredictTypeErrorViewer';
 import {
   evaluateBlanks,
-  evaluateJavaScriptFreeCode,
-  evaluatePhpFreeCode,
+  evaluateCodeForLanguage,
   evaluateOutputPrediction,
+  evaluateTypeErrorPrediction,
   evaluateBugFix,
   evaluatePracticalChallenge,
   EvaluationResult,
@@ -15,6 +18,26 @@ import {
 import { recordExerciseAttempt } from '../services/storage';
 import { requestGeminiContextualHint } from '../services/aiHint';
 import { AiTutorModal } from './AiTutorModal';
+import { getDifficultyTheme, getExerciseTypeTheme } from '../utils/exerciseTheme';
+import { assertNever } from '../utils/language';
+import { formatDiagnostic } from '../services/typescript/compilerCore';
+
+type WorkspaceTab = 'instrucoes' | 'po_brief' | 'requisitos' | 'dicas' | 'solucao';
+
+interface WorkspaceTabItem {
+  id: WorkspaceTab;
+  label: string;
+  /** Classe do indicador animado quando a aba está ativa. */
+  indicatorClass: string;
+  /** Cor do texto quando inativa. */
+  idleClass: string;
+}
+
+const FOCUS_RING =
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-from';
+
+/** Shake curto e sutil para resposta incorreta (só transform). */
+const SHAKE_KEYFRAMES = { x: [0, -7, 7, -5, 5, -2, 0] };
 
 interface ExerciseWorkspaceProps {
   exercise: Exercise;
@@ -46,6 +69,10 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     return currentAttempt?.outputPrediction || '';
   });
 
+  // Resposta de 'prever_erro_de_tipo' (linha + motivo)
+  const [typeErrorLine, setTypeErrorLine] = useState<number | null>(() => currentAttempt?.typeErrorAnswer?.line ?? null);
+  const [typeErrorReason, setTypeErrorReason] = useState<number | null>(() => currentAttempt?.typeErrorAnswer?.reason ?? null);
+
   // Free code / bug fix state
   const [userCode, setUserCode] = useState<string>(() => {
     if (currentAttempt?.userCode) return currentAttempt.userCode;
@@ -65,7 +92,11 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     return currentAttempt?.revealedSolution || isAlreadyCompleted;
   });
   const [showConfirmSolution, setShowConfirmSolution] = useState(false);
-  const [activeTab, setActiveTab] = useState<'instrucoes' | 'po_brief' | 'requisitos' | 'dicas' | 'solucao'>('instrucoes');
+  const [activeTab, setActiveTab] = useState<WorkspaceTab>('instrucoes');
+  // Incrementa a cada verificação para reanimar o painel de feedback.
+  const [evaluationCount, setEvaluationCount] = useState(0);
+  const [verifyButtonScope, animateVerifyButton] = useAnimate<HTMLButtonElement>();
+  const prefersReducedMotion = useReducedMotion();
 
   // Interactive Acceptance Criteria checklist for DEV projects
   const [checkedCriteria, setCheckedCriteria] = useState<string[]>(() => {
@@ -82,7 +113,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
 
   // Reconstruct current assembled code for Tutor analysis
   const assembledCode = React.useMemo(() => {
-    if (exercise.type === 'prever_saida') {
+    if (exercise.type === 'prever_saida' || exercise.type === 'prever_erro_de_tipo') {
       return exercise.codeToPredict || exercise.templateCode;
     }
     if (exercise.type !== 'lacunas') {
@@ -107,6 +138,8 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     const completed = progress.completedIds.includes(exercise.id);
     setUserBlanks(attempt?.userBlanks || {});
     setUserPrediction(attempt?.outputPrediction || '');
+    setTypeErrorLine(attempt?.typeErrorAnswer?.line ?? null);
+    setTypeErrorReason(attempt?.typeErrorAnswer?.reason ?? null);
     setUserCode(
       attempt?.userCode ||
       (exercise.type === 'corrigir_erros' && exercise.initialBuggyCode ? exercise.initialBuggyCode : exercise.templateCode)
@@ -130,6 +163,18 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     setShowAiHintBanner(false);
   }, [exercise.id]);
 
+  // Diagnósticos do compilador da última avaliação, enviados ao tutor IA (só TS).
+  // Em 'prever_erro_de_tipo' nunca são enviados: entregariam a resposta.
+  const compilerDiagnostics =
+    exercise.language === 'typescript' && exercise.type !== 'prever_erro_de_tipo'
+      ? (evaluationResult?.diagnostics ?? []).map(formatDiagnostic)
+      : undefined;
+
+  const typeErrorAnswerToSave =
+    exercise.type === 'prever_erro_de_tipo' && typeErrorLine !== null && typeErrorReason !== null
+      ? { line: typeErrorLine, reason: typeErrorReason }
+      : undefined;
+
   // Navigation indices
   const currentIndex = allExercisesInTrack.findIndex(e => e.id === exercise.id);
   const prevExercise = currentIndex > 0 ? allExercisesInTrack[currentIndex - 1] : null;
@@ -150,8 +195,9 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
 
     const saved = recordExerciseAttempt(exercise.id, isAlreadyCompleted, {
       userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
-      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' ? userCode : undefined,
+      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
       outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
+      typeErrorAnswer: typeErrorAnswerToSave,
       hintsUsed: hintsUnlockedCount,
       revealedSolution: showSolution,
     });
@@ -172,6 +218,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
         exercise,
         userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
         currentCode: assembledCode,
+        compilerDiagnostics,
       });
 
       setAiHintLoading(false);
@@ -192,29 +239,42 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
 
     let result: EvaluationResult;
 
-    if (exercise.type === 'lacunas') {
-      result = evaluateBlanks(exercise, userBlanks);
-    } else if (exercise.type === 'prever_saida') {
-      result = evaluateOutputPrediction(exercise, userPrediction);
-    } else if (exercise.type === 'corrigir_erros') {
-      result = await evaluateBugFix(exercise, userCode);
-    } else if (exercise.type === 'desafio_pratico') {
-      result = await evaluatePracticalChallenge(exercise, userCode);
-    } else {
-      if (exercise.language === 'javascript') {
-        result = await evaluateJavaScriptFreeCode(exercise, userCode);
-      } else {
-        result = evaluatePhpFreeCode(exercise, userCode);
-      }
+    // switch exaustivo: uma modalidade nova sem avaliador quebra o tsc
+    switch (exercise.type) {
+      case 'lacunas':
+        result = evaluateBlanks(exercise, userBlanks);
+        break;
+      case 'prever_saida':
+        result = evaluateOutputPrediction(exercise, userPrediction);
+        break;
+      case 'prever_erro_de_tipo':
+        result = await evaluateTypeErrorPrediction(exercise, { line: typeErrorLine, reason: typeErrorReason });
+        break;
+      case 'corrigir_erros':
+        result = await evaluateBugFix(exercise, userCode);
+        break;
+      case 'desafio_pratico':
+        result = await evaluatePracticalChallenge(exercise, userCode);
+        break;
+      case 'codigo_livre':
+        result = await evaluateCodeForLanguage(exercise, userCode);
+        break;
+      default:
+        return assertNever(exercise.type, 'Modalidade do exercício');
     }
 
     setEvaluationResult(result);
+    setEvaluationCount(c => c + 1);
+    if (!result.passed && !prefersReducedMotion && verifyButtonScope.current) {
+      animateVerifyButton(verifyButtonScope.current, SHAKE_KEYFRAMES, { duration: 0.4, ease: 'easeInOut' });
+    }
 
     // Persist attempt and update streak if passed
     const updated = recordExerciseAttempt(exercise.id, result.passed, {
       userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
-      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' ? userCode : undefined,
+      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
       outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
+      typeErrorAnswer: typeErrorAnswerToSave,
       hintsUsed: hintsUnlockedCount,
       revealedSolution: showSolution,
     });
@@ -238,6 +298,8 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
   const handleReset = () => {
     setUserBlanks({});
     setUserPrediction('');
+    setTypeErrorLine(null);
+    setTypeErrorReason(null);
     setUserCode(
       exercise.type === 'corrigir_erros' && exercise.initialBuggyCode
         ? exercise.initialBuggyCode
@@ -255,8 +317,9 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
       setActiveTab('dicas');
       const updated = recordExerciseAttempt(exercise.id, false, {
         userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
-        userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' ? userCode : undefined,
+        userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
         outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
+        typeErrorAnswer: typeErrorAnswerToSave,
         hintsUsed: nextCount,
       });
       onProgressUpdated(updated);
@@ -270,8 +333,9 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     setActiveTab('solucao');
     const updated = recordExerciseAttempt(exercise.id, isAlreadyCompleted, {
       userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
-      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' ? userCode : undefined,
+      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
       outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
+      typeErrorAnswer: typeErrorAnswerToSave,
       hintsUsed: hintsUnlockedCount,
       revealedSolution: true,
     });
@@ -290,18 +354,37 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
         return 'Desafio Prático';
       case 'codigo_livre':
         return 'Código Livre';
+      case 'prever_erro_de_tipo':
+        return 'Previsão de Erro de Tipo';
       default:
         return 'Exercício';
     }
   };
 
+  const workspaceTabs: WorkspaceTabItem[] = [
+    ...(exercise.projectBrief
+      ? [{ id: 'po_brief' as const, label: '📋 Briefing PO', indicatorClass: 'bg-danger', idleClass: 'text-danger hover:brightness-125' }]
+      : []),
+    ...(exercise.practicalRequirements && exercise.practicalRequirements.length > 0
+      ? [{ id: 'requisitos' as const, label: '⚡ Requisitos', indicatorClass: 'bg-success', idleClass: 'text-success hover:brightness-125' }]
+      : []),
+    { id: 'instrucoes', label: 'Instruções', indicatorClass: 'bg-gradient-accent', idleClass: 'text-muted hover:text-primary' },
+    {
+      id: 'dicas',
+      label: `Dicas (${hintsUnlockedCount}/${exercise.hints.length})`,
+      indicatorClass: 'bg-gradient-accent',
+      idleClass: 'text-muted hover:text-primary',
+    },
+    { id: 'solucao', label: 'Solução', indicatorClass: 'bg-gradient-accent', idleClass: 'text-muted hover:text-primary' },
+  ];
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-5 font-sans">
       {/* Top Bar Navigation Strip */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-subtle/80">
         <button
           onClick={onBackToList}
-          className="text-xs font-semibold text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+          className="text-xs font-semibold text-muted hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer"
         >
           <span>←</span>
           <span>Voltar ao Catálogo</span>
@@ -311,29 +394,29 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
           {prevExercise ? (
             <button
               onClick={() => onNavigateToExercise(prevExercise.id)}
-              className="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              className="px-3 py-1.5 rounded-lg border border-subtle bg-surface/60 text-primary hover:text-primary hover:bg-surface-hover transition-colors cursor-pointer"
             >
               ← Anterior
             </button>
           ) : (
-            <span className="px-3 py-1.5 rounded-lg border border-transparent text-slate-600 cursor-not-allowed">
+            <span className="px-3 py-1.5 rounded-lg border border-transparent text-muted/60 cursor-not-allowed">
               ← Anterior
             </span>
           )}
 
-          <span className="text-slate-500 font-mono text-[11px]">
+          <span className="text-muted font-mono text-[11px]">
             {currentIndex + 1} de {allExercisesInTrack.length}
           </span>
 
           {nextExercise ? (
             <button
               onClick={() => onNavigateToExercise(nextExercise.id)}
-              className="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              className="px-3 py-1.5 rounded-lg border border-subtle bg-surface/60 text-primary hover:text-primary hover:bg-surface-hover transition-colors cursor-pointer"
             >
               Próximo →
             </button>
           ) : (
-            <span className="px-3 py-1.5 rounded-lg border border-transparent text-slate-600 cursor-not-allowed">
+            <span className="px-3 py-1.5 rounded-lg border border-transparent text-muted/60 cursor-not-allowed">
               Próximo →
             </span>
           )}
@@ -348,101 +431,83 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 text-xs">
               {isAlreadyCompleted ? (
-                <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                <span className="text-success font-semibold flex items-center gap-1">
                   <span>✓</span> Concluído
                 </span>
               ) : (
-                <span className="text-amber-400/90 font-medium">○ Pendente</span>
+                <span className="text-warning/90 font-medium">○ Pendente</span>
               )}
-              <span className="text-slate-600">·</span>
-              <span className="text-indigo-400 font-semibold">
+              <span className="text-muted/60">·</span>
+              <span className={`font-semibold ${getExerciseTypeTheme(exercise.type).textClass}`}>
                 {getModalityLabel(exercise.type)}
               </span>
-              <span className="text-slate-600">·</span>
-              <span className="capitalize text-slate-400">{exercise.difficulty}</span>
+              <span className="text-muted/60">·</span>
+              <span className={getDifficultyTheme(exercise.difficulty).textClass}>
+                {getDifficultyTheme(exercise.difficulty).label}
+              </span>
             </div>
 
-            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-black text-primary tracking-tight">
               {exercise.title}
             </h1>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-muted leading-relaxed">
               {exercise.summary}
             </p>
           </div>
 
           {/* Sub-Tabs: Briefing / Requisitos / Instruções / Dicas / Solução */}
-          <div className="border border-slate-800 rounded-xl bg-slate-900/40 overflow-hidden shadow-sm">
-            <div className="flex border-b border-slate-800 bg-slate-950/60 p-1 gap-1 overflow-x-auto">
-              {exercise.projectBrief && (
-                <button
-                  onClick={() => setActiveTab('po_brief')}
-                  className={`flex-1 py-1.5 px-2 text-xs font-semibold rounded-md transition-colors whitespace-nowrap ${
-                    activeTab === 'po_brief'
-                      ? 'bg-rose-600 text-white shadow-sm'
-                      : 'text-rose-400 hover:text-rose-200'
-                  }`}
-                >
-                  📋 Briefing PO
-                </button>
-              )}
-              {exercise.practicalRequirements && exercise.practicalRequirements.length > 0 && (
-                <button
-                  onClick={() => setActiveTab('requisitos')}
-                  className={`flex-1 py-1.5 px-2 text-xs font-semibold rounded-md transition-colors whitespace-nowrap ${
-                    activeTab === 'requisitos'
-                      ? 'bg-emerald-600 text-white shadow-sm'
-                      : 'text-emerald-400 hover:text-emerald-200'
-                  }`}
-                >
-                  ⚡ Requisitos
-                </button>
-              )}
-              <button
-                onClick={() => setActiveTab('instrucoes')}
-                className={`flex-1 py-1.5 px-2 text-xs font-semibold rounded-md transition-colors whitespace-nowrap ${
-                  activeTab === 'instrucoes'
-                    ? 'bg-slate-800 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Instruções
-              </button>
-              <button
-                onClick={() => setActiveTab('dicas')}
-                className={`flex-1 py-1.5 px-2 text-xs font-semibold rounded-md transition-colors whitespace-nowrap relative ${
-                  activeTab === 'dicas'
-                    ? 'bg-slate-800 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Dicas ({hintsUnlockedCount}/{exercise.hints.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('solucao')}
-                className={`flex-1 py-1.5 px-2 text-xs font-semibold rounded-md transition-colors whitespace-nowrap ${
-                  activeTab === 'solucao'
-                    ? 'bg-slate-800 text-white shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                Solução
-              </button>
+          <div className="border border-subtle rounded-xl bg-surface/40 overflow-hidden shadow-sm">
+            <div role="tablist" className="flex border-b border-subtle bg-canvas/60 p-1 gap-1 overflow-x-auto">
+              {workspaceTabs.map(tab => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`relative flex-1 py-1.5 px-2 text-xs font-semibold rounded-md transition-colors whitespace-nowrap cursor-pointer ${FOCUS_RING} ${
+                      isActive ? 'text-white' : tab.idleClass
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.span
+                        layoutId={`workspace-tab-indicator-${exercise.id}`}
+                        transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                        className={`absolute inset-0 rounded-md shadow-sm ${tab.indicatorClass}`}
+                      />
+                    )}
+                    <span className="relative">{tab.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            <div className="p-4 text-xs space-y-4 max-h-[500px] overflow-y-auto leading-relaxed">
+            <div className="p-4 text-xs max-h-[500px] overflow-y-auto overflow-x-hidden leading-relaxed">
+              <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeTab}
+                role="tabpanel"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.16, ease: 'easeOut' }}
+                className="space-y-4"
+              >
               {/* Requirements Tab for Desafio Prático */}
               {activeTab === 'requisitos' && exercise.practicalRequirements && (
                 <div className="space-y-3">
-                  <span className="font-bold text-white uppercase tracking-wider text-[11px] block">
+                  <span className="font-bold text-primary uppercase tracking-wider text-[11px] block">
                     Regras de Negócio Obrigatórias:
                   </span>
                   <div className="space-y-2">
                     {exercise.practicalRequirements.map((req, idx) => (
-                      <div key={idx} className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex items-start gap-2.5">
-                        <span className="w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 font-bold flex items-center justify-center shrink-0 text-[10px]">
+                      <div key={idx} className="p-2.5 rounded-lg bg-canvas border border-subtle flex items-start gap-2.5">
+                        <span className="w-4 h-4 rounded-full bg-success/20 border border-success/40 text-success font-bold flex items-center justify-center shrink-0 text-[10px]">
                           {idx + 1}
                         </span>
-                        <span className="text-slate-200">{req}</span>
+                        <span className="text-primary">{req}</span>
                       </div>
                     ))}
                   </div>
@@ -451,31 +516,31 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
 
               {/* PO Briefing Tab for DEV Module */}
               {activeTab === 'po_brief' && exercise.projectBrief && (
-                <div className="space-y-3 text-slate-300">
-                  <div className="p-3 rounded-lg bg-rose-950/20 border border-rose-900/40 space-y-1">
-                    <div><strong className="text-rose-300">Cliente:</strong> {exercise.projectBrief.clientName}</div>
-                    <div><strong className="text-rose-300">Product Owner:</strong> {exercise.projectBrief.poName}</div>
+                <div className="space-y-3 text-primary">
+                  <div className="p-3 rounded-lg bg-danger/10 border border-danger/30 space-y-1">
+                    <div><strong className="text-danger">Cliente:</strong> {exercise.projectBrief.clientName}</div>
+                    <div><strong className="text-danger">Product Owner:</strong> {exercise.projectBrief.poName}</div>
                   </div>
 
                   <div>
-                    <strong className="text-white block mb-1">Contexto de Negócio:</strong>
-                    <p className="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                    <strong className="text-primary block mb-1">Contexto de Negócio:</strong>
+                    <p className="bg-canvas p-3 rounded-lg border border-subtle">
                       {exercise.projectBrief.businessContext}
                     </p>
                   </div>
 
                   <div>
-                    <strong className="text-white block mb-1">Critérios de Aceite do PO:</strong>
+                    <strong className="text-primary block mb-1">Critérios de Aceite do PO:</strong>
                     <div className="space-y-1.5">
                       {exercise.projectBrief.acceptanceCriteria.map(ac => (
-                        <label key={ac.id} className="flex items-center gap-2 p-2 rounded bg-slate-950 border border-slate-800 cursor-pointer">
+                        <label key={ac.id} className="flex items-center gap-2 p-2 rounded bg-canvas border border-subtle cursor-pointer">
                           <input
                             type="checkbox"
                             checked={checkedCriteria.includes(ac.id)}
                             onChange={() => handleToggleCriterion(ac.id)}
-                            className="rounded border-slate-700 text-indigo-600 focus:ring-0"
+                            className="rounded border-subtle text-accent-from focus:ring-0"
                           />
-                          <span className={checkedCriteria.includes(ac.id) ? 'line-through text-slate-500' : 'text-slate-200'}>
+                          <span className={checkedCriteria.includes(ac.id) ? 'line-through text-muted' : 'text-primary'}>
                             {ac.label}
                           </span>
                         </label>
@@ -487,23 +552,23 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
 
               {/* Instruções Tab */}
               {activeTab === 'instrucoes' && (
-                <div className="space-y-3 text-slate-300">
+                <div className="space-y-3 text-primary">
                   <div>
-                    <strong className="text-white block mb-1">Enunciado:</strong>
-                    <p className="bg-slate-950 p-3 rounded-lg border border-slate-800 whitespace-pre-line leading-relaxed">
+                    <strong className="text-primary block mb-1">Enunciado:</strong>
+                    <p className="bg-canvas p-3 rounded-lg border border-subtle whitespace-pre-line leading-relaxed">
                       {exercise.description}
                     </p>
                   </div>
 
                   <div>
-                    <strong className="text-white block mb-1">Objetivo:</strong>
-                    <div className="p-2.5 rounded-lg bg-indigo-950/20 border border-indigo-900/40 text-indigo-200 font-medium">
+                    <strong className="text-primary block mb-1">Objetivo:</strong>
+                    <div className="p-2.5 rounded-lg bg-accent-from/10 border border-accent-from/30 text-accent font-medium">
                       🎯 {exercise.goal}
                     </div>
                   </div>
 
                   {exercise.realWorldContext && (
-                    <div className="text-slate-400 italic pt-1">
+                    <div className="text-muted italic pt-1">
                       💡 <strong>Onde isso é usado no dia a dia:</strong> {exercise.realWorldContext}
                     </div>
                   )}
@@ -513,17 +578,17 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
               {/* Dicas Tab */}
               {activeTab === 'dicas' && (
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-slate-400">
+                  <div className="flex items-center justify-between pb-2 border-b border-subtle text-muted">
                     <span>Dicas progressivas disponíveis:</span>
                     <span className="font-mono">{hintsUnlockedCount}/{exercise.hints.length}</span>
                   </div>
 
                   {hintsUnlockedCount === 0 ? (
                     <div className="text-center py-4 space-y-2">
-                      <p className="text-slate-400">Tente resolver primeiro antes de liberar dicas.</p>
+                      <p className="text-muted">Tente resolver primeiro antes de liberar dicas.</p>
                       <button
                         onClick={handleRequestHint}
-                        className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold border border-slate-700"
+                        className="px-3 py-1.5 rounded-lg bg-surface-hover hover:bg-subtle text-primary font-semibold border border-subtle"
                       >
                         Liberar Dica 1
                       </button>
@@ -531,8 +596,8 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
                   ) : (
                     <div className="space-y-2.5">
                       {exercise.hints.slice(0, hintsUnlockedCount).map((hint, i) => (
-                        <div key={i} className="p-3 rounded-lg bg-amber-950/20 border border-amber-900/40 text-amber-200/90">
-                          <strong className="text-amber-300 block mb-1">Dica #{i + 1}:</strong>
+                        <div key={i} className="p-3 rounded-lg bg-warning/10 border border-warning/30 text-warning/90">
+                          <strong className="text-warning block mb-1">Dica #{i + 1}:</strong>
                           {hint}
                         </div>
                       ))}
@@ -540,7 +605,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
                       {hintsUnlockedCount < exercise.hints.length && (
                         <button
                           onClick={handleRequestHint}
-                          className="w-full py-2 text-xs font-semibold text-indigo-400 hover:text-indigo-300 border border-dashed border-slate-800 rounded-lg"
+                          className="w-full py-2 text-xs font-semibold text-accent hover:text-accent border border-dashed border-subtle rounded-lg"
                         >
                           Liberar Próxima Dica ({hintsUnlockedCount + 1}/{exercise.hints.length})
                         </button>
@@ -555,12 +620,12 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
                 <div className="space-y-3">
                   {!showSolution ? (
                     <div className="text-center py-6 space-y-3">
-                      <p className="text-slate-400">
+                      <p className="text-muted">
                         A solução comentada contém o código completo e a análise técnica detalhada.
                       </p>
                       <button
                         onClick={() => setShowConfirmSolution(true)}
-                        className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold border border-slate-700"
+                        className="px-4 py-2 rounded-lg bg-surface-hover hover:bg-subtle text-primary font-semibold border border-subtle"
                       >
                         Revelar Solução e Análise
                       </button>
@@ -568,23 +633,25 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
                   ) : (
                     <div className="space-y-3">
                       <div>
-                        <div className="flex items-center justify-between text-slate-400 mb-1 font-semibold">
+                        <div className="flex items-center justify-between text-muted mb-1 font-semibold">
                           <span>Código da Solução:</span>
                           <span className="uppercase">{exercise.language}</span>
                         </div>
-                        <pre className="p-3 bg-slate-950 rounded-lg border border-slate-800 font-mono text-emerald-300 text-xs leading-relaxed overflow-x-auto max-h-[460px] overflow-y-auto">
+                        <pre className="p-3 bg-canvas rounded-lg border border-subtle font-mono text-success text-xs leading-relaxed overflow-x-auto max-h-[460px] overflow-y-auto">
                           {exercise.solutionCode}
                         </pre>
                       </div>
 
-                      <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 space-y-1">
-                        <strong className="text-white block">Por que funciona e boas práticas:</strong>
-                        <p className="text-slate-300">{exercise.explanation}</p>
+                      <div className="p-3 bg-canvas rounded-lg border border-subtle space-y-1">
+                        <strong className="text-primary block">Por que funciona e boas práticas:</strong>
+                        <p className="text-primary">{exercise.explanation}</p>
                       </div>
                     </div>
                   )}
                 </div>
               )}
+              </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -593,29 +660,29 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
         <div className="lg:col-span-7 space-y-4">
           {/* INLINE AI HINT CALLOUT (When active) */}
           {showAiHintBanner && (
-            <div className="rounded-xl border border-indigo-500/50 bg-indigo-950/30 p-3.5 shadow-lg space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold text-indigo-200">
+            <div className="rounded-xl border border-accent-from/50 bg-accent-from/10 p-3.5 shadow-lg space-y-2">
+              <div className="flex items-center justify-between text-xs font-bold text-accent">
                 <span className="flex items-center gap-1.5">
                   <span>✨</span> Dica Contextual da IA (Gemini):
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowAiHintBanner(false)}
-                  className="text-slate-400 hover:text-white"
+                  className="text-muted hover:text-primary"
                 >
                   ✕
                 </button>
               </div>
 
               {aiHintLoading ? (
-                <div className="flex items-center gap-2 text-xs text-indigo-300 py-1">
-                  <span className="w-3.5 h-3.5 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+                <div className="flex items-center gap-2 text-xs text-accent py-1">
+                  <span className="w-3.5 h-3.5 border-2 border-accent-from border-t-transparent rounded-full animate-spin" />
                   <span>Analisando o código atual para formular a orientação...</span>
                 </div>
               ) : aiHintError ? (
-                <div className="text-xs text-rose-300">{aiHintError}</div>
+                <div className="text-xs text-danger">{aiHintError}</div>
               ) : (
-                <div className="text-xs text-slate-200 leading-relaxed font-sans">
+                <div className="text-xs text-primary leading-relaxed font-sans">
                   {aiHint}
                 </div>
               )}
@@ -633,6 +700,28 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
               onChangeBlank={handleChangeBlank}
               onSubmit={handleVerify}
             />
+          ) : exercise.type === 'prever_erro_de_tipo' && exercise.typeErrorChallenge ? (
+            <PredictTypeErrorViewer
+              code={exercise.codeToPredict || exercise.templateCode}
+              challenge={exercise.typeErrorChallenge}
+              selectedLine={typeErrorLine}
+              selectedReason={typeErrorReason}
+              onSelectLine={line => {
+                setTypeErrorLine(line);
+                setEvaluationResult(null);
+              }}
+              onSelectReason={reason => {
+                setTypeErrorReason(reason);
+                setEvaluationResult(null);
+              }}
+              lineFeedback={
+                evaluationResult
+                  ? typeErrorLine === exercise.typeErrorChallenge.errorLine
+                    ? 'correta'
+                    : 'incorreta'
+                  : null
+              }
+            />
           ) : exercise.type === 'prever_saida' ? (
             <PredictOutputViewer
               language={exercise.language}
@@ -644,15 +733,15 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
           ) : (
             <div className="space-y-3">
               {exercise.type === 'corrigir_erros' && (
-                <div className="p-3.5 rounded-xl border border-rose-500/40 bg-rose-950/20 text-xs text-rose-200 space-y-1 shadow-sm">
-                  <div className="font-bold text-rose-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <div className="p-3.5 rounded-xl border border-danger/40 bg-danger/10 text-xs text-danger space-y-1 shadow-sm">
+                  <div className="font-bold text-danger uppercase tracking-wider text-[11px] flex items-center gap-1.5">
                     <span>🚨</span> Relatório do Bug a Investigar:
                   </div>
                   <p className="leading-relaxed">
                     {exercise.bugDescription || 'O código apresenta uma falha que precisa ser corrigida.'}
                   </p>
                   {exercise.buggyLineNumbers && exercise.buggyLineNumbers.length > 0 && (
-                    <div className="text-[11px] text-rose-300 font-mono pt-1">
+                    <div className="text-[11px] text-danger font-mono pt-1">
                       Linha(s) suspeita(s): {exercise.buggyLineNumbers.join(', ')}
                     </div>
                   )}
@@ -660,11 +749,11 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
               )}
 
               {exercise.type === 'desafio_pratico' && (
-                <div className="p-3 rounded-xl border border-emerald-500/40 bg-emerald-950/20 text-xs text-emerald-200 flex items-center justify-between shadow-sm">
-                  <span className="font-bold text-emerald-300 uppercase tracking-wider text-[11px]">
+                <div className="p-3 rounded-xl border border-success/40 bg-success/10 text-xs text-success flex items-center justify-between shadow-sm">
+                  <span className="font-bold text-success uppercase tracking-wider text-[11px]">
                     ⚡ Desafio com Regras de Negócio Reais
                   </span>
-                  <span className="text-slate-400">Atenda aos requisitos listados à esquerda</span>
+                  <span className="text-muted">Atenda aos requisitos listados à esquerda</span>
                 </div>
               )}
 
@@ -679,12 +768,13 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
           )}
 
           {/* Action Toolbar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl border border-slate-800 bg-slate-900/60">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl border border-subtle bg-surface/60">
             <div className="flex items-center gap-2">
               <button
+                ref={verifyButtonScope}
                 type="button"
                 onClick={handleVerify}
-                className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                className={`px-5 py-2 rounded-control bg-gradient-accent text-white font-semibold text-xs shadow-glow transition-[filter] hover:brightness-110 active:brightness-95 flex items-center gap-1.5 cursor-pointer ${FOCUS_RING}`}
               >
                 <span>Verificar Resposta</span>
                 <span className="opacity-75 font-mono">↵</span>
@@ -693,7 +783,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
               <button
                 type="button"
                 onClick={handleTryAgain}
-                className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium transition-colors cursor-pointer"
+                className="px-3 py-2 rounded-lg bg-surface-hover hover:bg-subtle text-primary hover:text-primary text-xs font-medium transition-colors cursor-pointer"
               >
                 Tentar Novamente
               </button>
@@ -703,7 +793,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
               <button
                 type="button"
                 onClick={() => setShowAiTutorModal(true)}
-                className="px-3.5 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white border border-indigo-400/40 text-xs font-semibold transition-all flex items-center gap-1.5 shadow-md shadow-indigo-600/20 cursor-pointer"
+                className={`px-3.5 py-2 rounded-control bg-gradient-accent hover:brightness-110 text-white text-xs font-semibold transition-[filter] flex items-center gap-1.5 shadow-glow cursor-pointer ${FOCUS_RING}`}
                 title="Converse com o Tutor IA ou analise o código linha a linha"
               >
                 <span>💬 Tutor IA</span>
@@ -713,11 +803,11 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
                 type="button"
                 onClick={handleRequestAiHint}
                 disabled={aiHintLoading}
-                className="px-3 py-2 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-indigo-200 border border-slate-700 text-xs font-medium transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                className="px-3 py-2 rounded-lg bg-surface-hover/90 hover:bg-subtle text-accent border border-subtle text-xs font-medium transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
               >
                 {aiHintLoading ? (
                   <>
-                    <span className="w-3 h-3 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin inline-block" />
+                    <span className="w-3 h-3 border-2 border-accent-from border-t-transparent rounded-full animate-spin inline-block" />
                     <span>Analisando...</span>
                   </>
                 ) : (
@@ -733,7 +823,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
                   if (!showSolution) setShowConfirmSolution(true);
                   else setActiveTab('solucao');
                 }}
-                className="px-3 py-2 rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 text-xs font-medium transition-colors cursor-pointer"
+                className="px-3 py-2 rounded-lg border border-subtle bg-surface text-primary hover:text-primary hover:bg-surface-hover text-xs font-medium transition-colors cursor-pointer"
               >
                 Solução
               </button>
@@ -741,34 +831,62 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
           </div>
 
           {/* Evaluation Results Feedback Panel */}
+          <AnimatePresence mode="wait">
           {evaluationResult && (
-            <div
-              className={`rounded-xl border p-4 space-y-3 transition-all ${
+            <motion.div
+              key={evaluationCount}
+              role="status"
+              aria-live="polite"
+              initial={{ opacity: 0, y: 10, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className={`rounded-card border p-4 space-y-3 ${
                 evaluationResult.passed
-                  ? 'border-emerald-800/80 bg-emerald-950/20'
-                  : 'border-rose-800/80 bg-rose-950/20'
+                  ? 'border-success/40 bg-success/10 shadow-[0_0_32px_color-mix(in_srgb,var(--success)_18%,transparent)]'
+                  : 'border-danger/30 bg-danger/10'
               }`}
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-white flex items-center gap-1.5">
+                    <span className="text-sm font-bold text-primary flex items-center gap-2">
                       {evaluationResult.passed ? (
                         <>
-                          <span className="text-emerald-400">✓</span> Resposta Correta!
+                          {/* Selo de sucesso: pop com spring + um anel que se expande uma vez */}
+                          <span className="relative w-6 h-6 flex items-center justify-center" aria-hidden="true">
+                            <motion.span
+                              className="absolute inset-0 rounded-full border-2 border-success"
+                              initial={{ scale: 1, opacity: 0.7 }}
+                              animate={{ scale: 2, opacity: 0 }}
+                              transition={{ duration: 0.7, ease: 'easeOut', delay: 0.15 }}
+                            />
+                            <motion.span
+                              className="relative w-6 h-6 rounded-full bg-success flex items-center justify-center"
+                              initial={{ scale: 0, rotate: -45 }}
+                              animate={{ scale: 1, rotate: 0 }}
+                              transition={{ type: 'spring', stiffness: 420, damping: 16 }}
+                            >
+                              <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                            </motion.span>
+                          </span>
+                          Resposta correta!
                         </>
                       ) : (
                         <>
-                          <span className="text-rose-400">✗</span> Existem pendências a corrigir
+                          <span className="w-6 h-6 rounded-full bg-danger/20 border border-danger/40 flex items-center justify-center" aria-hidden="true">
+                            <X className="w-3.5 h-3.5 text-danger" strokeWidth={3} />
+                          </span>
+                          Existem pendências a corrigir
                         </>
                       )}
                     </span>
-                    <span className="font-mono text-xs text-slate-400 tabular-nums">
+                    <span className="font-mono text-xs text-muted tabular-nums">
                       ({evaluationResult.scorePercent}% acerto)
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-xs text-muted leading-relaxed">
                     {evaluationResult.generalFeedback}
                   </p>
                 </div>
@@ -776,7 +894,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
                 {evaluationResult.passed && nextExercise && (
                   <button
                     onClick={() => onNavigateToExercise(nextExercise.id)}
-                    className="shrink-0 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
+                    className={`shrink-0 px-4 py-2 rounded-control bg-success hover:brightness-110 text-white font-semibold text-xs shadow-sm transition-[filter] flex items-center gap-1.5 cursor-pointer ${FOCUS_RING}`}
                   >
                     <span>Próximo</span>
                     <span>→</span>
@@ -786,14 +904,14 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
 
               {/* Detailed Test Results Breakdown */}
               {evaluationResult.testCaseResults.length > 0 && (
-                <div className="space-y-1.5 pt-2 border-t border-slate-800/60 font-mono text-xs">
+                <div className="space-y-1.5 pt-2 border-t border-subtle/60 font-mono text-xs">
                   {evaluationResult.testCaseResults.map((tc, idx) => (
                     <div
                       key={idx}
                       className={`p-2 rounded-lg border flex items-center justify-between gap-2 ${
                         tc.passed
-                          ? 'border-emerald-900/40 bg-emerald-950/40 text-emerald-200'
-                          : 'border-rose-900/40 bg-rose-950/40 text-rose-200'
+                          ? 'border-success/30 bg-success/10 text-success'
+                          : 'border-danger/30 bg-danger/10 text-danger'
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -805,38 +923,55 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
                   ))}
                 </div>
               )}
-            </div>
+            </motion.div>
           )}
+          </AnimatePresence>
         </div>
       </div>
 
       {/* Confirmation Modal to View Solution */}
+      <AnimatePresence>
       {showConfirmSolution && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="max-w-md w-full rounded-2xl border border-slate-800 bg-slate-900 p-6 space-y-4 shadow-2xl">
-            <h3 className="text-lg font-bold text-white">Visualizar a Solução Completa?</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-canvas/80 backdrop-blur-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+        >
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            className="max-w-md w-full rounded-card border border-subtle bg-surface p-6 space-y-4 shadow-card"
+            initial={{ opacity: 0, scale: 0.96, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 8 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+          >
+            <h3 className="text-lg font-bold text-primary">Visualizar a Solução Completa?</h3>
+            <p className="text-xs text-muted leading-relaxed">
               O aprendizado é mais profundo quando você tenta resolver e consulta as dicas progressivas antes de ver a resposta pronta. Tem certeza de que deseja visualizar a solução agora?
             </p>
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => setShowConfirmSolution(false)}
-                className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-lg bg-surface-hover hover:bg-subtle text-primary text-xs font-semibold transition-colors cursor-pointer"
               >
                 Voltar e Tentar
               </button>
               <button
                 type="button"
                 onClick={handleConfirmViewSolution}
-                className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors cursor-pointer"
+                className={`px-4 py-2 rounded-control bg-gradient-accent hover:brightness-110 text-white text-xs font-semibold transition-[filter] cursor-pointer ${FOCUS_RING}`}
               >
                 Sim, Revelar Solução
               </button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       {/* Interactive AI Tutor Modal with Dialog & Line-by-Line Code Breakdown */}
       <AiTutorModal
@@ -845,6 +980,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
         exercise={exercise}
         currentAssembledCode={assembledCode}
         hasSolutionRevealed={showSolution}
+        compilerDiagnostics={compilerDiagnostics}
       />
     </div>
   );

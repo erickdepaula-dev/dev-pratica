@@ -1,6 +1,7 @@
 import { Language, UserProgress, ExerciseAttempt } from '../types/exercise';
 import { AiChallenge, AiChallengeAttempt, AiChallengeEvaluation } from '../types/aiChallenge';
 import { getFortalezaDateString, getDaysDifference } from '../utils/dateUtils';
+import { isLanguage } from '../utils/language';
 
 const STORAGE_KEY = 'devpratica_user_progress_v1';
 
@@ -61,6 +62,11 @@ export function loadUserProgress(): UserProgress {
     const parsed = JSON.parse(raw) as UserProgress;
 
     // Sanitize defaults if corrupted
+    // Migração defensiva (Fase 2): progresso antigo só tem 'php' | 'javascript', que continuam
+    // válidos. Qualquer valor desconhecido (corrompido ou de versão futura) volta para 'php'.
+    if (!isLanguage(parsed.selectedLanguage)) {
+      parsed.selectedLanguage = defaultProgress.selectedLanguage;
+    }
     if (!parsed.streak) {
       parsed.streak = { currentStreak: 0, lastActiveDate: '', activeDates: [] };
     }
@@ -71,7 +77,7 @@ export function loadUserProgress(): UserProgress {
       parsed.attempts = {};
     } else {
       for (const att of Object.values(parsed.attempts)) {
-        if (att.completedAt === undefined) att.completedAt = null as any;
+        if (att.completedAt === undefined) att.completedAt = null;
       }
     }
     if (!parsed.aiChallenges) {
@@ -110,6 +116,7 @@ export function recordExerciseAttempt(
     hintsUsed?: number;
     revealedSolution?: boolean;
     outputPrediction?: string;
+    typeErrorAnswer?: { line: number; reason: number };
   }
 ): UserProgress {
   const current = loadUserProgress();
@@ -126,6 +133,10 @@ export function recordExerciseAttempt(
     userCode: data.userCode ?? existingAttempt?.userCode,
     hintsUsed: Math.max(data.hintsUsed ?? 0, existingAttempt?.hintsUsed ?? 0),
     revealedSolution: data.revealedSolution || existingAttempt?.revealedSolution || false,
+    // Antes da Fase 2 estes campos eram descartados a cada gravação:
+    outputPrediction: data.outputPrediction ?? existingAttempt?.outputPrediction,
+    checklistDone: existingAttempt?.checklistDone,
+    typeErrorAnswer: data.typeErrorAnswer ?? existingAttempt?.typeErrorAnswer,
   };
 
   current.attempts[exerciseId] = newAttempt;

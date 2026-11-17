@@ -1,5 +1,16 @@
 import { Language } from './exercise';
 
+/**
+ * Linguagens suportadas pelos Desafios com IA. TypeScript fica fora por enquanto:
+ * o gerador/avaliador do servidor (server.ts) só conhece PHP e JavaScript.
+ */
+export type AiChallengeLanguage = Exclude<Language, 'typescript'>;
+
+/** Trilha selecionada → linguagem dos Desafios IA (TS cai para JS, a mais próxima). */
+export function toAiChallengeLanguage(language: Language): AiChallengeLanguage {
+  return language === 'typescript' ? 'javascript' : language;
+}
+
 export type AiChallengeDifficulty =
   | 'muito_facil'
   | 'facil'
@@ -23,7 +34,7 @@ export interface AiChallengeUsageExample {
 export interface AiChallenge {
   id: string;
   title: string;
-  language: Language; // 'php' | 'javascript'
+  language: AiChallengeLanguage;
   topic: string;
   difficulty: AiChallengeDifficulty;
   difficultyLevel: 1 | 2 | 3 | 4 | 5;

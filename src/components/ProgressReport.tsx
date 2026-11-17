@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UserProgress, Language } from '../types/exercise';
 import { allExercises, getExercisesByLanguage } from '../data';
+import { getLanguageTheme } from '../utils/exerciseTheme';
 import { exportProgressJSON, importProgressJSON, resetProgress } from '../services/storage';
 
 interface ProgressReportProps {
@@ -101,16 +102,16 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Top Title & Data Sync Actions */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-subtle">
         <div>
-          <div className="flex items-center gap-2 text-xs text-indigo-400 font-medium mb-1">
+          <div className="flex items-center gap-2 text-xs text-accent font-medium mb-1">
             <span>Relatório Analítico</span>
             <span aria-hidden="true">·</span>
-            <span className="uppercase">{currentLang}</span>
+            <span>{getLanguageTheme(currentLang).name}</span>
             <span aria-hidden="true">·</span>
             <span>Histórico Local Persistente</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl font-extrabold text-primary tracking-tight">
             Seu Progresso & Evolução Técnica
           </h1>
         </div>
@@ -119,7 +120,7 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={handleExport}
-            className="px-3.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 text-xs font-semibold transition-colors flex items-center gap-1.5"
+            className="px-3.5 py-1.5 rounded-lg border border-subtle bg-surface text-primary hover:text-primary hover:bg-surface-hover text-xs font-semibold transition-colors flex items-center gap-1.5"
           >
             <span>↓</span>
             <span>Exportar Backup (JSON)</span>
@@ -127,7 +128,7 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
 
           <button
             onClick={() => setShowImportBox(!showImportBox)}
-            className="px-3.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 text-xs font-semibold transition-colors flex items-center gap-1.5"
+            className="px-3.5 py-1.5 rounded-lg border border-subtle bg-surface text-primary hover:text-primary hover:bg-surface-hover text-xs font-semibold transition-colors flex items-center gap-1.5"
           >
             <span>↑</span>
             <span>Restaurar Backup</span>
@@ -135,7 +136,7 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
 
           <button
             onClick={() => setShowResetConfirm(true)}
-            className="px-3 py-1.5 rounded-lg border border-rose-900/60 bg-rose-950/20 text-rose-300 hover:bg-rose-950/40 text-xs font-semibold transition-colors"
+            className="px-3 py-1.5 rounded-lg border border-danger/30 bg-danger/10 text-danger hover:bg-danger/10 text-xs font-semibold transition-colors"
           >
             Zerar Dados
           </button>
@@ -144,28 +145,28 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
 
       {/* Import Drawer */}
       {showImportBox && (
-        <div className="p-4 rounded-xl border border-indigo-900/60 bg-slate-900 space-y-3">
-          <h3 className="text-sm font-bold text-white">Restaurar Progresso a partir de JSON</h3>
-          <p className="text-xs text-slate-400">Cole abaixo o conteúdo do arquivo JSON exportado anteriormente:</p>
+        <div className="p-4 rounded-xl border border-accent-from/30 bg-surface space-y-3">
+          <h3 className="text-sm font-bold text-primary">Restaurar Progresso a partir de JSON</h3>
+          <p className="text-xs text-muted">Cole abaixo o conteúdo do arquivo JSON exportado anteriormente:</p>
           <textarea
             value={importText}
             onChange={e => setImportText(e.target.value)}
             rows={4}
-            className="w-full p-3 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-slate-200 outline-none focus:border-indigo-500"
+            className="w-full p-3 bg-canvas border border-subtle rounded-lg text-xs font-mono text-primary outline-none focus:border-accent-from"
             placeholder='{ "completedIds": [...], ... }'
           />
           <div className="flex items-center justify-between">
-            {importStatus && <span className="text-xs text-emerald-400">{importStatus}</span>}
+            {importStatus && <span className="text-xs text-success">{importStatus}</span>}
             <div className="flex items-center gap-2 ml-auto">
               <button
                 onClick={() => setShowImportBox(false)}
-                className="px-3 py-1.5 text-xs text-slate-400 hover:text-white"
+                className="px-3 py-1.5 text-xs text-muted hover:text-primary"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleImportSubmit}
-                className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold"
+                className="px-4 py-1.5 rounded-lg bg-accent-from hover:bg-accent-from text-primary text-xs font-semibold"
               >
                 Restaurar Agora
               </button>
@@ -177,24 +178,24 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
       {/* Top Diagnostic Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Topic Breakdown */}
-        <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-6 space-y-4">
+        <div className="rounded-xl border border-subtle bg-surface/40 p-6 space-y-4">
           <div>
-            <h2 className="text-base font-bold text-white">Domínio por Assunto ({currentLang.toUpperCase()})</h2>
-            <p className="text-xs text-slate-400">Distribuição do seu avanço em cada tema do dia a dia</p>
+            <h2 className="text-base font-bold text-primary">Domínio por Assunto ({getLanguageTheme(currentLang).name})</h2>
+            <p className="text-xs text-muted">Distribuição do seu avanço em cada tema do dia a dia</p>
           </div>
 
           <div className="space-y-3 pt-2">
             {topicStats.map(stat => (
               <div key={stat.topic} className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-medium text-slate-300">{stat.topic}</span>
-                  <span className="font-mono text-slate-400 tabular-nums">
+                  <span className="font-medium text-primary">{stat.topic}</span>
+                  <span className="font-mono text-muted tabular-nums">
                     {stat.completed}/{stat.total} ({stat.percent}%)
                   </span>
                 </div>
-                <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-surface-hover rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="bg-indigo-500 h-1.5 rounded-full transition-all duration-500"
+                    className="bg-accent-from h-1.5 rounded-full transition-all duration-500"
                     style={{ width: `${stat.percent}%` }}
                   />
                 </div>
@@ -204,15 +205,15 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
         </div>
 
         {/* Reinforcement Recommendations */}
-        <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-6 space-y-4 flex flex-col justify-between">
+        <div className="rounded-xl border border-subtle bg-surface/40 p-6 space-y-4 flex flex-col justify-between">
           <div>
-            <h2 className="text-base font-bold text-white">Assuntos Recomendados para Reforço</h2>
-            <p className="text-xs text-slate-400">Tópicos com exercícios pendentes para dominar o ciclo completo</p>
+            <h2 className="text-base font-bold text-primary">Assuntos Recomendados para Reforço</h2>
+            <p className="text-xs text-muted">Tópicos com exercícios pendentes para dominar o ciclo completo</p>
 
             <div className="space-y-3 pt-4">
               {weakTopics.length === 0 ? (
-                <div className="p-4 rounded-lg bg-emerald-950/20 border border-emerald-900/40 text-emerald-300 text-xs text-center">
-                  🎉 Parabéns! Você concluiu todos os tópicos disponíveis de {currentLang.toUpperCase()}.
+                <div className="p-4 rounded-lg bg-success/10 border border-success/30 text-success text-xs text-center">
+                  🎉 Parabéns! Você concluiu todos os tópicos disponíveis de {getLanguageTheme(currentLang).name}.
                 </div>
               ) : (
                 weakTopics.slice(0, 4).map(w => {
@@ -222,18 +223,18 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
                   return (
                     <div
                       key={w.topic}
-                      className="p-3 rounded-lg border border-slate-800 bg-slate-950 flex items-center justify-between gap-3 text-xs"
+                      className="p-3 rounded-lg border border-subtle bg-canvas flex items-center justify-between gap-3 text-xs"
                     >
                       <div>
-                        <div className="font-semibold text-slate-200">{w.topic}</div>
-                        <div className="text-[11px] text-slate-500">
+                        <div className="font-semibold text-primary">{w.topic}</div>
+                        <div className="text-[11px] text-muted">
                           {w.total - w.completed} exercício(s) pendente(s)
                         </div>
                       </div>
                       {pendingEx && (
                         <button
                           onClick={() => onStartExercise(pendingEx.id)}
-                          className="px-3 py-1 rounded-md bg-indigo-600/80 hover:bg-indigo-600 text-white font-medium text-xs whitespace-nowrap transition-colors"
+                          className="px-3 py-1 rounded-md bg-accent-from/80 hover:bg-accent-from text-primary font-medium text-xs whitespace-nowrap transition-colors"
                         >
                           Praticar →
                         </button>
@@ -245,28 +246,28 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
             </div>
           </div>
 
-          <div className="p-3 bg-slate-950/60 rounded-lg border border-slate-800/80 text-xs text-slate-400 mt-4">
+          <div className="p-3 bg-canvas/60 rounded-lg border border-subtle/80 text-xs text-muted mt-4">
             💡 Dica de estudo: No PHP, a combinação de PDO com prepared statements e injeção de dependências é o diferencial mais valorizado em entrevistas e código legado.
           </div>
         </div>
       </div>
 
       {/* Activity History Table */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900/30 overflow-hidden">
-        <div className="p-5 border-b border-slate-800">
-          <h2 className="text-base font-bold text-white">Histórico Detalhado de Resoluções</h2>
-          <p className="text-xs text-slate-400">Todas as tentativas registradas com data e status</p>
+      <div className="rounded-xl border border-subtle bg-surface/30 overflow-hidden">
+        <div className="p-5 border-b border-subtle">
+          <h2 className="text-base font-bold text-primary">Histórico Detalhado de Resoluções</h2>
+          <p className="text-xs text-muted">Todas as tentativas registradas com data e status</p>
         </div>
 
         {historyItems.length === 0 ? (
-          <div className="p-8 text-center text-xs text-slate-500">
+          <div className="p-8 text-center text-xs text-muted">
             Nenhuma tentativa registrada ainda. Comece a resolver exercícios para construir seu histórico!
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-800 bg-slate-950/60 text-slate-400 font-semibold">
+                <tr className="border-b border-subtle bg-canvas/60 text-muted font-semibold">
                   <th className="py-3 px-4">Exercício</th>
                   <th className="py-3 px-4">Linguagem</th>
                   <th className="py-3 px-4">Nível</th>
@@ -276,7 +277,7 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
                   <th className="py-3 px-4 text-right">Ação</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-subtle/60">
                 {historyItems.map((item, idx) => {
                   const ex = item.exercise!;
                   const isDone = item.passed;
@@ -288,31 +289,31 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
                   });
 
                   return (
-                    <tr key={idx} className="hover:bg-slate-900/40 transition-colors">
-                      <td className="py-3 px-4 font-semibold text-slate-200">
+                    <tr key={idx} className="hover:bg-surface/40 transition-colors">
+                      <td className="py-3 px-4 font-semibold text-primary">
                         {ex.title}
                       </td>
-                      <td className="py-3 px-4 uppercase font-mono text-indigo-400">
+                      <td className="py-3 px-4 uppercase font-mono text-accent">
                         {ex.language}
                       </td>
-                      <td className="py-3 px-4 capitalize text-slate-400">
+                      <td className="py-3 px-4 capitalize text-muted">
                         {ex.difficulty}
                       </td>
-                      <td className="py-3 px-4 font-mono tabular-nums text-slate-300">
+                      <td className="py-3 px-4 font-mono tabular-nums text-primary">
                         {item.attemptsCount}
                       </td>
                       <td className="py-3 px-4">
-                        <span className={`font-semibold ${isDone ? 'text-emerald-400' : 'text-amber-400'}`}>
+                        <span className={`font-semibold ${isDone ? 'text-success' : 'text-warning'}`}>
                           {isDone ? '✓ Concluído' : '○ Em Aberto'}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-slate-500 font-mono tabular-nums">
+                      <td className="py-3 px-4 text-muted font-mono tabular-nums">
                         {dateFormatted}
                       </td>
                       <td className="py-3 px-4 text-right">
                         <button
                           onClick={() => onStartExercise(ex.id)}
-                          className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold"
+                          className="text-xs text-accent hover:text-accent font-semibold"
                         >
                           Revisar →
                         </button>
@@ -328,24 +329,24 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
 
       {/* Confirmation Modal to Reset Progress */}
       {showResetConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="max-w-md w-full rounded-2xl border border-slate-800 bg-slate-900 p-6 space-y-4 shadow-2xl">
-            <h3 className="text-lg font-bold text-rose-400">Zerar todo o progresso?</h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-canvas/80 backdrop-blur-sm">
+          <div className="max-w-md w-full rounded-2xl border border-subtle bg-surface p-6 space-y-4 shadow-2xl">
+            <h3 className="text-lg font-bold text-danger">Zerar todo o progresso?</h3>
+            <p className="text-xs text-primary leading-relaxed">
               Esta ação apagará todas as resoluções salvas, histórico de tentativas e sequência de estudos no seu navegador. Essa ação não pode ser desfeita, a menos que você tenha exportado um backup JSON.
             </p>
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => setShowResetConfirm(false)}
-                className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors"
+                className="px-4 py-2 rounded-lg bg-surface-hover hover:bg-subtle text-primary text-xs font-semibold transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="button"
                 onClick={handleReset}
-                className="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-colors"
+                className="px-4 py-2 rounded-lg bg-danger hover:bg-danger text-primary text-xs font-semibold transition-colors"
               >
                 Sim, Limpar Tudo
               </button>
