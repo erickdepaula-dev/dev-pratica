@@ -1,6 +1,6 @@
 # 📘 Fase 2 — Trilha TypeScript
 
-**Status:** 🟡 Em andamento (2.1 a 2.3 concluídas)
+**Status:** 🟡 Em andamento (2.1 a 2.4 concluídas)
 **Depende de:** Fase 1 (usa os tokens de design para o seletor de linguagem e badges)
 **Objetivo:** adicionar TypeScript como terceira trilha, com a mesma profundidade de JS e PHP.
 
@@ -76,9 +76,9 @@ Decidir na tarefa 2.6 se entra nesta fase ou fica para depois.
 - [x] Modalidades do intermediário (5 corrigir_erros, 5 prever_saida, 5 desafio_pratico)
 
 ### 2.4 — Conteúdo: avançado e DEV
-- [ ] Exercícios do nível avançado (meta revista: 13)
-- [ ] Modalidades do avançado
-- [ ] Projetos DEV com `projectBrief` completo (meta: 3 a 4 projetos)
+- [x] Exercícios do nível avançado (meta revista: 13)
+- [x] Modalidades do avançado (5 corrigir_erros, 5 prever_saida, 5 desafio_pratico)
+- [x] Projetos DEV com `projectBrief` completo (4 projetos, um por tema listado acima)
 
 ### 2.5 — Interface
 - [ ] Seletor de linguagem no `Header.tsx` com a terceira opção
@@ -157,6 +157,8 @@ tipo → não executa). O resultado final continua sendo um `EvaluationResult`.
 - **Foco no que é exclusivo de TS:** cada exercício exercita o sistema de tipos. Exercícios
   de correção partem de **erros reais do compilador** (TS2322, TS2366, TS18048...) e os
   desafios usam `typeAssertions` para provar a tipagem (ex.: que a função recusa `string`).
+- **Projetos DEV sem DOM nem rede:** dependências externas (transporte HTTP) são injetadas
+  por parâmetro — testável no sandbox e boa prática de arquitetura.
 - **Todo o código assume `strict: true`** (vários bugs — ex.: "possibly undefined" — só
   existem com strict).
 
@@ -171,6 +173,8 @@ tipo → não executa). O resultado final continua sendo um `EvaluationResult`.
   sem erro vira TS2578 — é assim que "isto deve ser rejeitado" é verificado.
 - **Cada `testFunction` roda no próprio escopo:** `return (function () { <teste> })();`,
   para não colidir com nomes declarados pelo usuário.
+- **Testes podem ser assíncronos:** o projeto DEV do cliente HTTP retorna Promise nos testes.
+  O avaliador deve aguardar o retorno (`await Promise.resolve(...)`), como o de JS já faz.
 - Erros de tipo interrompem o pipeline antes da execução (o usuário vê os diagnósticos).
 
 ### Verificador de conteúdo (QA)
