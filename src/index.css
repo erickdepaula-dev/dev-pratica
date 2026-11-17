@@ -13,7 +13,7 @@
  *
  * Exemplos: bg-canvas (fundo base; não usamos "base" para não colidir com text-base),
  * bg-surface, bg-surface-hover, border-subtle, text-primary,
- * text-muted, text-success, bg-danger/10, from-accent-from to-accent-to,
+ * text-muted, text-accent (texto de destaque), text-syntax-*, text-success, bg-danger/10, from-accent-from to-accent-to,
  * shadow-card, shadow-glow, rounded-card, rounded-control.
  */
 @theme inline {
@@ -25,11 +25,18 @@
   --color-muted: var(--text-muted);
   --color-accent-from: var(--accent-from);
   --color-accent-to: var(--accent-to);
+  --color-accent: var(--accent-text);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
   --color-streak-from: var(--streak-from);
   --color-streak-to: var(--streak-to);
+  --color-syntax-keyword: var(--syntax-keyword);
+  --color-syntax-variable: var(--syntax-variable);
+  --color-syntax-string: var(--syntax-string);
+  --color-syntax-number: var(--syntax-number);
+  --color-syntax-comment: var(--syntax-comment);
+  --color-syntax-tag: var(--syntax-tag);
 
   --shadow-card: var(--shadow-card);
   --shadow-glow: var(--shadow-glow);

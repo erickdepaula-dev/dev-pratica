@@ -81,31 +81,31 @@ export const FreeCodeEditor: React.FC<FreeCodeEditorProps> = ({
   };
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-950 overflow-hidden font-mono text-sm shadow-xl flex flex-col transition-all">
+    <div className="rounded-card border border-subtle bg-canvas overflow-hidden font-mono text-sm shadow-card flex flex-col transition-[border-color,box-shadow] duration-200 focus-within:border-accent-from/60 focus-within:shadow-glow">
       {/* Editor Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 border-b border-slate-800/80 bg-slate-900/70 text-xs text-slate-400">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 border-b border-subtle/80 bg-surface/70 text-xs text-muted">
         <div className="flex items-center gap-2">
           <div className="flex gap-1.5" aria-hidden="true">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-danger/80 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-warning/80 inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-success/80 inline-block" />
           </div>
-          <span className="text-slate-200 font-semibold ml-2">Editor Livre ({language.toUpperCase()})</span>
-          <span className="text-slate-600">·</span>
-          <span className="text-[11px] text-slate-400">{lines.length} {lines.length === 1 ? 'linha' : 'linhas'}</span>
+          <span className="text-primary font-semibold ml-2">Editor Livre ({language.toUpperCase()})</span>
+          <span className="text-muted/60">·</span>
+          <span className="text-[11px] text-muted">{lines.length} {lines.length === 1 ? 'linha' : 'linhas'}</span>
         </div>
 
         <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={handleCopy}
-            className="px-2 py-1 rounded bg-slate-800/80 hover:bg-slate-800 hover:text-white border border-slate-700/60 text-slate-300 text-[11px] transition-colors flex items-center gap-1"
+            className="px-2 py-1 rounded bg-surface-hover/80 hover:bg-surface-hover hover:text-primary border border-subtle/60 text-primary text-[11px] transition-colors flex items-center gap-1"
             title="Copiar código para a área de transferência"
           >
             {copied ? (
               <>
-                <span className="text-emerald-400">✓</span>
-                <span className="text-emerald-300">Copiado</span>
+                <span className="text-success">✓</span>
+                <span className="text-success">Copiado</span>
               </>
             ) : (
               <>
@@ -118,17 +118,17 @@ export const FreeCodeEditor: React.FC<FreeCodeEditorProps> = ({
           <button
             type="button"
             onClick={onReset}
-            className="px-2 py-1 rounded bg-slate-800/80 hover:bg-slate-800 hover:text-white border border-slate-700/60 text-slate-300 text-[11px] transition-colors flex items-center gap-1"
+            className="px-2 py-1 rounded bg-surface-hover/80 hover:bg-surface-hover hover:text-primary border border-subtle/60 text-primary text-[11px] transition-colors flex items-center gap-1"
             title="Restaurar código inicial do exercício"
           >
             <span>↺</span>
             <span>Restaurar</span>
           </button>
 
-          <span className="text-slate-700 hidden sm:inline">|</span>
+          <span className="text-muted/60 hidden sm:inline">|</span>
 
-          <div className="hidden sm:flex items-center gap-1.5 text-slate-400 text-[11px]">
-            <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] text-slate-300 font-bold">
+          <div className="hidden sm:flex items-center gap-1.5 text-muted text-[11px]">
+            <kbd className="px-1.5 py-0.5 rounded bg-surface-hover border border-subtle text-[10px] text-primary font-bold">
               Ctrl + Enter
             </kbd>
             <span>executar</span>
@@ -137,18 +137,18 @@ export const FreeCodeEditor: React.FC<FreeCodeEditorProps> = ({
       </div>
 
       {/* Editor Body: Fixed 15 lines on desktop (~390px) with smooth inner scrolling */}
-      <div className="relative flex flex-1 h-[390px] min-h-[320px] max-h-[390px] bg-slate-950 overflow-hidden">
+      <div className="relative flex flex-1 h-[390px] min-h-[320px] max-h-[390px] bg-canvas overflow-hidden">
         {/* Line Numbers Gutter */}
         <div
           ref={lineNumbersRef}
-          className="select-none py-4 pl-3 pr-3 text-right text-slate-600 text-xs bg-slate-950/95 border-r border-slate-900 font-mono overflow-hidden shrink-0 z-10"
+          className="select-none py-4 pl-3 pr-3 text-right text-muted/60 text-xs bg-canvas/95 border-r border-subtle font-mono overflow-hidden shrink-0 z-10"
           style={{ width: '3.6rem' }}
           aria-hidden="true"
         >
           {Array.from({ length: lineCount }).map((_, i) => (
             <div
               key={i}
-              className="text-slate-600 font-mono text-xs tabular-nums"
+              className="text-muted/60 font-mono text-xs tabular-nums"
               style={{ height: '24px', lineHeight: '24px' }}
             >
               {i + 1}
@@ -175,7 +175,7 @@ export const FreeCodeEditor: React.FC<FreeCodeEditorProps> = ({
             autoComplete="off"
             autoCorrect="off"
             wrap="off"
-            className="flex-1 w-full h-full py-4 px-4 bg-transparent text-slate-100 font-mono text-[13.5px] outline-none focus:ring-0 selection:bg-indigo-500/30 overflow-auto whitespace-pre cursor-text"
+            className="flex-1 w-full h-full py-4 px-4 bg-transparent text-primary font-mono text-[13.5px] outline-none focus:ring-0 selection:bg-accent-from/30 overflow-auto whitespace-pre cursor-text"
             style={{
               lineHeight: '24px',
               tabSize: 4,
@@ -186,19 +186,19 @@ export const FreeCodeEditor: React.FC<FreeCodeEditorProps> = ({
       </div>
 
       {/* Editor Status Footer */}
-      <div className="px-4 py-1.5 bg-slate-900/60 border-t border-slate-800/80 text-[11px] text-slate-400 flex flex-wrap items-center justify-between gap-2">
+      <div className="px-4 py-1.5 bg-surface/60 border-t border-subtle/80 text-[11px] text-muted flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-slate-400">
+          <span className="font-mono text-muted">
             Lin {cursorPos.line}, Col {cursorPos.col}
           </span>
-          <span className="text-slate-700">·</span>
+          <span className="text-muted/60">·</span>
           <span>Tab insere 4 espaços</span>
         </div>
 
-        <div className="flex items-center gap-2 text-slate-500">
+        <div className="flex items-center gap-2 text-muted">
           <span>UTF-8</span>
-          <span className="text-slate-700">·</span>
-          <span className="uppercase font-semibold text-slate-400">{language}</span>
+          <span className="text-muted/60">·</span>
+          <span className="uppercase font-semibold text-muted">{language}</span>
         </div>
       </div>
     </div>

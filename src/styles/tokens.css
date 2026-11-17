@@ -19,6 +19,8 @@
   /* Destaque (gradiente assinatura) */
   --accent-from: #6366f1;
   --accent-to: #a855f7;
+  /* Texto de destaque legível em fundo escuro (contraste > 7:1 com --bg-surface) */
+  --accent-text: #a5b4fc;
 
   /* Estados */
   --success: #10b981;
@@ -28,6 +30,14 @@
   /* Ofensiva (streak) */
   --streak-from: #f97316;
   --streak-to: #ef4444;
+
+  /* Realce de sintaxe dos editores */
+  --syntax-keyword: #c084fc;
+  --syntax-variable: #7dd3fc;
+  --syntax-string: #6ee7b7;
+  --syntax-number: #fcd34d;
+  --syntax-comment: #64748b;
+  --syntax-tag: #fbbf24;
 
   /* Gradientes compostos */
   --gradient-accent: linear-gradient(135deg, var(--accent-from), var(--accent-to));

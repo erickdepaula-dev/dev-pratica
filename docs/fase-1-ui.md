@@ -1,6 +1,6 @@
 # 🎨 Fase 1 — UI Redesign
 
-**Status:** 🟡 Em andamento (1.1 a 1.4 concluídas)
+**Status:** 🟡 Em andamento (1.1 a 1.5 concluídas)
 **Objetivo:** dar ao DevPrática uma identidade visual própria — gradientes, animações e consistência — tendo o coddy.tech como referência.
 
 ---
@@ -83,11 +83,11 @@ move isso para um único lugar reutilizável, mantendo as cores atuais:
 - [x] Contador com animação de incremento ao subir o streak
 
 ### 1.5 — Workspace de exercício
-- [ ] Refinar `ExerciseWorkspace.tsx` com os tokens novos
-- [ ] Transição suave entre as abas (enunciado / solução / análise)
-- [ ] Feedback de acerto com animação de sucesso (sem confete exagerado)
-- [ ] Feedback de erro com shake sutil no botão de verificar
-- [ ] Estilizar `FillInBlanksEditor` e `FreeCodeEditor` com foco visível nos tokens
+- [x] Refinar `ExerciseWorkspace.tsx` com os tokens novos
+- [x] Transição suave entre as abas (enunciado / solução / análise)
+- [x] Feedback de acerto com animação de sucesso (sem confete exagerado)
+- [x] Feedback de erro com shake sutil no botão de verificar
+- [x] Estilizar `FillInBlanksEditor` e `FreeCodeEditor` com foco visível nos tokens
 
 ### 1.6 — Lista de exercícios
 - [ ] Cards de exercício com badge de modalidade colorido (helper da 1.1)
@@ -134,6 +134,8 @@ move isso para um único lugar reutilizável, mantendo as cores atuais:
 | gradiente assinatura | `bg-gradient-accent`, `text-gradient-accent` |
 | gradiente da ofensiva | `bg-gradient-streak` |
 | sombras / raios | `shadow-card`, `shadow-glow`, `rounded-card`, `rounded-control` |
+| `--accent-text` | `text-accent` (texto de destaque legível; use no lugar de `text-accent-from` em texto pequeno) |
+| `--syntax-*` | `text-syntax-keyword`, `-variable`, `-string`, `-number`, `-comment`, `-tag` |
 
 Badges de modalidade e dificuldade: `getExerciseTypeTheme(type)` e
 `getDifficultyTheme(difficulty)` em `src/utils/exerciseTheme.ts`
@@ -163,5 +165,16 @@ Badges de modalidade e dificuldade: `getExerciseTypeTheme(type)` e
 - Contador troca de dígito com spring e mostra "+1" apenas quando o valor **sobe**.
 - Dias futuros aparecem com borda tracejada; hoje tem anel laranja.
 - Novo utilitário `text-gradient-streak` em `src/index.css`.
+
+### Workspace (após a 1.5)
+
+- `ExerciseWorkspace`, `FillInBlanksEditor`, `FreeCodeEditor` e `PredictOutputViewer` sem
+  cores de paleta avulsas. A migração foi feita por regra (slate → canvas/surface/subtle/
+  primary/muted; emerald/rose/amber/indigo → success/danger/warning/accent).
+- Abas orientadas a dados (`workspaceTabs`) com indicador `layoutId` e conteúdo em
+  `AnimatePresence mode="wait"`.
+- Erro: shake via `useAnimate` no botão "Verificar" (pulado se `useReducedMotion()`).
+- Acerto: selo com spring + um anel que se expande uma vez; painel com brilho verde.
+- Editores: `focus-within` com borda accent + `shadow-glow`.
 
 - O dev server roda com `watch: null` — reinicie `npm run dev` para ver alterações.
