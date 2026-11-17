@@ -2,20 +2,27 @@ import { Language, UserProgress, ExerciseAttempt } from '../types/exercise';
 import { AiChallenge, AiChallengeAttempt, AiChallengeEvaluation } from '../types/aiChallenge';
 import { getFortalezaDateString, getDaysDifference } from '../utils/dateUtils';
 import { isLanguage } from '../utils/language';
+import { allExercises, getExerciseById } from '../data';
+import { computeAiChallengeXp, computeExerciseXp, retroactiveAiChallengeXp, retroactiveExerciseXp } from './xp';
+import { unlockBadges } from './badges';
 
 const STORAGE_KEY = 'devpratica_user_progress_v1';
 
-const defaultProgress: UserProgress = {
-  selectedLanguage: 'php',
-  completedIds: [],
-  attempts: {},
-  aiChallenges: {},
-  streak: {
-    currentStreak: 0,
-    lastActiveDate: '',
-    activeDates: [],
-  },
-};
+/**
+ * Progresso vazio — sempre um objeto NOVO. Antes era uma constante compartilhada e
+ * retornada por referência; hoje nenhum fluxo a modifica (a gravação relê o localStorage),
+ * mas um objeto novo por chamada elimina o risco por construção.
+ */
+function createDefaultProgress(): UserProgress {
+  return {
+    selectedLanguage: 'php',
+    completedIds: [],
+    attempts: {},
+    aiChallenges: {},
+    streak: { currentStreak: 0, lastActiveDate: '', activeDates: [] },
+    badges: [],
+  };
+}
 
 /**
  * Returns the effective displayed streak state based on America/Fortaleza calendar days.
@@ -56,8 +63,9 @@ export function loadUserProgress(): UserProgress {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      saveUserProgress(defaultProgress);
-      return defaultProgress;
+      const fresh = createDefaultProgress();
+      saveUserProgress(fresh);
+      return fresh;
     }
     const parsed = JSON.parse(raw) as UserProgress;
 
@@ -65,7 +73,7 @@ export function loadUserProgress(): UserProgress {
     // Migração defensiva (Fase 2): progresso antigo só tem 'php' | 'javascript', que continuam
     // válidos. Qualquer valor desconhecido (corrompido ou de versão futura) volta para 'php'.
     if (!isLanguage(parsed.selectedLanguage)) {
-      parsed.selectedLanguage = defaultProgress.selectedLanguage;
+      parsed.selectedLanguage = 'php';
     }
     if (!parsed.streak) {
       parsed.streak = { currentStreak: 0, lastActiveDate: '', activeDates: [] };
@@ -88,11 +96,64 @@ export function loadUserProgress(): UserProgress {
       }
     }
 
-    return parsed;
+    // Migração defensiva (Fase 3): XP retroativo e badges retroativas
+    const { progress: migrated, changed } = migrateProgress(parsed);
+    if (changed) saveUserProgress(migrated);
+    return migrated;
   } catch (e) {
     console.error('Falha ao carregar progresso local:', e);
-    return defaultProgress;
+    return createDefaultProgress();
   }
+}
+
+/**
+ * Migração defensiva da gamificação (Fase 3). Idempotente: rodar de novo não muda nada.
+ * - Tentativas concluídas sem `xpEarned` (anteriores à Fase 3) recebem o XP retroativo.
+ * - Tentativas concluídas sem `completedAt` (dados muito antigos) usam `lastAttemptAt`.
+ * - Badges cujas condições já são atendidas são desbloqueadas.
+ * Usada na carga local, na mesclagem com o Firestore e na importação de JSON.
+ */
+export function migrateProgress(progress: UserProgress): { progress: UserProgress; changed: boolean } {
+  let changed = false;
+
+  for (const attempt of Object.values(progress.attempts ?? {})) {
+    if (!attempt.passed) continue;
+    if (!attempt.completedAt && attempt.lastAttemptAt) {
+      attempt.completedAt = attempt.lastAttemptAt;
+      changed = true;
+    }
+    if (attempt.xpEarned === undefined) {
+      const exercise = getExerciseById(attempt.exerciseId);
+      if (exercise) {
+        attempt.xpEarned = retroactiveExerciseXp(exercise.difficulty, attempt);
+        changed = true;
+      }
+    }
+  }
+
+  for (const attempt of Object.values(progress.aiChallenges ?? {})) {
+    if (!attempt.passed) continue;
+    if (!attempt.completedAt && attempt.lastAttemptAt) {
+      attempt.completedAt = attempt.lastAttemptAt;
+      changed = true;
+    }
+    if (attempt.xpEarned === undefined && attempt.challenge) {
+      attempt.xpEarned = retroactiveAiChallengeXp(attempt);
+      changed = true;
+    }
+  }
+
+  if (!Array.isArray(progress.badges)) {
+    progress.badges = [];
+    changed = true;
+  }
+  const { badges, newlyUnlocked } = unlockBadges(progress, allExercises, new Date().toISOString());
+  if (newlyUnlocked.length > 0) {
+    progress.badges = badges;
+    changed = true;
+  }
+
+  return { progress, changed };
 }
 
 export function saveUserProgress(progress: UserProgress): void {
@@ -122,6 +183,7 @@ export function recordExerciseAttempt(
   const current = loadUserProgress();
   const existingAttempt = current.attempts[exerciseId];
   const now = new Date().toISOString();
+  const isFirstCompletion = passed && !existingAttempt?.passed;
 
   const newAttempt: ExerciseAttempt = {
     exerciseId,
@@ -137,7 +199,21 @@ export function recordExerciseAttempt(
     outputPrediction: data.outputPrediction ?? existingAttempt?.outputPrediction,
     checklistDone: existingAttempt?.checklistDone,
     typeErrorAnswer: data.typeErrorAnswer ?? existingAttempt?.typeErrorAnswer,
+    xpEarned: existingAttempt?.xpEarned,
   };
+
+  // XP: calculado só na PRIMEIRA conclusão e congelado; refazer não acumula.
+  if (isFirstCompletion) {
+    const exercise = getExerciseById(exerciseId);
+    if (exercise) {
+      newAttempt.xpEarned = computeExerciseXp({
+        difficulty: exercise.difficulty,
+        firstTry: newAttempt.attemptsCount === 1,
+        hintsUsed: newAttempt.hintsUsed,
+        revealedSolution: newAttempt.revealedSolution ?? false,
+      }).total;
+    }
+  }
 
   current.attempts[exerciseId] = newAttempt;
 
@@ -178,6 +254,7 @@ export function recordExerciseAttempt(
     if (!current.streak.activeDates.includes(today)) {
       current.streak.activeDates.push(today);
     }
+    current.badges = unlockBadges(current, allExercises, now).badges;
   }
 
   saveUserProgress(current);
@@ -211,6 +288,8 @@ export function saveAiChallengeDraft(
     lastAttemptAt: existing?.lastAttemptAt ?? now,
     completedAt: existing?.completedAt ?? null,
     unlockedHintsCount: Math.max(unlockedHintsCount, existing?.unlockedHintsCount ?? 0),
+    // Salvar rascunho depois de concluir não pode apagar o XP já ganho
+    xpEarned: existing?.xpEarned,
   };
 
   saveUserProgress(current);
@@ -248,7 +327,18 @@ export function recordAiChallengeAttempt(
     lastAttemptAt: now,
     completedAt: isPassed ? (existing?.completedAt || now) : (existing?.completedAt ?? null),
     unlockedHintsCount: Math.max(unlockedHintsCount, existing?.unlockedHintsCount ?? 0),
+    xpEarned: existing?.xpEarned,
   };
+
+  // XP: só na primeira aprovação, congelado
+  if (isPassed && !existing?.passed) {
+    attempt.xpEarned = computeAiChallengeXp({
+      difficultyLevel: challenge.difficultyLevel,
+      score: attempt.score,
+      firstTry: attempt.attemptsCount === 1,
+      hintsUsed: attempt.unlockedHintsCount,
+    });
+  }
 
   current.aiChallenges[challenge.id] = attempt;
 
@@ -279,6 +369,7 @@ export function recordAiChallengeAttempt(
     if (!current.streak.activeDates.includes(today)) {
       current.streak.activeDates.push(today);
     }
+    current.badges = unlockBadges(current, allExercises, now).badges;
   }
 
   saveUserProgress(current);
@@ -293,14 +384,7 @@ export function setSelectedLanguage(language: Language): UserProgress {
 }
 
 export function resetProgress(): UserProgress {
-  const resetData: UserProgress = {
-    ...defaultProgress,
-    streak: {
-      currentStreak: 0,
-      lastActiveDate: '',
-      activeDates: [],
-    },
-  };
+  const resetData = createDefaultProgress();
   saveUserProgress(resetData);
   return resetData;
 }
@@ -314,7 +398,7 @@ export function importProgressJSON(jsonString: string): boolean {
   try {
     const parsed = JSON.parse(jsonString) as UserProgress;
     if (parsed && Array.isArray(parsed.completedIds) && parsed.attempts) {
-      saveUserProgress(parsed);
+      saveUserProgress(migrateProgress(parsed).progress);
       return true;
     }
     return false;

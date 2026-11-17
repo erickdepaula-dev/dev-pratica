@@ -1,7 +1,9 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db, auth } from './firebase';
 import { UserProgress } from '../types/exercise';
-import { loadUserProgress, saveUserProgress } from './storage';
+import { loadUserProgress, migrateProgress, saveUserProgress } from './storage';
+import type { AiChallengeAttempt } from '../types/aiChallenge';
+import type { UnlockedBadge } from '../types/gamification';
 import { isLanguage } from '../utils/language';
 
 export enum OperationType {
@@ -75,6 +77,7 @@ export async function syncProgressToFirestore(progress: UserProgress): Promise<v
       completedIds: progress.completedIds,
       attempts: progress.attempts,
       aiChallenges: progress.aiChallenges || {},
+      badges: progress.badges ?? [],
       updatedAt: new Date().toISOString(),
     };
 
@@ -83,6 +86,45 @@ export async function syncProgressToFirestore(progress: UserProgress): Promise<v
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, `users/${user.uid}`);
   }
+}
+
+interface MergeableAttempt {
+  passed: boolean;
+  completedAt?: string | null;
+  xpEarned?: number;
+}
+
+/**
+ * Mescla registros por id. Em conflito, a nuvem prevalece, exceto que: uma conclusão nunca
+ * é desfeita, e o XP congelado e a data de conclusão mais antiga são preservados.
+ */
+function mergeById<T extends MergeableAttempt>(local: Record<string, T>, cloud: Record<string, T>): Record<string, T> {
+  const merged: Record<string, T> = { ...local };
+  for (const [id, remote] of Object.entries(cloud)) {
+    const own = local[id];
+    if (!own) {
+      merged[id] = remote;
+      continue;
+    }
+    const completedDates = [own.completedAt, remote.completedAt].filter((d): d is string => Boolean(d)).sort();
+    merged[id] = {
+      ...own,
+      ...remote,
+      passed: own.passed || remote.passed,
+      completedAt: completedDates[0] ?? null,
+      xpEarned: remote.xpEarned ?? own.xpEarned,
+    };
+  }
+  return merged;
+}
+
+function mergeBadges(local: UnlockedBadge[], cloud: UnlockedBadge[]): UnlockedBadge[] {
+  const byId = new Map<string, UnlockedBadge>();
+  for (const badge of [...local, ...cloud]) {
+    const current = byId.get(badge.id);
+    if (!current || badge.unlockedAt < current.unlockedAt) byId.set(badge.id, badge);
+  }
+  return [...byId.values()];
 }
 
 /**
@@ -135,17 +177,18 @@ export async function loadProgressFromFirestore(): Promise<UserProgress | null> 
       finalLastActiveDate = localDate || cloudDate;
     }
 
-    // Merge attempts
-    const mergedAttempts = {
-      ...(local.attempts || {}),
-      ...(data.attempts || {}),
-    };
+    // Merge attempts (a nuvem prevalece por tentativa, mas o XP congelado e a conclusão
+    // nunca se perdem: um registro da nuvem anterior à Fase 3 não tem xpEarned)
+    const mergedAttempts = mergeById(local.attempts || {}, (data.attempts || {}) as UserProgress['attempts']);
 
-    // Merge AI challenges
-    const mergedAiChallenges = {
-      ...(local.aiChallenges || {}),
-      ...(data.aiChallenges || {}),
-    };
+    // Merge AI challenges (mesma regra)
+    const mergedAiChallenges = mergeById(
+      local.aiChallenges || {},
+      (data.aiChallenges || {}) as Record<string, AiChallengeAttempt>
+    );
+
+    // Badges: união por id, mantendo a data de desbloqueio mais antiga
+    const mergedBadges = mergeBadges(local.badges ?? [], Array.isArray(data.badges) ? (data.badges as UnlockedBadge[]) : []);
 
     const merged: UserProgress = {
       selectedLanguage: isLanguage(data.selectedLanguage) ? data.selectedLanguage : local.selectedLanguage,
@@ -157,10 +200,13 @@ export async function loadProgressFromFirestore(): Promise<UserProgress | null> 
         lastActiveDate: finalLastActiveDate,
         activeDates: mergedActiveDates,
       },
+      badges: mergedBadges,
     };
 
-    saveUserProgress(merged);
-    return merged;
+    // XP retroativo e badges para o que veio da nuvem (Fase 3)
+    const migrated = migrateProgress(merged).progress;
+    saveUserProgress(migrated);
+    return migrated;
   } catch (error) {
     handleFirestoreError(error, OperationType.GET, `users/${user.uid}`);
     return null;

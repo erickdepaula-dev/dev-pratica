@@ -19,6 +19,7 @@ import {
   totalXp,
 } from '../src/services/xp';
 import { BADGES, buildBadgeContext, isConditionMet, longestStreakFromDates, unlockBadges } from '../src/services/badges';
+import { migrateProgress } from '../src/services/storage';
 import type { Exercise, ExerciseAttempt, UserProgress } from '../src/types/exercise';
 
 let passed = 0;
@@ -171,6 +172,46 @@ test('unlockBadges: só acrescenta as novas e nunca remove', () => {
 
 test('IDs de badge únicos', () => {
   assert.equal(new Set(BADGES.map(b => b.id)).size, BADGES.length);
+});
+
+// ---------------------------------------------------------------- Migração (dados reais)
+test('Migração: progresso de antes da Fase 3 recebe XP e badges retroativos, de forma idempotente', () => {
+  const dias = Array.from({ length: 8 }, (_, i) => '2026-10-' + String(i + 10).padStart(2, '0'));
+  const antigo = {
+    selectedLanguage: 'php',
+    completedIds: ['php-basico-01', 'js-basico-01'],
+    attempts: {
+      // 1ª tentativa, sem dica → 10 × 1.5 = 15
+      'php-basico-01': { exerciseId: 'php-basico-01', passed: true, attemptsCount: 1, completedAt: '2026-10-10T12:00:00Z', lastAttemptAt: '2026-10-10T12:00:00Z', hintsUsed: 0, revealedSolution: true },
+      // 3 tentativas, 1 dica, sem completedAt (dado muito antigo) → 10 × 0.8 = 8
+      'js-basico-01': { exerciseId: 'js-basico-01', passed: true, attemptsCount: 3, completedAt: null, lastAttemptAt: '2026-10-11T12:00:00Z', hintsUsed: 1 },
+      // não concluída → sem XP
+      'php-basico-02': { exerciseId: 'php-basico-02', passed: false, attemptsCount: 2, completedAt: null, lastAttemptAt: '2026-10-12T12:00:00Z', hintsUsed: 0 },
+    },
+    aiChallenges: {},
+    streak: { currentStreak: 0, lastActiveDate: dias.at(-1) ?? '', activeDates: dias },
+  } as UserProgress;
+
+  const r1 = migrateProgress(structuredClone(antigo));
+  assert.equal(r1.changed, true);
+  assert.equal(r1.progress.attempts['php-basico-01'].xpEarned, 15);
+  assert.equal(r1.progress.attempts['js-basico-01'].xpEarned, 8);
+  assert.equal(r1.progress.attempts['js-basico-01'].completedAt, '2026-10-11T12:00:00Z');
+  assert.equal(r1.progress.attempts['php-basico-02'].xpEarned, undefined);
+  assert.equal(totalXp(r1.progress), 23);
+  const ids = (r1.progress.badges ?? []).map(b => b.id);
+  assert.ok(ids.includes('primeiro-commit'));
+  assert.ok(ids.includes('semana-cheia'), 'ofensiva antiga de 8 dias deve render a badge');
+
+  // Idempotente: rodar de novo não muda nada (nem as datas de desbloqueio)
+  const r2 = migrateProgress(structuredClone(r1.progress));
+  assert.equal(r2.changed, false);
+  assert.deepEqual(r2.progress, r1.progress);
+});
+
+test('Migração não recalcula XP já congelado', () => {
+  const p = progresso([tentativa('php-basico-01', '2026-11-01T10:00:00Z', 3)]);
+  assert.equal(migrateProgress(p).progress.attempts['php-basico-01'].xpEarned, 3);
 });
 
 // ---------------------------------------------------------------- Calibração

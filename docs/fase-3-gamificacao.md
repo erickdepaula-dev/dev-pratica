@@ -1,6 +1,6 @@
 # 🎮 Fase 3 — Gamificação
 
-**Status:** 🟡 Em andamento (3.1 concluída)
+**Status:** 🟡 Em andamento (3.1 e 3.2 concluídas)
 **Depende de:** Fase 1 (tokens visuais) e Fase 2 (trilha TS entra no cálculo de XP)
 **Objetivo:** tornar o progresso visível e recompensador, aproximando a sensação do Coddy.
 
@@ -93,11 +93,11 @@ Condições declarativas para facilitar adicionar novas sem mexer na lógica.
 - [x] Testes manuais de sanidade dos cálculos (planilha ou script) — `npm run check:xp` (15 testes + calibração)
 
 ### 3.2 — Persistência
-- [ ] Estender `UserProgress` com `badges` e as tentativas com `xpEarned` (ver "Decisões")
-- [ ] **Migração defensiva** em `src/services/storage.ts`:
+- [x] Estender `UserProgress` com `badges` e as tentativas com `xpEarned` (ver "Decisões")
+- [x] **Migração defensiva** em `src/services/storage.ts`:
       usuário com progresso antigo recebe XP retroativo calculado dos `attempts` existentes
-- [ ] Atualizar `firestore.rules` se o shape do documento mudar
-- [ ] Verificar `firestoreSync.ts` — campos novos precisam subir e descer
+- [x] Atualizar `firestore.rules` se o shape do documento mudar — revisado: as regras só validam `userId`; `badges` não exige mudança
+- [x] Verificar `firestoreSync.ts` — campos novos precisam subir e descer
 
 ### 3.3 — Interface
 - [ ] Barra de XP no `Header.tsx` (espaço já reservado na Fase 1)
@@ -117,9 +117,9 @@ Condições declarativas para facilitar adicionar novas sem mexer na lógica.
 ## Critérios de pronto
 
 - [ ] XP é calculado, persistido e sincronizado
-- [ ] Usuário com progresso anterior recebe XP retroativo correto (não zera)
+- [x] Usuário com progresso anterior recebe XP retroativo correto (não zera) — `check:xp`
 - [ ] Badges desbloqueiam nas condições certas
-- [ ] Refazer exercício não acumula XP
+- [x] Refazer exercício não acumula XP (testado no navegador e no `check:xp`)
 - [ ] `npm run lint` e `npm run build` passam
 - [ ] `docs/CONTEXT.md` atualizado
 
@@ -140,6 +140,21 @@ Condições declarativas para facilitar adicionar novas sem mexer na lógica.
   (1ª tentativa = `attemptsCount <= 1`, dicas = `hintsUsed`), **ignorando o fator de solução**,
   porque o dado antigo não distingue "revelou antes de acertar" de "exibida após o acerto".
 - `services/xp.ts` e `services/badges.ts` são puros; o catálogo de exercícios entra por parâmetro.
+
+## Persistência (3.2)
+
+- **Na conclusão** (`storage.ts`): `recordExerciseAttempt` e `recordAiChallengeAttempt` calculam o
+  `xpEarned` só na primeira aprovação e reavaliam as badges. `saveAiChallengeDraft` preserva o
+  `xpEarned` (salvar rascunho depois de concluir não pode apagar o XP).
+- **`migrateProgress()`** (idempotente): XP retroativo para tentativas concluídas sem `xpEarned`;
+  `completedAt` ausente (dados muito antigos) ← `lastAttemptAt`; badges retroativas. Roda na carga
+  local, na mesclagem com o Firestore e na importação de JSON.
+- **Firestore** (`firestoreSync.ts`): `badges` sobe no documento. Na mesclagem, tentativas são
+  combinadas por id (`mergeById`): a nuvem prevalece, mas uma conclusão nunca é desfeita e o
+  `xpEarned` congelado e a data de conclusão mais antiga são preservados. Badges: união por id,
+  mantendo o desbloqueio mais antigo.
+- `check:xp` cobre a migração com um progresso realista de antes da Fase 3 (17 testes).
+- Testado no navegador: 1ª conclusão de primeira = 15 XP; refazer (3 tentativas) mantém 15 XP.
 
 ## Notas de implementação
 
