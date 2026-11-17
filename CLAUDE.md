@@ -60,6 +60,7 @@ src/
 npm run dev     # servidor full-stack (porta 3000)
 npm run lint    # tsc --noEmit (TS 7, por caminho explícito) — validação de tipos
 npm run check:ts # valida os exercícios TS com o compilador real (rodar ao criar/editar exercícios TS)
+npm run check:xp # testes de sanidade de XP, níveis e badges + calibração
 npm run build   # build de produção
 npm start       # produção
 ```

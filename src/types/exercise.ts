@@ -147,9 +147,16 @@ export interface ExerciseAttempt {
   outputPrediction?: string;
   /** Resposta de 'prever_erro_de_tipo' (linha escolhida e índice do motivo). */
   typeErrorAnswer?: { line: number; reason: number };
+  /**
+   * XP ganho na PRIMEIRA conclusão — calculado uma vez e congelado (Fase 3).
+   * Ausente em tentativas anteriores à Fase 3: a migração em storage.ts preenche com o
+   * XP retroativo.
+   */
+  xpEarned?: number;
 }
 
 import { AiChallengeAttempt } from './aiChallenge';
+import { UnlockedBadge } from './gamification';
 
 export interface UserProgress {
   selectedLanguage: Language;
@@ -161,4 +168,6 @@ export interface UserProgress {
     lastActiveDate: string;
     activeDates: string[];
   };
+  /** Conquistas já desbloqueadas (Fase 3). Nunca são removidas. */
+  badges?: UnlockedBadge[];
 }

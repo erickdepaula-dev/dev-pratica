@@ -86,4 +86,6 @@ export interface AiChallengeAttempt {
   lastAttemptAt: string;
   completedAt?: string | null;
   unlockedHintsCount: number;
+  /** XP ganho na primeira aprovação — congelado (Fase 3). */
+  xpEarned?: number;
 }

@@ -34,8 +34,7 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 
 ### Ainda não existe
 
-- ❌ Sistema de XP / níveis de carreira
-- ❌ Conquistas (badges)
+- 🟡 XP, níveis de carreira e conquistas: modelo e cálculo prontos (Fase 3.1); persistência e UI em andamento
 - ❌ Trilha de lógica pura (material em PDF ainda não convertido)
 
 ---
@@ -63,7 +62,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 | :--- | :--- | :--- |
 | 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ✅ Concluída |
 | 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefas concluídas; 2 critérios aguardam verificação manual |
-| 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | ⬜ Não iniciada |
+| 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | 🟡 Tarefa 3.1 concluída |
 | 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefa 4.2 concluída (índice extraído) |
 
 **Índice de apoio:** [`fase-4-indice-exercicios.md`](./fase-4-indice-exercicios.md) — catálogo dos 160 exercícios.
@@ -120,8 +119,17 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 2. Logado com Google, concluir um exercício TS e conferir que o progresso volta após recarregar
    (sincronização com o Firestore).
 
-**Próximo passo:** depois da verificação, marcar a Fase 2 como ✅ e abrir `docs/fase-3-gamificacao.md`.
-Atenção para a Fase 3: o XP por modalidade precisa incluir `prever_erro_de_tipo`.
+Depois da verificação, marcar a Fase 2 como ✅.
+
+**Fase 3 em andamento** (o usuário pediu para seguir e testar tudo depois; PR #1 foi mesclado na
+`main` e a branch de trabalho recomeçou a partir dela).
+- 3.1 — tipos (`types/gamification.ts`), cálculo de XP e níveis (`services/xp.ts`), badges
+  declarativas (`services/badges.ts`) e `npm run check:xp` (15 testes + calibração). Níveis
+  recalibrados contra o volume real (Staff 15.000 → 8.000). XP total é derivado dos `xpEarned`
+  congelados — ver "Decisões de modelagem" em `fase-3-gamificacao.md`.
+
+**Próximo passo:** 3.2 — persistência (`xpEarned` na conclusão, `badges`, migração retroativa,
+merge no Firestore).
 Lembrete: até a 2.6 a avaliação de TS é um stub — exercícios `lacunas` e `prever_saida`
 já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 `desafio_pratico` em TS só serão avaliados de verdade após a 2.6.
@@ -159,3 +167,4 @@ já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 | 2026-11-17 | 2 | 2.6 parcial: avaliador TS com compilação real no navegador (typescript@5.9.3 via alias, lazy), pipeline compilar→executar→testar→regras, `npm run check:ts`. Corrigido: `npm run lint` rodava o TS 5.9 por colisão de binários. |
 | 2026-11-17 | 2 | 2.6 parcial: modalidade `prever_erro_de_tipo` (tipo, tela, avaliador, 30 exercícios validados). Corrigidos: persistência de `outputPrediction` e `checklistDone`; "1 dias" no header. |
 | 2026-11-17 | 2 | Tarefa 2.6 concluída: tutor IA ciente de TS (diagnósticos reais nos prompts, sem revelar respostas em `prever_erro_de_tipo`) e roteiro TS no Guia. Fase 2 com todas as tarefas feitas; 2 critérios aguardam verificação manual (Gemini e Firestore). |
+| 2026-11-17 | 3 | Tarefa 3.1 concluída: tipos de gamificação, `services/xp.ts`, `services/badges.ts` (11 badges declarativas) e `npm run check:xp`. Níveis recalibrados contra o XP real (9.200 base). |

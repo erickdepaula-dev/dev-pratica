@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "node ./node_modules/typescript/bin/tsc --noEmit",
-    "check:ts": "tsx scripts/check-ts-exercises.ts"
+    "check:ts": "tsx scripts/check-ts-exercises.ts",
+    "check:xp": "tsx scripts/check-gamification.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

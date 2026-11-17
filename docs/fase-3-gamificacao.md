@@ -1,6 +1,6 @@
 # 🎮 Fase 3 — Gamificação
 
-**Status:** ⬜ Não iniciada
+**Status:** 🟡 Em andamento (3.1 concluída)
 **Depende de:** Fase 1 (tokens visuais) e Fase 2 (trilha TS entra no cálculo de XP)
 **Objetivo:** tornar o progresso visível e recompensador, aproximando a sensação do Coddy.
 
@@ -39,16 +39,25 @@ quem competir. O foco é progressão individual.
 
 ### Níveis de carreira
 
-| Nível | XP acumulado |
-| :--- | :--- |
-| Iniciante | 0 |
-| Júnior | 500 |
-| Pleno | 2.000 |
-| Sênior | 6.000 |
-| Staff | 15.000 |
+| Nível | XP acumulado | Proposta original |
+| :--- | :--- | :--- |
+| Iniciante | 0 | 0 |
+| Júnior | 400 | 500 |
+| Pleno | 1.500 | 2.000 |
+| Sênior | 4.000 | 6.000 |
+| Staff | 8.000 | 15.000 |
 
-> Números são uma proposta inicial. Calibrar depois de rodar contra o volume real
-> de exercícios (hoje ~456 em JS+PHP, mais os da Fase 2 e 4).
+> **Calibrado na 3.1 contra o volume real** (`npm run check:xp` imprime a tabela): o XP base
+> total das 3 trilhas é **9.200** (293 exercícios; 13.800 com bônus de 1ª tentativa em tudo).
+> Com a proposta original, Staff (15.000) seria inalcançável. Agora: Júnior ≈ o básico de uma
+> trilha; Sênior (43%) ≈ uma trilha e meia; Staff (87%) ≈ as três trilhas. Recalibrar após a Fase 4.
+
+### Detalhes do cálculo
+
+- Dicas: × 0.8 **por dica** (0.8ⁿ), com piso de × 0.5 — o piso só entra a partir da 4ª dica.
+- Os modificadores se multiplicam; o resultado é arredondado (`Math.round`).
+- **Desafios com IA:** base por nível (1–5: 10, 20, 35, 60, 100) × nota/10, com os mesmos
+  multiplicadores de 1ª tentativa e dicas.
 
 ---
 
@@ -67,19 +76,24 @@ Condições declarativas para facilitar adicionar novas sem mexer na lógica.
 | Caçador de bugs | 25 exercícios de `corrigir_erros` |
 | Compilador humano | 25 exercícios de `prever_saida` |
 | Product Owner | Concluir todos os projetos DEV de uma trilha |
+| Type checker *(nova)* | 25 exercícios de `prever_erro_de_tipo` (modalidade da Fase 2) |
+| Senioridade *(nova)* | Alcançar o nível de carreira Sênior |
+
+"Semana cheia" e "Mês de disciplina" usam a **maior** ofensiva já alcançada, derivada de
+`activeDates` — quem já teve 7 dias seguidos antes da Fase 3 ganha a badge retroativamente.
 
 ---
 
 ## Tarefas
 
 ### 3.1 — Modelo e cálculo
-- [ ] `src/types/gamification.ts`: tipos `XpEvent`, `CareerLevel`, `Badge`, `BadgeCondition`
-- [ ] `src/services/xp.ts`: cálculo de XP a partir de um `ExerciseAttempt`
-- [ ] `src/services/badges.ts`: avaliação declarativa das condições de badge
-- [ ] Testes manuais de sanidade dos cálculos (planilha ou script)
+- [x] `src/types/gamification.ts`: tipos `XpEvent`, `CareerLevel`, `Badge`, `BadgeCondition`
+- [x] `src/services/xp.ts`: cálculo de XP a partir de um `ExerciseAttempt`
+- [x] `src/services/badges.ts`: avaliação declarativa das condições de badge
+- [x] Testes manuais de sanidade dos cálculos (planilha ou script) — `npm run check:xp` (15 testes + calibração)
 
 ### 3.2 — Persistência
-- [ ] Estender `UserProgress` com `xp: number`, `badges: string[]`
+- [ ] Estender `UserProgress` com `badges` e as tentativas com `xpEarned` (ver "Decisões")
 - [ ] **Migração defensiva** em `src/services/storage.ts`:
       usuário com progresso antigo recebe XP retroativo calculado dos `attempts` existentes
 - [ ] Atualizar `firestore.rules` se o shape do documento mudar
@@ -110,6 +124,22 @@ Condições declarativas para facilitar adicionar novas sem mexer na lógica.
 - [ ] `docs/CONTEXT.md` atualizado
 
 ---
+
+## Decisões de modelagem (3.1)
+
+- **XP congelado na conclusão:** cada tentativa ganha `xpEarned`, calculado uma única vez na
+  primeira conclusão. Motivo: hoje, depois de acertar, a solução é exibida automaticamente e
+  gravações seguintes salvam `revealedSolution: true`; recalcular faria o XP **cair** depois de
+  ganho. Também garante "refazer não acumula".
+- **XP total derivado, não armazenado** (desvio da proposta `UserProgress.xp: number`): é a soma
+  dos `xpEarned`. Um total separado teria de ser mesclado à parte com o Firestore e poderia
+  divergir das tentativas; derivado, o XP retroativo e a sincronização ficam corretos por construção.
+- **Badges desbloqueadas armazenadas** (`UserProgress.badges: { id, unlockedAt }[]`), porque não
+  podem sumir (ex.: ofensiva quebrada); as **condições** são derivadas dos dados existentes.
+- **XP retroativo:** tentativas concluídas antes da Fase 3 recebem XP com os dados gravados
+  (1ª tentativa = `attemptsCount <= 1`, dicas = `hintsUsed`), **ignorando o fator de solução**,
+  porque o dado antigo não distingue "revelou antes de acertar" de "exibida após o acerto".
+- `services/xp.ts` e `services/badges.ts` são puros; o catálogo de exercícios entra por parâmetro.
 
 ## Notas de implementação
 
