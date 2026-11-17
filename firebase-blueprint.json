@@ -1,0 +1,151 @@
+{
+  "entities": {
+    "userProfile": {
+      "title": "UserProfile",
+      "description": "Perfil do estudante com ofensiva (streak), linguagem selecionada e progresso salvo na nuvem.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "ID do usuário autenticado no Firebase."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "E-mail do usuário."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Nome de exibição do estudante."
+        },
+        "selectedLanguage": {
+          "type": "string",
+          "enum": ["php", "javascript"],
+          "description": "Linguagem ativa selecionada."
+        },
+        "currentStreak": {
+          "type": "integer",
+          "description": "Número de dias consecutivos de estudo (ofensiva)."
+        },
+        "lastActiveDate": {
+          "type": "string",
+          "description": "Data da última atividade no formato YYYY-MM-DD."
+        },
+        "activeDates": {
+          "type": "array",
+          "description": "Lista de datas em que o usuário praticou."
+        },
+        "lastExerciseId": {
+          "type": "string",
+          "description": "ID do último exercício acessado para continuar de onde parou."
+        },
+        "completedIds": {
+          "type": "array",
+          "description": "IDs de todos os exercícios completados com sucesso."
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Data e hora ISO da última atualização."
+        }
+      },
+      "required": ["userId", "selectedLanguage", "currentStreak", "completedIds"]
+    },
+    "exerciseAttempt": {
+      "title": "ExerciseAttempt",
+      "description": "Registro de tentativa e código submetido em um exercício.",
+      "type": "object",
+      "properties": {
+        "exerciseId": {
+          "type": "string",
+          "description": "ID do exercício."
+        },
+        "userId": {
+          "type": "string",
+          "description": "ID do estudante."
+        },
+        "passed": {
+          "type": "boolean",
+          "description": "Se a resolução passou nos testes."
+        },
+        "attemptsCount": {
+          "type": "integer",
+          "description": "Contagem de tentativas."
+        },
+        "hintsUsed": {
+          "type": "integer",
+          "description": "Quantidade de dicas solicitadas."
+        },
+        "lastAttemptAt": {
+          "type": "string",
+          "description": "Timestamp da última submissão."
+        },
+        "completedAt": {
+          "type": "string",
+          "description": "Timestamp da conclusão com sucesso."
+        },
+        "userCode": {
+          "type": "string",
+          "description": "Código escrito ou estado das lacunas."
+        }
+      },
+      "required": ["exerciseId", "userId", "passed", "attemptsCount"]
+    },
+    "devProject": {
+      "title": "DevProject",
+      "description": "Projeto prático do módulo DEV com requisitos de Product Owner e entrega de código.",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "type": "string",
+          "description": "Identificador do projeto."
+        },
+        "userId": {
+          "type": "string",
+          "description": "ID do usuário responsável."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["planejamento", "em_desenvolvimento", "entregue"],
+          "description": "Status do desenvolvimento."
+        },
+        "code": {
+          "type": "string",
+          "description": "Código desenvolvido para a solução."
+        },
+        "completedChecklist": {
+          "type": "array",
+          "description": "Critérios de aceitação do PO marcados como atendidos."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Anotações de arquitetura do desenvolvedor."
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Data de atualização."
+        }
+      },
+      "required": ["projectId", "userId", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/userProfile"
+      },
+      "description": "Documento principal do perfil e progresso do estudante."
+    },
+    "/users/{userId}/attempts/{exerciseId}": {
+      "schema": {
+        "$ref": "#/entities/exerciseAttempt"
+      },
+      "description": "Histórico e tentativas detalhadas de cada exercício do usuário."
+    },
+    "/users/{userId}/dev_projects/{projectId}": {
+      "schema": {
+        "$ref": "#/entities/devProject"
+      },
+      "description": "Projetos práticos do módulo DEV com requisitos de PO desenvolvidos pelo usuário."
+    }
+  }
+}

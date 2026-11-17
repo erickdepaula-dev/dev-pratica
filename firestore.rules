@@ -1,0 +1,48 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Safety Net: Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // 2. User profile and progress document
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false; // Prevent user enumeration
+      allow create: if isOwner(userId) && isValidId(userId) &&
+        request.resource.data.userId == request.auth.uid;
+      allow update: if isOwner(userId) && isValidId(userId) &&
+        request.resource.data.userId == request.auth.uid;
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      // 3. Exercise attempts subcollection
+      match /attempts/{exerciseId} {
+        allow read: if isOwner(userId) && isValidId(userId) && isValidId(exerciseId);
+        allow create, update: if isOwner(userId) && isValidId(userId) && isValidId(exerciseId) &&
+          request.resource.data.userId == request.auth.uid;
+        allow delete: if isOwner(userId) && isValidId(userId) && isValidId(exerciseId);
+      }
+
+      // 4. Dev Module Projects subcollection
+      match /dev_projects/{projectId} {
+        allow read: if isOwner(userId) && isValidId(userId) && isValidId(projectId);
+        allow create, update: if isOwner(userId) && isValidId(userId) && isValidId(projectId) &&
+          request.resource.data.userId == request.auth.uid;
+        allow delete: if isOwner(userId) && isValidId(userId) && isValidId(projectId);
+      }
+    }
+  }
+}
