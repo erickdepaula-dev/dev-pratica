@@ -1,6 +1,6 @@
 # 📘 Fase 2 — Trilha TypeScript
 
-**Status:** 🟡 Em andamento (2.1 a 2.5 concluídas)
+**Status:** 🟡 Em andamento (2.1 a 2.5 concluídas; 2.6 em andamento)
 **Depende de:** Fase 1 (usa os tokens de design para o seletor de linguagem e badges)
 **Objetivo:** adicionar TypeScript como terceira trilha, com a mesma profundidade de JS e PHP.
 
@@ -87,10 +87,10 @@ Decidir na tarefa 2.6 se entra nesta fase ou fica para depois.
 - [x] Ícone / cor própria para a trilha TS (azul TypeScript `#3178C6`)
 
 ### 2.6 — Avaliação e tutor
-- [ ] `src/services/evaluator.ts`: validação para TS com **compilação real no navegador**
-      (decidido — ver "Decisão: validação de TypeScript" abaixo). Substituir o stub
-      `evaluateTypeScriptCode` criado na 2.1.
-- [ ] Decidir se a modalidade `prever_erro_de_tipo` entra nesta fase
+- [x] `src/services/evaluator.ts`: validação para TS com **compilação real no navegador**
+      (ver "Avaliador TS implementado" abaixo).
+- [x] Decidir se a modalidade `prever_erro_de_tipo` entra nesta fase — **entra**, com 10 exercícios por nível (básico, intermediário, avançado; o DEV é só de projetos)
+- [ ] Implementar a modalidade `prever_erro_de_tipo` (tipo, tela, avaliador, 30 exercícios)
 - [ ] `src/services/aiHint.ts`: prompt do tutor ciente de TypeScript
       (deve explicar erros de tipo, não só de lógica)
 - [ ] `StudyGuide.tsx`: roteiro de estudo da trilha TS
@@ -177,15 +177,35 @@ tipo → não executa). O resultado final continua sendo um `EvaluationResult`.
   O avaliador deve aguardar o retorno (`await Promise.resolve(...)`), como o de JS já faz.
 - Erros de tipo interrompem o pipeline antes da execução (o usuário vê os diagnósticos).
 
+### Avaliador TS implementado (2.6)
+
+- **Dependência:** `"typescript-browser": "npm:typescript@5.9.3"` (versão exata: os diagnósticos
+  são gabarito de exercícios). O TS 7 continua sendo o `typescript` do lint.
+- **Armadilha resolvida:** os dois pacotes declaram o binário `tsc`, e o `node_modules/.bin/tsc`
+  passou a apontar para o 5.9 (depende da ordem de instalação). O `npm run lint` agora chama
+  `node ./node_modules/typescript/bin/tsc` explicitamente — sempre o TS 7.
+- `src/services/typescript/compilerCore.ts` — núcleo **puro** (recebe o módulo `ts` e as libs):
+  opções, host em memória, cache de libs parseadas, diagnósticos com linha relativa ao código do
+  aluno e origem (`codigo` | `teste_de_tipo`).
+- `src/services/typescript/pipeline.ts` — etapas `compilar → executar → testar → regras`, cada uma
+  um objeto `{ name, run(ctx) }`. **Para validações futuras (performance, cobertura, Web Worker),
+  basta criar uma etapa e incluí-la na lista** passada a `runPipeline`.
+- `src/services/typescript/browserCompiler.ts` + `libFiles.ts` — carregamento sob demanda
+  (`import()`): compilador ~3,5 MB (988 KB gzip) e libs em **um** chunk (484 KB / 54 KB gzip).
+  Nada disso entra no bundle inicial.
+- `EvaluationResult.diagnostics` carrega os diagnósticos (usados também pelo tutor).
+- **Medido no build de produção:** 1ª avaliação ~1 s (inclui download); seguintes ~100–200 ms de
+  compilação. Por isso **não** há Web Worker por enquanto — se travar a UI, a etapa de compilação
+  pode ser movida para um Worker sem mudar o pipeline.
+
 ### Verificador de conteúdo (QA)
 
-Todo exercício TS foi validado por um script com o compilador real (TS 5.9.3): a solução
+**`npm run check:ts`** (`scripts/check-ts-exercises.ts`) usa o MESMO núcleo e o MESMO pipeline
+do app. Todo exercício TS é validado com o compilador real: a solução
 compila sem erros e passa nos testes; o código bugado dos `corrigir_erros` falha (e o erro
 cai em `buggyLineNumbers`); as lacunas preenchidas com as respostas esperadas compilam; a
 saída real de cada `prever_saida` bate com o gabarito; a solução cumpre as próprias
-`validationRules`. O script entra no repositório na
-2.6 como `scripts/check-ts-exercises.ts`, junto com a dependência `typescript@5` — antes
-disso, o `npm run lint` (TS 7) não tem os tipos da API do compilador.
+`validationRules`. Rode-o sempre que criar ou editar exercícios TS.
 
 ### O que a 2.1 deixou pronto
 

@@ -63,7 +63,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 | Fase | Arquivo | Status |
 | :--- | :--- | :--- |
 | 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ✅ Concluída |
-| 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefas 2.1 a 2.5 concluídas |
+| 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 2.1 a 2.5 concluídas; 2.6 em andamento |
 | 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | ⬜ Não iniciada |
 | 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefa 4.2 concluída (índice extraído) |
 
@@ -103,9 +103,13 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
   Progresso, realce de sintaxe TS. Seletor e grid derivam de `LANGUAGES` + `getLanguageTheme`.
   Header ajustado para caber 3 trilhas sem overflow.
 
-**Próximo passo:** tarefa `2.6 — Avaliação e tutor` (compilação real de TS no navegador,
-tutor ciente de TS, roteiro TS no Guia, decisão sobre `prever_erro_de_tipo`).
-Até lá, exercícios TS de código (livre, corrigir, desafio) mostram "validação disponível na 2.6".
+- 2.6 (parcial) — **compilação real de TS no navegador** (pacote oficial 5.9.3 via alias,
+  carregado sob demanda) com pipeline extensível compilar → executar → testar → regras.
+  `npm run check:ts` valida o conteúdo com o mesmo pipeline do app. `npm run lint` agora
+  chama o TS 7 por caminho explícito (o alias sequestrava o `.bin/tsc`).
+
+**Próximo passo:** 2.6 — modalidade `prever_erro_de_tipo` (30 exercícios: 10 por nível),
+depois tutor IA ciente de TS e roteiro TS no Guia.
 Lembrete: até a 2.6 a avaliação de TS é um stub — exercícios `lacunas` e `prever_saida`
 já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 `desafio_pratico` em TS só serão avaliados de verdade após a 2.6.
@@ -140,3 +144,4 @@ já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 | 2026-11-17 | 2 | Tarefa 2.3 concluída: +28 exercícios TS do intermediário (type guards, unknown, generics, utility types, readonly, classes). 56 no total, todos validados com o compilador real. |
 | 2026-11-17 | 2 | Tarefa 2.4 concluída: +28 exercícios TS do avançado e 4 projetos DEV com projectBrief. Trilha TS com 88 exercícios, todos validados com o compilador TS 5.9.3. |
 | 2026-11-17 | 2 | Tarefa 2.5 concluída: trilha TS selecionável no Header, catálogo e Dashboard; seletor derivado de uma fonte única; realce de sintaxe TS; header sem overflow com 3 trilhas. |
+| 2026-11-17 | 2 | 2.6 parcial: avaliador TS com compilação real no navegador (typescript@5.9.3 via alias, lazy), pipeline compilar→executar→testar→regras, `npm run check:ts`. Corrigido: `npm run lint` rodava o TS 5.9 por colisão de binários. |

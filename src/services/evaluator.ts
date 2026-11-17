@@ -1,5 +1,6 @@
 import { Exercise, Blank } from '../types/exercise';
 import { assertNever } from '../utils/language';
+import type { TsDiagnostic } from '../types/typescriptEvaluation';
 
 export interface BlankValidationResult {
   blankId: string;
@@ -22,6 +23,8 @@ export interface EvaluationResult {
     error?: string;
   }[];
   generalFeedback: string;
+  /** Só TypeScript: diagnósticos do compilador (também enviados ao tutor IA). */
+  diagnostics?: TsDiagnostic[];
 }
 
 /**
@@ -286,26 +289,32 @@ export async function evaluateCodeForLanguage(
 }
 
 /**
- * Avaliação de TypeScript — PROVISÓRIA (Fase 2, tarefa 2.1).
- *
- * Decisão registrada para a tarefa 2.6: compilação real no navegador com o pacote
- * oficial `typescript` (API JS da linha 5.x), lendo os diagnósticos de sintaxe e de
- * tipos do compilador — sem regex. Até lá, nenhum exercício TS existe na base e este
- * stub só garante que código TS nunca caia, por engano, no avaliador de JS ou PHP.
+ * Avaliação de TypeScript com compilação real no navegador (pacote oficial `typescript`,
+ * linha 5.x via alias `typescript-browser`). Pipeline: compilar → executar → testar → regras.
+ * O compilador é carregado sob demanda na primeira avaliação (ver services/typescript/).
  */
 export async function evaluateTypeScriptCode(
-  _exercise: Exercise,
-  _userCode: string
+  exercise: Exercise,
+  userCode: string
 ): Promise<EvaluationResult> {
-  return {
-    passed: false,
-    scorePercent: 0,
-    blankResults: [],
-    logs: [],
-    testCaseResults: [],
-    generalFeedback:
-      'A validação de TypeScript ainda não está disponível. Ela chega na tarefa 2.6, com compilação real no navegador.',
-  };
+  try {
+    const [{ getBrowserCompileFn }, { runPipeline }] = await Promise.all([
+      import('./typescript/browserCompiler'),
+      import('./typescript/pipeline'),
+    ]);
+    const compile = await getBrowserCompileFn();
+    return await runPipeline(exercise, userCode, compile);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return {
+      passed: false,
+      scorePercent: 0,
+      blankResults: [],
+      logs: [],
+      testCaseResults: [{ description: 'Carregamento do compilador TypeScript', passed: false, error: message }],
+      generalFeedback: 'Não foi possível carregar o compilador TypeScript. Verifique a conexão e tente novamente.',
+    };
+  }
 }
 
 /**
