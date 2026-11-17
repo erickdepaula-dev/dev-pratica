@@ -44,7 +44,6 @@ interface HeaderProps {
   onChangeTab: (tab: ActiveTab) => void;
   selectedLanguage: Language;
   onSelectLanguage: (lang: Language) => void;
-  onContinueNext: () => void;
   totalCompleted: number;
   totalExercises: number;
   progress: UserProgress;
@@ -62,7 +61,6 @@ export const Header: React.FC<HeaderProps> = ({
   onChangeTab,
   selectedLanguage,
   onSelectLanguage,
-  onContinueNext,
   progress,
   currentUser,
   isSyncing,
@@ -140,11 +138,10 @@ export const Header: React.FC<HeaderProps> = ({
                       className="absolute inset-0 rounded-full bg-gradient-accent shadow-glow"
                     />
                   )}
-                  {/* md: só ícone · lg: rótulo curto · xl: ícone + rótulo completo */}
+                  {/* md: só ícone · lg: rótulo curto · xl+: ícone + rótulo curto (o completo fica no title) */}
                   <span className="relative flex items-center gap-1.5" title={item.label}>
                     <Icon className="w-4 h-4 lg:hidden xl:block" aria-hidden="true" />
-                    <span className="sr-only lg:not-sr-only lg:whitespace-nowrap xl:hidden">{item.shortLabel}</span>
-                    <span className="hidden xl:inline">{item.label}</span>
+                    <span className="sr-only lg:not-sr-only lg:whitespace-nowrap">{item.shortLabel}</span>
                   </span>
                 </button>
               );
@@ -153,7 +150,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Área direita: XP (Fase 3), ofensiva, linguagem, conta */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {xpSlot && <div className="hidden lg:block">{xpSlot}</div>}
+            {xpSlot && <div className="hidden xl:block">{xpSlot}</div>}
 
             <div
               className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-streak-from/10 border border-streak-from/30 text-xs font-semibold text-streak-from"
@@ -161,7 +158,7 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <span aria-hidden="true">🔥</span>
               <span className="tabular-nums font-mono">{streak}</span>
-              <span className="hidden xl:inline text-[11px] font-normal">{streak === 1 ? 'dia' : 'dias'}</span>
+              <span className="hidden 2xl:inline text-[11px] font-normal">{streak === 1 ? 'dia' : 'dias'}</span>
             </div>
 
             <div className="hidden sm:block">
@@ -246,18 +243,9 @@ export const Header: React.FC<HeaderProps> = ({
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-accent-from/40 bg-accent-from/10 hover:bg-accent-from/20 text-xs font-semibold text-primary transition-colors cursor-pointer ${FOCUS_RING}`}
                 title="Entrar com Google para salvar seus dias e progresso no Firebase Firestore"
               >
-                <span className="hidden xl:inline">Salvar no Firebase</span>
-                <span className="xl:hidden">Entrar</span>
+                <span>Entrar</span>
               </button>
             )}
-
-            <button
-              type="button"
-              onClick={onContinueNext}
-              className={`hidden xl:inline-flex items-center px-4 py-1.5 text-xs font-semibold text-white bg-gradient-accent rounded-full shadow-glow transition-[filter,transform] hover:brightness-110 active:scale-95 whitespace-nowrap cursor-pointer ${FOCUS_RING}`}
-            >
-              Continuar
-            </button>
 
             {/* Botão do menu mobile */}
             <button
@@ -313,6 +301,12 @@ export const Header: React.FC<HeaderProps> = ({
               })}
             </nav>
 
+            {xpSlot && (
+              <div className="xl:hidden flex items-center justify-between gap-3 px-4 py-3 border-t border-subtle">
+                <span className="text-xs text-muted">Nível</span>
+                {xpSlot}
+              </div>
+            )}
             <div className="sm:hidden flex items-center justify-between gap-3 px-4 pb-4 pt-1 border-t border-subtle mt-1">
               <span className="text-xs text-muted pt-3">Trilha</span>
               <div className="pt-3">

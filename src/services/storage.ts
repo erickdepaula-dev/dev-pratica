@@ -178,6 +178,11 @@ export function recordExerciseAttempt(
     revealedSolution?: boolean;
     outputPrediction?: string;
     typeErrorAnswer?: { line: number; reason: number };
+    /**
+     * false para gravações que NÃO são envio de resposta (liberar dica, revelar solução,
+     * marcar critério de aceite). Elas não podem consumir a "1ª tentativa" do bônus de XP.
+     */
+    countAttempt?: boolean;
   }
 ): UserProgress {
   const current = loadUserProgress();
@@ -188,7 +193,7 @@ export function recordExerciseAttempt(
   const newAttempt: ExerciseAttempt = {
     exerciseId,
     passed: passed || (existingAttempt?.passed ?? false),
-    attemptsCount: (existingAttempt?.attemptsCount ?? 0) + 1,
+    attemptsCount: (existingAttempt?.attemptsCount ?? 0) + (data.countAttempt === false ? 0 : 1),
     completedAt: passed ? (existingAttempt?.completedAt || now) : (existingAttempt?.completedAt ?? null),
     lastAttemptAt: now,
     userBlanks: data.userBlanks ?? existingAttempt?.userBlanks,

@@ -1,6 +1,6 @@
 # 🎮 Fase 3 — Gamificação
 
-**Status:** 🟡 Em andamento (3.1 e 3.2 concluídas)
+**Status:** 🟡 Em andamento (3.1 a 3.3 concluídas)
 **Depende de:** Fase 1 (tokens visuais) e Fase 2 (trilha TS entra no cálculo de XP)
 **Objetivo:** tornar o progresso visível e recompensador, aproximando a sensação do Coddy.
 
@@ -100,11 +100,11 @@ Condições declarativas para facilitar adicionar novas sem mexer na lógica.
 - [x] Verificar `firestoreSync.ts` — campos novos precisam subir e descer
 
 ### 3.3 — Interface
-- [ ] Barra de XP no `Header.tsx` (espaço já reservado na Fase 1)
-- [ ] Animação de ganho de XP ao concluir exercício (número subindo + barra preenchendo)
-- [ ] Card de nível de carreira no `Dashboard.tsx`
-- [ ] Grid de conquistas — desbloqueadas coloridas, pendentes em silhueta
-- [ ] Modal/toast ao desbloquear uma badge
+- [x] Barra de XP no `Header.tsx` (espaço já reservado na Fase 1)
+- [x] Animação de ganho de XP ao concluir exercício (número subindo + barra preenchendo)
+- [x] Card de nível de carreira no `Dashboard.tsx`
+- [x] Grid de conquistas — desbloqueadas coloridas, pendentes em silhueta
+- [x] Modal/toast ao desbloquear uma badge
 
 ### 3.4 — Integração
 - [ ] Disparar cálculo de XP no fluxo de conclusão do `ExerciseWorkspace.tsx`
@@ -155,6 +155,26 @@ Condições declarativas para facilitar adicionar novas sem mexer na lógica.
   mantendo o desbloqueio mais antigo.
 - `check:xp` cobre a migração com um progresso realista de antes da Fase 3 (17 testes).
 - Testado no navegador: 1ª conclusão de primeira = 15 XP; refazer (3 tentativas) mantém 15 XP.
+
+## Interface (3.3)
+
+- `XpBar.tsx` (Header, `xpSlot`): nível + barra; o número de XP aparece em `2xl`. Ao subir, o
+  número conta, a barra preenche e "+N XP" flutua (respeita `prefers-reduced-motion`). No celular,
+  aparece no menu.
+- Painel de acerto do workspace: "+N XP" na 1ª conclusão; "Já concluído · sem XP extra" ao refazer.
+- `CareerCard.tsx` (Dashboard): nível, XP para o próximo, escada de níveis e conquistas recentes.
+- `BadgeGrid.tsx` (aba Progresso, seção `#conquistas`): desbloqueadas coloridas com data; pendentes
+  em silhueta com a condição visível.
+- Toast de conquista: tom `conquista` no `SyncToast`; o `App` compara as badges antes/depois de cada
+  atualização. As desbloqueadas na migração da primeira carga não geram toast.
+- **Header reequilibrado** (havia overflow): a medição em 1280 px — pulada na Fase 1 — mostrou que
+  essa largura já estourava antes da barra, e a versão "completa" (`2xl`) não cabia nem em 1920 px,
+  porque o contêiner tem 1280 px. Agora: rótulos curtos da navegação sempre (o completo fica no
+  `title`), "Entrar" no lugar de "Salvar no Firebase", e o botão "Continuar" do Header saiu (duplicava
+  o card "Continuar de onde parei" do Painel). Sem overflow em 375/768/1024/1280/1440/1536/1920.
+- **`countAttempt: false`** em `recordExerciseAttempt` para gravações que não são envio de resposta
+  (liberar dica, revelar solução, marcar critério DEV). Antes, elas incrementavam `attemptsCount` e
+  tiravam o bônus de 1ª tentativa — no DEV, quem seguia o checklist perdia o × 1.5.
 
 ## Notas de implementação
 

@@ -18,6 +18,8 @@ import { getDifficultyTheme, getExerciseTypeTheme, getLanguageTheme } from '../u
 import { ProgressRing } from './ProgressRing';
 import { LANGUAGES } from '../utils/language';
 import { StreakCard } from './StreakCard';
+import { CareerCard } from './CareerCard';
+import { totalXp } from '../services/xp';
 
 interface DashboardProps {
   progress: UserProgress;
@@ -297,6 +299,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <StatCard icon={ListTodo} label="Restantes" value={totalInLang - completedInLang} hint="nesta trilha" />
         <StatCard icon={Trophy} label="Total geral" value={totalDone} hint={`de ${totalAll} exercícios`} />
         <StatCard icon={CalendarDays} label="Dias de estudo" value={activeDaysCount} hint="com exercício concluído" />
+      </motion.div>
+
+      {/* 3b. Nível de carreira e conquistas (Fase 3) */}
+      <motion.div variants={itemVariants}>
+        <CareerCard xp={totalXp(progress)} badges={progress.badges ?? []} onOpenAchievements={onNavigateToProgress} />
       </motion.div>
 
       {/* 4. Ofensiva + semana */}

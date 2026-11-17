@@ -7,6 +7,9 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Header, ActiveTab } from './components/Header';
 import { SyncToast, ToastMessage, ToastTone } from './components/SyncToast';
 import { PageSkeleton } from './components/PageSkeleton';
+import { XpBar } from './components/XpBar';
+import { totalXp } from './services/xp';
+import { BADGES } from './services/badges';
 import { Dashboard } from './components/Dashboard';
 import { ExerciseList } from './components/ExerciseList';
 import { ExerciseWorkspace } from './components/ExerciseWorkspace';
@@ -81,6 +84,25 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
+  // Badges já vistas nesta sessão — para anunciar só as recém-desbloqueadas.
+  const knownBadgesRef = useRef<Set<string>>(new Set((progress.badges ?? []).map(b => b.id)));
+  useEffect(() => {
+    const known = knownBadgesRef.current;
+    const fresh = (progress.badges ?? []).filter(b => !known.has(b.id));
+    if (fresh.length === 0) return;
+    fresh.forEach(b => known.add(b.id));
+    const names = fresh
+      .map(b => BADGES.find(def => def.id === b.id))
+      .filter((def): def is (typeof BADGES)[number] => Boolean(def))
+      .map(def => def.icon + ' ' + def.name);
+    if (names.length > 0) {
+      triggerToast(
+        names.length === 1 ? 'Conquista desbloqueada: ' + names[0] : 'Conquistas desbloqueadas: ' + names.join(', '),
+        'conquista'
+      );
+    }
+  }, [progress.badges, triggerToast]);
+
   // Update progress handler that also pushes to Firestore if logged in
   const handleProgressUpdated = useCallback((newProgress: UserProgress) => {
     setProgress(newProgress);
@@ -105,16 +127,6 @@ export default function App() {
   const handleBackToList = () => {
     setSelectedExerciseId(null);
     setActiveTab('exercicios');
-  };
-
-  const handleContinueNext = () => {
-    const langExercises = getExercisesByLanguage(progress.selectedLanguage);
-    const nextUncompleted = langExercises.find(ex => !progress.completedIds.includes(ex.id)) || langExercises[0];
-    if (nextUncompleted) {
-      setSelectedExerciseId(nextUncompleted.id);
-    } else {
-      setActiveTab('exercicios');
-    }
   };
 
   // Firebase auth actions
@@ -194,7 +206,6 @@ export default function App() {
         }}
         selectedLanguage={progress.selectedLanguage}
         onSelectLanguage={handleSelectLanguage}
-        onContinueNext={handleContinueNext}
         totalCompleted={progress.completedIds.length}
         totalExercises={allExercises.length}
         progress={progress}
@@ -203,6 +214,7 @@ export default function App() {
         onLogin={handleLogin}
         onLogout={handleLogout}
         onManualSync={handleManualSync}
+        xpSlot={<XpBar xp={totalXp(progress)} />}
       />
 
       {/* Main Content Router */}

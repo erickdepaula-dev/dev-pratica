@@ -62,7 +62,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 | :--- | :--- | :--- |
 | 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ✅ Concluída |
 | 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefas concluídas; 2 critérios aguardam verificação manual |
-| 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | 🟡 Tarefas 3.1 e 3.2 concluídas |
+| 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | 🟡 Tarefas 3.1 a 3.3 concluídas |
 | 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefa 4.2 concluída (índice extraído) |
 
 **Índice de apoio:** [`fase-4-indice-exercicios.md`](./fase-4-indice-exercicios.md) — catálogo dos 160 exercícios.
@@ -132,8 +132,12 @@ Depois da verificação, marcar a Fase 2 como ✅.
   `migrateProgress()` com XP/badges retroativos, merge no Firestore que nunca perde XP nem
   conclusão, `badges` sincronizadas.
 
-**Próximo passo:** 3.3 — interface (barra de XP no Header, card de nível, grid de conquistas,
-animação de ganho de XP, toast de badge).
+- 3.3 — interface: `XpBar` no Header, "+N XP" no acerto, `CareerCard` no Dashboard, `BadgeGrid`
+  na aba Progresso, toast de conquista. Header reequilibrado (overflow em 1280+). Dicas/critérios
+  DEV não consomem mais a "1ª tentativa" (`countAttempt: false`).
+
+**Próximo passo:** 3.4 — integração (XP nos Desafios IA na UI, XP potencial no card do exercício,
+histórico de XP por dia no Progresso).
 Lembrete: até a 2.6 a avaliação de TS é um stub — exercícios `lacunas` e `prever_saida`
 já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 `desafio_pratico` em TS só serão avaliados de verdade após a 2.6.
@@ -173,3 +177,4 @@ já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 | 2026-11-17 | 2 | Tarefa 2.6 concluída: tutor IA ciente de TS (diagnósticos reais nos prompts, sem revelar respostas em `prever_erro_de_tipo`) e roteiro TS no Guia. Fase 2 com todas as tarefas feitas; 2 critérios aguardam verificação manual (Gemini e Firestore). |
 | 2026-11-17 | 3 | Tarefa 3.1 concluída: tipos de gamificação, `services/xp.ts`, `services/badges.ts` (11 badges declarativas) e `npm run check:xp`. Níveis recalibrados contra o XP real (9.200 base). |
 | 2026-11-17 | 3 | Tarefa 3.2 concluída: XP congelado na conclusão, migração retroativa idempotente (`migrateProgress`), merge no Firestore preservando XP/conclusões, badges sincronizadas. |
+| 2026-11-17 | 3 | Tarefa 3.3 concluída: barra de XP, +XP no acerto, card de carreira, grid e toast de conquistas. Header sem overflow de 375 a 1920 px; botão "Continuar" do Header removido. Dicas não consomem mais a 1ª tentativa. |

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { CircleAlert, CircleCheckBig, Info, X } from 'lucide-react';
+import { CircleAlert, CircleCheckBig, Info, Trophy, X } from 'lucide-react';
 
-export type ToastTone = 'success' | 'error' | 'info';
+export type ToastTone = 'success' | 'error' | 'info' | 'conquista';
 
 export interface ToastMessage {
   /** Muda a cada novo toast — reinicia o timer mesmo com a mesma mensagem. */
@@ -22,6 +22,7 @@ const TONE_STYLE: Record<ToastTone, { icon: typeof Info; iconClass: string; bord
   success: { icon: CircleCheckBig, iconClass: 'text-success', borderClass: 'border-success/40' },
   error: { icon: CircleAlert, iconClass: 'text-danger', borderClass: 'border-danger/40' },
   info: { icon: Info, iconClass: 'text-accent', borderClass: 'border-accent-from/40' },
+  conquista: { icon: Trophy, iconClass: 'text-streak-from', borderClass: 'border-streak-from/50' },
 };
 
 /** Notificação de sincronização com entrada/saída animada e fechamento automático. */

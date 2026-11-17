@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { UserProgress, Language } from '../types/exercise';
 import { allExercises, getExercisesByLanguage } from '../data';
 import { getLanguageTheme } from '../utils/exerciseTheme';
+import { BadgeGrid } from './BadgeGrid';
+import { BADGES } from '../services/badges';
 import { exportProgressJSON, importProgressJSON, resetProgress } from '../services/storage';
 
 interface ProgressReportProps {
@@ -174,6 +176,17 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
           </div>
         </div>
       )}
+
+      {/* Conquistas (Fase 3) */}
+      <section id="conquistas" aria-labelledby="conquistas-titulo" className="rounded-card border border-subtle bg-surface/40 p-5 space-y-4">
+        <div className="flex items-center justify-between gap-2">
+          <h2 id="conquistas-titulo" className="text-base font-bold text-primary">Conquistas</h2>
+          <span className="text-xs font-mono text-muted">
+            {(progress.badges ?? []).length} de {BADGES.length} desbloqueadas
+          </span>
+        </div>
+        <BadgeGrid badges={progress.badges ?? []} />
+      </section>
 
       {/* Top Diagnostic Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

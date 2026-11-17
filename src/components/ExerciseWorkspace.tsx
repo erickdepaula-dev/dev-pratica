@@ -95,6 +95,8 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('instrucoes');
   // Incrementa a cada verificação para reanimar o painel de feedback.
   const [evaluationCount, setEvaluationCount] = useState(0);
+  // XP ganho na última verificação: número na 1ª conclusão; 0 ao refazer; null sem acerto.
+  const [xpGained, setXpGained] = useState<number | null>(null);
   const [verifyButtonScope, animateVerifyButton] = useAnimate<HTMLButtonElement>();
   const prefersReducedMotion = useReducedMotion();
 
@@ -145,6 +147,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
       (exercise.type === 'corrigir_erros' && exercise.initialBuggyCode ? exercise.initialBuggyCode : exercise.templateCode)
     );
     setEvaluationResult(null);
+    setXpGained(null);
     setHasAttempted(false);
     setHintsUnlockedCount(attempt?.hintsUsed || 0);
     setShowSolution(attempt?.revealedSolution || completed);
@@ -194,6 +197,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     setCheckedCriteria(updated);
 
     const saved = recordExerciseAttempt(exercise.id, isAlreadyCompleted, {
+      countAttempt: false,
       userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
       userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
       outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
@@ -281,6 +285,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     if (updated.attempts[exercise.id]) {
       updated.attempts[exercise.id].checklistDone = checkedCriteria;
     }
+    setXpGained(result.passed ? (isAlreadyCompleted ? 0 : (updated.attempts[exercise.id]?.xpEarned ?? 0)) : null);
     onProgressUpdated(updated);
 
     if (result.passed) {
@@ -316,6 +321,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
       setHintsUnlockedCount(nextCount);
       setActiveTab('dicas');
       const updated = recordExerciseAttempt(exercise.id, false, {
+        countAttempt: false,
         userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
         userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
         outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
@@ -332,6 +338,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     setShowConfirmSolution(false);
     setActiveTab('solucao');
     const updated = recordExerciseAttempt(exercise.id, isAlreadyCompleted, {
+      countAttempt: false,
       userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
       userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
       outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
@@ -871,6 +878,18 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
                             </motion.span>
                           </span>
                           Resposta correta!
+                          {xpGained !== null && (
+                            <motion.span
+                              className={`ml-1 text-xs font-bold px-2 py-0.5 rounded-full ${
+                                xpGained > 0 ? 'bg-gradient-accent text-white shadow-glow' : 'bg-surface-hover text-muted border border-subtle'
+                              }`}
+                              initial={{ opacity: 0, scale: 0.6, y: 4 }}
+                              animate={{ opacity: 1, scale: 1, y: 0 }}
+                              transition={{ type: 'spring', stiffness: 420, damping: 18, delay: 0.25 }}
+                            >
+                              {xpGained > 0 ? '+' + xpGained + ' XP' : 'Já concluído · sem XP extra'}
+                            </motion.span>
+                          )}
                         </>
                       ) : (
                         <>
