@@ -1,9 +1,10 @@
-import { Exercise, Language, Difficulty } from '../types/exercise';
+import { Exercise, Language, Difficulty, Track } from '../types/exercise';
 import { phpExercises } from './php';
 import { jsExercises } from './js';
 import { tsExercises } from './ts';
+import { logicTrackExercises } from './logica';
 
-export const allExercises: Exercise[] = [...phpExercises, ...jsExercises, ...tsExercises];
+export const allExercises: Exercise[] = [...phpExercises, ...jsExercises, ...tsExercises, ...logicTrackExercises];
 
 /** IDs que aparecem mais de uma vez. O progresso salvo é indexado por ID, então isso deve ser sempre vazio. */
 export function findDuplicateExerciseIds(exercises: Exercise[] = allExercises): string[] {
@@ -23,8 +24,17 @@ if (import.meta.env?.DEV) {
   }
 }
 
+/**
+ * Exercícios da trilha de uma linguagem. Exercícios da trilha de Lógica (Fase 4) ficam de fora:
+ * eles têm `language: 'javascript'` como variante padrão, mas não pertencem à trilha JS.
+ */
 export function getExercisesByLanguage(language: Language): Exercise[] {
-  return allExercises.filter(ex => ex.language === language);
+  return allExercises.filter(ex => ex.language === language && ex.track === undefined);
+}
+
+/** Exercícios de uma trilha do catálogo (uma linguagem ou Lógica). */
+export function getExercisesByTrack(track: Track): Exercise[] {
+  return track === 'logica' ? allExercises.filter(ex => ex.track === 'logica') : getExercisesByLanguage(track);
 }
 
 export function getExerciseById(id: string): Exercise | undefined {
@@ -39,7 +49,7 @@ export function getAvailableTopics(language: Language): string[] {
 }
 
 export function getDifficultyCount(language: Language, difficulty: Difficulty): number {
-  return allExercises.filter(ex => ex.language === language && ex.difficulty === difficulty).length;
+  return getExercisesByLanguage(language).filter(ex => ex.difficulty === difficulty).length;
 }
 
 export { phpExercises } from './php';

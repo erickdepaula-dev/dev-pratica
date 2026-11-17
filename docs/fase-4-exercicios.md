@@ -1,6 +1,6 @@
 # 📚 Fase 4 — Exercícios dos PDFs
 
-**Status:** ⬜ Não iniciada
+**Status:** 🟡 Em andamento (4.1 e 4.2 concluídas)
 **Depende de:** Fases 1, 2 e 3 (usa tokens, trilha TS e sistema de XP já estabilizados)
 **Objetivo:** converter o material de estudo em PDF em exercícios da plataforma.
 
@@ -42,15 +42,36 @@ Mais trabalho na UI, mas reflete melhor a natureza do material.
 
 **Recomendação:** opção (b). Decidir na tarefa 4.1 antes de converter em volume.
 
+**✅ Decidido pelo usuário (2026-11-17): opção (b), trilha "Lógica" própria.**
+
 ---
 
 ## Tarefas
 
 ### 4.1 — Decisão e modelagem
-- [ ] Decidir entre trilha própria vs distribuir nas trilhas existentes
-- [ ] Se trilha própria: estender `Language` ou criar o conceito de `Track` separado de linguagem
-- [ ] Definir a convenção de ID (ex.: `logica-001-media-aritmetica`)
-- [ ] Modelar como um exercício aceita solução em mais de uma linguagem
+- [x] Decidir entre trilha própria vs distribuir nas trilhas existentes — **trilha própria**
+- [x] Se trilha própria: estender `Language` ou criar o conceito de `Track` separado de linguagem — **`Track` separado**
+- [x] Definir a convenção de ID (ex.: `logica-001-media-aritmetica`)
+- [x] Modelar como um exercício aceita solução em mais de uma linguagem
+
+### Modelagem decidida (4.1)
+
+- **`Track = Language | 'logica'`** (`src/types/exercise.ts`). `'logica'` **não** entra em `Language`:
+  compilador, avaliador e tutor continuam lidando só com linguagens reais.
+- **Linguagens da trilha: JavaScript e TypeScript** (`LogicLanguage`). PHP fica de fora porque não
+  há como executá-lo no navegador (o avaliador de PHP é só estrutural) — o plano já pedia
+  `solutionCode` em JS e TS.
+- Cada exercício de Lógica tem `track: 'logica'`, `language: 'javascript'` (variante padrão) e
+  `logicVariants: { javascript, typescript }` com `templateCode`/`solutionCode` (+ `typeAssertions`
+  opcional no TS). **`resolveLogicExercise(ex, linguagem)`** (`src/utils/track.ts`) devolve um
+  `Exercise` comum da linguagem escolhida: **avaliador, compilador TS, tutor e XP funcionam sem
+  nenhuma mudança**. O `id` não muda com a linguagem (o progresso é do exercício).
+- **IDs** (tipo `LogicExercise`): `logica-001-soma-de-dois-numeros` (número do índice, 100 principais),
+  `logica-c01-...` (bônus de condicionais), `logica-r01-...` (bônus de repetição).
+- `getExercisesByLanguage` exclui a Lógica (senão ela inflaria a trilha JS); `getExercisesByTrack`
+  serve a nova trilha. Badges: "Trilha fechada" agrupa por trilha (fechar um nível de Lógica vale);
+  "Poliglota" continua exigindo as 3 linguagens. Coberto no `check:xp` (20 testes).
+- `src/data/logica/index.ts` criado (vazio) e registrado em `allExercises`.
 
 ### 4.2 — Extração do conteúdo ✅ CONCLUÍDA
 - [x] Extrair a estrutura dos PDFs (texto + OCR nos que são imagem)
@@ -72,6 +93,13 @@ títulos e tópicos. Os enunciados são escritos do zero na tarefa 4.3, no tom d
 - [ ] 30 exercícios de condicionais
 - [ ] 30 exercícios de estruturas de repetição
 - [ ] Agrupar por tópico para os filtros da lista
+
+### 4.6 — Interface da trilha de Lógica *(acrescentada na 4.1 — o plano não tinha tarefa de UI)*
+- [ ] Seletor de trilha com "Lógica" (Header, catálogo, Dashboard); `UserProgress.selectedTrack`
+      com migração defensiva (progresso antigo: `selectedTrack = selectedLanguage`)
+- [ ] No workspace de um exercício de Lógica: escolher JS ou TS (lembrar a última escolha)
+- [ ] `check:ts` (ou um `check:logica`) validando as duas variantes de cada exercício de Lógica
+- [ ] Card da trilha no Dashboard, XP e conquistas funcionando para a Lógica
 
 ### 4.5 — Teste de mesa como modalidade
 - [ ] Avaliar criar a modalidade `teste_de_mesa`: usuário preenche a tabela de

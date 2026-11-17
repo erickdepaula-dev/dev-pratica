@@ -20,6 +20,7 @@ import {
   xpByDay,
 } from '../src/services/xp';
 import { getFortalezaDateString } from '../src/utils/dateUtils';
+import { resolveLogicExercise, trackOf } from '../src/utils/track';
 import { BADGES, buildBadgeContext, isConditionMet, longestStreakFromDates, unlockBadges } from '../src/services/badges';
 import { migrateProgress } from '../src/services/storage';
 import type { Exercise, ExerciseAttempt, UserProgress } from '../src/types/exercise';
@@ -189,6 +190,43 @@ test('XP por dia usa o fuso de Fortaleza (22h local = 01h UTC do dia seguinte)',
     { date: '2026-11-17', xp: 20, count: 2 },
     { date: '2026-11-18', xp: 0, count: 0 },
   ]);
+});
+
+// ---------------------------------------------------------------- Trilha de Lógica (Fase 4.1)
+const logica: Exercise = {
+  ...catalogo[0],
+  id: 'logica-001-soma',
+  language: 'javascript',
+  track: 'logica',
+  templateCode: 'function soma(a, b) {}',
+  solutionCode: 'function soma(a, b) { return a + b; }',
+  logicVariants: {
+    javascript: { templateCode: 'function soma(a, b) {}', solutionCode: 'function soma(a, b) { return a + b; }' },
+    typescript: {
+      templateCode: 'function soma(a: number, b: number): number {}',
+      solutionCode: 'function soma(a: number, b: number): number { return a + b; }',
+      typeAssertions: '// @ts-expect-error\nsoma("1", 2);',
+    },
+  },
+};
+
+test('Lógica: resolveLogicExercise monta a variante escolhida como exercício comum', () => {
+  const ts = resolveLogicExercise(logica, 'typescript');
+  assert.equal(ts.language, 'typescript');
+  assert.ok(ts.solutionCode.includes('a: number'));
+  assert.ok(ts.typeAssertions?.includes('@ts-expect-error'));
+  assert.equal(ts.id, logica.id, 'o id não muda: o progresso é do exercício, não da linguagem');
+  assert.equal(resolveLogicExercise(catalogo[0], 'typescript'), catalogo[0], 'fora da Lógica, nada muda');
+  assert.equal(trackOf(logica), 'logica');
+  assert.equal(trackOf(catalogo[0]), 'php');
+});
+
+test('Lógica: não conta como trilha de linguagem no "Poliglota", mas fecha nível da própria trilha', () => {
+  const cat = [...catalogo, logica];
+  const ctx = buildBadgeContext(progresso([tentativa('php-a', '1', 1), tentativa('logica-001-soma', '2', 1)]), cat);
+  assert.equal(isConditionMet({ kind: 'trilhas_distintas', min: 2 }, ctx), false);
+  // logica/basico só tem logica-001-soma → nível completo da trilha de Lógica
+  assert.equal(isConditionMet({ kind: 'nivel_completo' }, ctx), true);
 });
 
 // ---------------------------------------------------------------- Migração (dados reais)

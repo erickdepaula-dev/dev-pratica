@@ -7,7 +7,8 @@
  */
 import type { Exercise, ExerciseAttempt, Language, UserProgress } from '../types/exercise';
 import type { Badge, BadgeCondition, UnlockedBadge } from '../types/gamification';
-import { assertNever, LANGUAGES } from '../utils/language';
+import { assertNever, isLanguage, LANGUAGES } from '../utils/language';
+import { trackOf } from '../utils/track';
 import { getDaysDifference } from '../utils/dateUtils';
 import { CAREER_LEVELS, getCareerProgress, totalXp } from './xp';
 
@@ -83,11 +84,12 @@ export function isConditionMet(condition: BadgeCondition, ctx: BadgeContext): bo
       return false;
     }
     case 'trilhas_distintas':
-      return new Set(ctx.completed.map(c => c.exercise.language)).size >= condition.min;
+      // Só trilhas de linguagem: exercícios de Lógica não contam como "trilha JS"
+      return new Set(ctx.completed.map(c => trackOf(c.exercise)).filter(isLanguage)).size >= condition.min;
     case 'nivel_completo': {
       const groups = new Map<string, Exercise[]>();
       for (const ex of ctx.catalog) {
-        const key = ex.language + '/' + ex.difficulty;
+        const key = trackOf(ex) + '/' + ex.difficulty;
         groups.set(key, [...(groups.get(key) ?? []), ex]);
       }
       return [...groups.values()].some(group => everyCompletedIn(group, completedIds));
@@ -96,7 +98,7 @@ export function isConditionMet(condition: BadgeCondition, ctx: BadgeContext): bo
       return ctx.completed.filter(c => c.exercise.type === condition.tipo).length >= condition.quantidade;
     case 'projetos_dev_trilha':
       return LANGUAGES.some((language: Language) =>
-        everyCompletedIn(ctx.catalog.filter(ex => ex.language === language && ex.difficulty === 'dev'), completedIds)
+        everyCompletedIn(ctx.catalog.filter(ex => trackOf(ex) === language && ex.difficulty === 'dev'), completedIds)
       );
     case 'nivel_carreira': {
       const target = CAREER_LEVELS.findIndex(l => l.id === condition.nivel);

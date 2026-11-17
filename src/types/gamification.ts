@@ -72,7 +72,7 @@ export type BadgeCondition =
   | { kind: 'maior_ofensiva'; dias: number }
   /** Exercícios concluídos em sequência (ordem de conclusão) sem usar dica. */
   | { kind: 'sequencia_sem_dica'; quantidade: number }
-  /** Concluiu pelo menos um exercício em N trilhas diferentes. */
+  /** Concluiu pelo menos um exercício em N trilhas de LINGUAGEM diferentes (Lógica não conta). */
   | { kind: 'trilhas_distintas'; min: number }
   /** Concluiu 100% de uma trilha em algum nível (ex.: todo o básico de PHP). */
   | { kind: 'nivel_completo' }

@@ -63,7 +63,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 | 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ✅ Concluída |
 | 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefas concluídas; 2 critérios aguardam verificação manual |
 | 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | 🟡 Tarefas concluídas; sync com Firestore aguarda verificação manual |
-| 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefa 4.2 concluída (índice extraído) |
+| 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefas 4.1 e 4.2 concluídas |
 
 **Índice de apoio:** [`fase-4-indice-exercicios.md`](./fase-4-indice-exercicios.md) — catálogo dos 160 exercícios.
 
@@ -143,8 +143,14 @@ Depois da verificação, marcar a Fase 2 como ✅.
 **Pendente de verificação manual (Fase 3):** logado com Google, concluir um exercício e conferir
 em outro navegador que o XP e as conquistas aparecem (sincronização com o Firestore).
 
-**Próximo passo:** Fase 4 — exercícios dos PDFs (`docs/fase-4-exercicios.md`). A decisão em aberto
-da tarefa 4.1 (trilha "Lógica" própria vs. distribuir nas trilhas de linguagem) é do usuário.
+**Fase 4 iniciada.** 4.1 — usuário decidiu por **trilha "Lógica" própria**. Modelagem: `Track`
+separado de `Language`; exercícios de Lógica com variantes JS e TS (`logicVariants`) e
+`resolveLogicExercise()` montando a versão escolhida (avaliador/XP sem mudanças); convenção de
+ID `logica-001-...`/`logica-c01-...`/`logica-r01-...`; `src/data/logica/` registrado (vazio).
+Acrescentada a tarefa 4.6 (interface da trilha), que o plano não tinha.
+
+**Próximo passo:** 4.6 (interface) antes da 4.3 — para cada lote convertido já poder ser testado
+na tela — ou 4.3 direto (conversão em lotes de 20). Confirmar a ordem com o usuário.
 Lembrete: até a 2.6 a avaliação de TS é um stub — exercícios `lacunas` e `prever_saida`
 já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 `desafio_pratico` em TS só serão avaliados de verdade após a 2.6.
@@ -155,7 +161,7 @@ já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
   com o pacote oficial `typescript`, em pipeline extensível (compilar → executar → testar).
   Atenção: o TS 7 do lint é nativo e não tem API JS; a 2.6 usa a linha 5.x via alias npm.
   Detalhes em `fase-2-typescript.md`.
-- Fase 4, tarefa 4.1: trilha "Lógica" própria vs distribuir nas trilhas de linguagem.
+- ~~Fase 4, tarefa 4.1: trilha própria vs distribuir~~ → **decidido: trilha "Lógica" própria**, resolvida em JS ou TS.
 
 ---
 
@@ -186,3 +192,4 @@ já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 | 2026-11-17 | 3 | Tarefa 3.2 concluída: XP congelado na conclusão, migração retroativa idempotente (`migrateProgress`), merge no Firestore preservando XP/conclusões, badges sincronizadas. |
 | 2026-11-17 | 3 | Tarefa 3.3 concluída: barra de XP, +XP no acerto, card de carreira, grid e toast de conquistas. Header sem overflow de 375 a 1920 px; botão "Continuar" do Header removido. Dicas não consomem mais a 1ª tentativa. |
 | 2026-11-17 | 3 | Tarefa 3.4 concluída e Fase 3 com todas as tarefas feitas: XP nos Desafios IA e nos cards, gráfico de XP por dia. Pendente: verificação manual da sincronização com o Firestore. |
+| 2026-11-17 | 4 | Tarefa 4.1 concluída: trilha "Lógica" própria (decisão do usuário); `Track` separado de `Language`, variantes JS/TS por exercício com `resolveLogicExercise`, convenção de IDs, badges por trilha. Tarefa 4.6 (interface) acrescentada. |

@@ -1,5 +1,24 @@
 export type Language = 'php' | 'javascript' | 'typescript';
 export type Difficulty = 'basico' | 'intermediario' | 'avancado' | 'dev';
+
+/**
+ * Trilha do catálogo (Fase 4): as linguagens + a trilha de Lógica.
+ * Trilha ≠ linguagem: um exercício de Lógica é resolvido EM uma linguagem (LogicLanguage),
+ * mas pertence à trilha 'logica'. Por isso 'logica' não entra em `Language` — compilador,
+ * avaliador e tutor continuam lidando só com linguagens reais.
+ */
+export type Track = Language | 'logica';
+
+/** Linguagens em que a trilha de Lógica pode ser resolvida (executáveis no navegador). */
+export type LogicLanguage = Extract<Language, 'javascript' | 'typescript'>;
+
+/** Código específico de uma linguagem em um exercício de Lógica. */
+export interface LogicVariant {
+  templateCode: string;
+  solutionCode: string;
+  /** Opcional: variante de testes de tipo (só faz sentido em TypeScript). */
+  typeAssertions?: string;
+}
 export type ExerciseType =
   | 'lacunas'
   | 'codigo_livre'
@@ -113,6 +132,15 @@ export interface Exercise {
   typeAssertions?: string;
 
   typeErrorChallenge?: TypeErrorChallenge; // For 'prever_erro_de_tipo'
+
+  /** Fase 4: presente só nos exercícios da trilha de Lógica. */
+  track?: 'logica';
+  /**
+   * Fase 4: código de cada linguagem aceita na trilha de Lógica. `language`, `templateCode` e
+   * `solutionCode` do exercício guardam a variante padrão (JavaScript); a escolhida pelo aluno
+   * é montada por `resolveLogicExercise` (src/utils/track.ts).
+   */
+  logicVariants?: Record<LogicLanguage, LogicVariant>;
   validationRules?: Array<{
     id: string;
     description: string;
@@ -131,6 +159,19 @@ export type TsExercise<D extends Difficulty = Difficulty> = Exercise & {
   language: 'typescript';
   difficulty: D;
   id: `ts-${D}-${string}`;
+};
+
+/**
+ * Exercício da trilha de Lógica. IDs: `logica-<origem><nnn>-<slug>`:
+ * - 100 exercícios principais: `logica-001-soma-de-dois-numeros` (número do índice);
+ * - bônus de condicionais: `logica-c01-...`; bônus de repetição: `logica-r01-...`.
+ * O número espelha docs/fase-4-indice-exercicios.md, para rastrear a origem de cada um.
+ */
+export type LogicExercise = Exercise & {
+  id: `logica-${'' | 'c' | 'r'}${number}-${string}`;
+  track: 'logica';
+  language: 'javascript';
+  logicVariants: Record<LogicLanguage, LogicVariant>;
 };
 
 export interface ExerciseAttempt {
