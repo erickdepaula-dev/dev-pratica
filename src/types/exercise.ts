@@ -83,6 +83,17 @@ export interface Exercise {
   acceptableOutputPredictions?: string[]; // Multiple valid representations
   
   practicalRequirements?: string[]; // For 'desafio_pratico'
+
+  /**
+   * Só TypeScript (avaliado a partir da tarefa 2.6): código TS anexado ao do usuário
+   * antes da compilação, para testar TIPOS — que não existem em runtime.
+   * - Linhas comuns devem compilar (ex.: `const r: [number, number] | null = minMax([1]);`).
+   * - Linhas precedidas de `// @ts-expect-error` DEVEM ser rejeitadas pelo compilador
+   *   (ex.: garantir que a função não aceita `string`). Pressupõe `strict: true`.
+   * - São só checadas, NUNCA executadas: o avaliador as envolve numa função que não é
+   *   chamada (`function __typeAssertions() { ... }`), o que também isola o escopo.
+   */
+  typeAssertions?: string;
   validationRules?: Array<{
     id: string;
     description: string;

@@ -63,7 +63,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 | Fase | Arquivo | Status |
 | :--- | :--- | :--- |
 | 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ✅ Concluída |
-| 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefas 2.1 e 2.2 concluídas |
+| 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 2.1 e 2.2 concluídas; 2.3 em andamento |
 | 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | ⬜ Não iniciada |
 | 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefa 4.2 concluída (índice extraído) |
 
@@ -90,8 +90,11 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 - 2.2 — `src/data/ts/` (7 arquivos + `index.ts`) registrado em `allExercises`; tipo
   `TsExercise<nivel>` faz o `tsc` barrar IDs fora de `ts-<nivel>-<slug>`;
   `findDuplicateExerciseIds()` com alerta em dev.
+- 2.3 (parcial) — **básico completo: 28 exercícios** (10 lacunas, 6 corrigir_erros,
+  6 prever_saida, 5 desafio_pratico, 1 codigo_livre), todos validados com o compilador real.
+  Novo campo opcional `Exercise.typeAssertions` (testes de tipo; só checados, nunca executados).
 
-**Próximo passo:** tarefa `2.3 — Conteúdo: básico e intermediário` (meta ~40 + modalidades por nível).
+**Próximo passo:** 2.3 — lote do **intermediário** (28 exercícios).
 Lembrete: até a 2.6 a avaliação de TS é um stub — exercícios `lacunas` e `prever_saida`
 já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 `desafio_pratico` em TS só serão avaliados de verdade após a 2.6.
@@ -122,3 +125,4 @@ já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 | 2026-11-17 | 2 | Decisão da 2.6: validar TS com compilação real no navegador (pacote oficial, linha 5.x — o TS 7 nativo não tem API JS), pipeline extensível. |
 | 2026-11-17 | 2 | Tarefa 2.1 concluída: `Language` com TS, `utils/language.ts`, migração defensiva, avaliador com despacho exaustivo (stub TS), Desafios IA restritos a PHP/JS, tema da trilha TS. |
 | 2026-11-17 | 2 | Tarefa 2.2 concluída: `src/data/ts/` registrado; convenção `ts-<nivel>-<slug>` checada pelo tipo `TsExercise`; detecção de IDs duplicados em dev. Contagem real das trilhas corrigida (88 PHP / 87 JS). |
+| 2026-11-17 | 2 | 2.3 parcial: 28 exercícios TS do nível básico, validados com o compilador TS 5.9.3 (solução compila e passa nos testes, bug é detectável, gabaritos conferidos). Campo `typeAssertions` no `Exercise`. Meta revista para 28 por nível (volume real de JS). |

@@ -1,6 +1,6 @@
 # 📘 Fase 2 — Trilha TypeScript
 
-**Status:** 🟡 Em andamento (2.1 e 2.2 concluídas)
+**Status:** 🟡 Em andamento (2.1 e 2.2 concluídas; 2.3 em andamento)
 **Depende de:** Fase 1 (usa os tokens de design para o seletor de linguagem e badges)
 **Objetivo:** adicionar TypeScript como terceira trilha, com a mesma profundidade de JS e PHP.
 
@@ -70,13 +70,13 @@ Decidir na tarefa 2.6 se entra nesta fase ou fica para depois.
 - [x] Convenção de ID: `ts-<nivel>-<slug>` (ex.: `ts-basico-union-types`) — checada pelo tipo `TsExercise`
 
 ### 2.3 — Conteúdo: básico e intermediário
-- [ ] Exercícios do nível básico (meta: ~40, alinhado ao volume de JS)
-- [ ] Modalidades do básico
-- [ ] Exercícios do nível intermediário (meta: ~40)
+- [x] Exercícios do nível básico (meta revista: 13 por arquivo principal, como em JS — ver nota)
+- [x] Modalidades do básico (5 corrigir_erros, 5 prever_saida, 5 desafio_pratico)
+- [ ] Exercícios do nível intermediário (meta revista: 13)
 - [ ] Modalidades do intermediário
 
 ### 2.4 — Conteúdo: avançado e DEV
-- [ ] Exercícios do nível avançado (meta: ~40)
+- [ ] Exercícios do nível avançado (meta revista: 13)
 - [ ] Modalidades do avançado
 - [ ] Projetos DEV com `projectBrief` completo (meta: 3 a 4 projetos)
 
@@ -147,6 +147,40 @@ tipo → não executa). O resultado final continua sendo um `EvaluationResult`.
   no que é **exclusivo** de TypeScript: o sistema de tipos.
 - `satisfies` e template literal types exigem TS 4.9+ — disponíveis tanto no TS 7 (lint)
   quanto no TS 5.9 (compilação no navegador).
+
+### Conteúdo (2.3 / 2.4)
+
+- **Volume:** a meta original de "~40 por nível, alinhado ao volume de JS" partiu de uma
+  contagem errada. A trilha JS tem **28 por nível** (13 no arquivo principal: 10 lacunas +
+  1 corrigir_erros + 1 prever_saida + 1 desafio/livre; e 15 nas modalidades: 5 + 5 + 5).
+  A trilha TS segue esse volume.
+- **Foco no que é exclusivo de TS:** cada exercício exercita o sistema de tipos. Exercícios
+  de correção partem de **erros reais do compilador** (TS2322, TS2366, TS18048...) e os
+  desafios usam `typeAssertions` para provar a tipagem (ex.: que a função recusa `string`).
+- **Todo o código assume `strict: true`** (vários bugs — ex.: "possibly undefined" — só
+  existem com strict).
+
+### Regras do avaliador TS (definidas ao validar o conteúdo; implementar na 2.6)
+
+- Compilar com `strict: true`, `target: ES2022`, `lib: ['lib.es2022.d.ts']` (sem DOM — evita
+  colisões como a global `name`) e um ambiente mínimo declarando `console`.
+- `moduleDetection: legacy` / `module: None`: o JS emitido é um script, sem `export {}`,
+  e pode ser executado com `new Function` como no avaliador de JS.
+- **`typeAssertions` nunca executam:** envolver em `function __typeAssertions(): void { ... }`
+  (não chamada) e compilar junto com o código do usuário. Uma diretiva `@ts-expect-error`
+  sem erro vira TS2578 — é assim que "isto deve ser rejeitado" é verificado.
+- **Cada `testFunction` roda no próprio escopo:** `return (function () { <teste> })();`,
+  para não colidir com nomes declarados pelo usuário.
+- Erros de tipo interrompem o pipeline antes da execução (o usuário vê os diagnósticos).
+
+### Verificador de conteúdo (QA)
+
+Todo exercício TS foi validado por um script com o compilador real (TS 5.9.3): a solução
+compila sem erros e passa nos testes; o código bugado dos `corrigir_erros` falha (e o erro
+cai em `buggyLineNumbers`); as lacunas preenchidas com as respostas esperadas compilam; a
+saída real de cada `prever_saida` bate com o gabarito. O script entra no repositório na
+2.6 como `scripts/check-ts-exercises.ts`, junto com a dependência `typescript@5` — antes
+disso, o `npm run lint` (TS 7) não tem os tipos da API do compilador.
 
 ### O que a 2.1 deixou pronto
 
