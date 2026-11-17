@@ -1,6 +1,6 @@
 # 📘 Fase 2 — Trilha TypeScript
 
-**Status:** 🟡 Em andamento (2.1 e 2.2 concluídas; 2.3 em andamento)
+**Status:** 🟡 Em andamento (2.1 a 2.3 concluídas)
 **Depende de:** Fase 1 (usa os tokens de design para o seletor de linguagem e badges)
 **Objetivo:** adicionar TypeScript como terceira trilha, com a mesma profundidade de JS e PHP.
 
@@ -72,8 +72,8 @@ Decidir na tarefa 2.6 se entra nesta fase ou fica para depois.
 ### 2.3 — Conteúdo: básico e intermediário
 - [x] Exercícios do nível básico (meta revista: 13 por arquivo principal, como em JS — ver nota)
 - [x] Modalidades do básico (5 corrigir_erros, 5 prever_saida, 5 desafio_pratico)
-- [ ] Exercícios do nível intermediário (meta revista: 13)
-- [ ] Modalidades do intermediário
+- [x] Exercícios do nível intermediário (meta revista: 13)
+- [x] Modalidades do intermediário (5 corrigir_erros, 5 prever_saida, 5 desafio_pratico)
 
 ### 2.4 — Conteúdo: avançado e DEV
 - [ ] Exercícios do nível avançado (meta revista: 13)
@@ -178,7 +178,8 @@ tipo → não executa). O resultado final continua sendo um `EvaluationResult`.
 Todo exercício TS foi validado por um script com o compilador real (TS 5.9.3): a solução
 compila sem erros e passa nos testes; o código bugado dos `corrigir_erros` falha (e o erro
 cai em `buggyLineNumbers`); as lacunas preenchidas com as respostas esperadas compilam; a
-saída real de cada `prever_saida` bate com o gabarito. O script entra no repositório na
+saída real de cada `prever_saida` bate com o gabarito; a solução cumpre as próprias
+`validationRules`. O script entra no repositório na
 2.6 como `scripts/check-ts-exercises.ts`, junto com a dependência `typescript@5` — antes
 disso, o `npm run lint` (TS 7) não tem os tipos da API do compilador.
 
