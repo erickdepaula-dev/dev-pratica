@@ -36,7 +36,7 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 - ❌ Trilha TypeScript
 - ❌ Sistema de XP / níveis de carreira
 - ❌ Conquistas (badges)
-- ❌ Design system formalizado (cores estão espalhadas pelos componentes)
+- 🟡 Design system: tokens criados (`src/styles/tokens.css`), aplicação nas telas em andamento
 - ❌ Animações consistentes (dependência `motion` instalada mas pouco usada)
 - ❌ Trilha de lógica pura (material em PDF ainda não convertido)
 
@@ -63,7 +63,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 
 | Fase | Arquivo | Status |
 | :--- | :--- | :--- |
-| 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ⬜ Não iniciada |
+| 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | 🟡 Tarefa 1.1 concluída |
 | 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | ⬜ Não iniciada |
 | 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | ⬜ Não iniciada |
 | 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefa 4.2 concluída (índice extraído) |
@@ -78,14 +78,18 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 
 **Última atualização:** 2026-11-17
 
-**Fase ativa:** nenhuma — planejamento concluído, aguardando início da Fase 1.
-A tarefa 4.2 (extração dos PDFs) foi feita fora de ordem, por ser pré-requisito de
-informação e depender de acesso à pasta local.
+**Fase ativa:** Fase 1 — UI Redesign.
 
-**Próximo passo:** abrir `docs/fase-1-ui.md` e começar pela tarefa `1.1 — Design tokens`.
+**Concluído:** tarefa 1.1 — design tokens em `src/styles/tokens.css`, mapeados no
+`@theme inline` de `src/index.css` (classes `bg-surface`, `text-muted`, `bg-gradient-accent`...),
+e helper `src/utils/exerciseTheme.ts` (modalidade + dificuldade) já usado no `Dashboard.tsx`.
+A paleta aplicada é a proposta original do arquivo da fase.
+
+**Próximo passo:** tarefa `1.2 — Header e navegação`.
+Obs.: `ExerciseList.tsx` ainda tem um `getTypeMeta` duplicado — será trocado pelo helper na tarefa 1.6.
 
 **Pendências / decisões em aberto:**
-- Definir a paleta de cores final da Fase 1 (proposta inicial no arquivo da fase, sujeita a aprovação).
+- Paleta da Fase 1: implementada com a proposta inicial; ajustes finos só exigem editar `src/styles/tokens.css`.
 - Fase 2, tarefa 2.6: como validar TypeScript — regex vs transpilar no browser.
 - Fase 4, tarefa 4.1: trilha "Lógica" própria vs distribuir nas trilhas de linguagem.
 
@@ -97,3 +101,4 @@ informação e depender de acesso à pasta local.
 | :--- | :--- | :--- |
 | 2026-11-17 | — | Criado `CLAUDE.md` e a documentação de fases (`docs/`). Plano de ação definido. |
 | 2026-11-17 | 4 | Tarefa 4.2 concluída: 160 exercícios extraídos dos PDFs (texto + OCR) e catalogados em `fase-4-indice-exercicios.md`. Decidido não versionar os enunciados originais. |
+| 2026-11-17 | 1 | Tarefa 1.1 concluída: `tokens.css`, mapeamento `@theme` (+ utilitários de gradiente), `exerciseTheme.ts` e `Dashboard.tsx` migrado para o helper. |

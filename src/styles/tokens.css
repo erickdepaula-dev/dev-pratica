@@ -1,0 +1,43 @@
+/*
+ * Design tokens do DevPrática (Fase 1 — tarefa 1.1).
+ *
+ * Fonte única da paleta. Os componentes não devem usar cores hex avulsas:
+ * consuma estas variáveis via as classes utilitárias geradas no `@theme`
+ * de `src/index.css` (ex.: `bg-surface`, `text-muted`, `border-subtle`).
+ */
+:root {
+  /* Superfícies */
+  --bg-base: #0b0f1a;
+  --bg-surface: #121829;
+  --bg-surface-hover: #1a2238;
+  --border-subtle: #232b42;
+
+  /* Texto */
+  --text-primary: #e8ecf5;
+  --text-muted: #8792ac;
+
+  /* Destaque (gradiente assinatura) */
+  --accent-from: #6366f1;
+  --accent-to: #a855f7;
+
+  /* Estados */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #f43f5e;
+
+  /* Ofensiva (streak) */
+  --streak-from: #f97316;
+  --streak-to: #ef4444;
+
+  /* Gradientes compostos */
+  --gradient-accent: linear-gradient(135deg, var(--accent-from), var(--accent-to));
+  --gradient-streak: linear-gradient(135deg, var(--streak-from), var(--streak-to));
+
+  /* Sombras */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px rgb(0 0 0 / 0.25);
+  --shadow-glow: 0 0 0 1px rgb(99 102 241 / 0.35), 0 8px 32px rgb(99 102 241 / 0.2);
+
+  /* Raios */
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
+}

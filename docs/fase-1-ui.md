@@ -1,6 +1,6 @@
 # 🎨 Fase 1 — UI Redesign
 
-**Status:** ⬜ Não iniciada
+**Status:** 🟡 Em andamento (1.1 concluída)
 **Objetivo:** dar ao DevPrática uma identidade visual própria — gradientes, animações e consistência — tendo o coddy.tech como referência.
 
 ---
@@ -57,11 +57,11 @@ move isso para um único lugar reutilizável, mantendo as cores atuais:
 ## Tarefas
 
 ### 1.1 — Design tokens
-- [ ] Criar `src/styles/tokens.css` com as CSS variables da paleta
-- [ ] Importar em `src/index.css`
-- [ ] Mapear os tokens no `@theme` do Tailwind 4 para virarem classes utilitárias
-- [ ] Criar `src/utils/exerciseTheme.ts` com o mapa de cor por modalidade e por dificuldade
-- [ ] Substituir `getExerciseTypeBadge` do `Dashboard.tsx` pelo helper novo
+- [x] Criar `src/styles/tokens.css` com as CSS variables da paleta
+- [x] Importar em `src/index.css`
+- [x] Mapear os tokens no `@theme` do Tailwind 4 para virarem classes utilitárias
+- [x] Criar `src/utils/exerciseTheme.ts` com o mapa de cor por modalidade e por dificuldade
+- [x] Substituir `getExerciseTypeBadge` do `Dashboard.tsx` pelo helper novo
 
 ### 1.2 — Header e navegação
 - [ ] Redesenhar `src/components/Header.tsx` com o gradiente assinatura no item ativo
@@ -119,3 +119,22 @@ move isso para um único lugar reutilizável, mantendo as cores atuais:
 - `motion` v12 importa de `motion/react`, não de `framer-motion`.
 - Evitar animar `width`/`height` (causa reflow); preferir `transform` e `opacity`.
 - O projeto não tem biblioteca de componentes — tudo é Tailwind na mão. Manter assim.
+
+### Classes utilitárias disponíveis (após a 1.1)
+
+| Token CSS | Classe Tailwind |
+| :--- | :--- |
+| `--bg-base` | `bg-canvas` (não `bg-base`, para não colidir com `text-base`) |
+| `--bg-surface` / `--bg-surface-hover` | `bg-surface` / `bg-surface-hover` |
+| `--border-subtle` | `border-subtle` |
+| `--text-primary` / `--text-muted` | `text-primary` / `text-muted` |
+| `--accent-from` / `--accent-to` | `from-accent-from` / `to-accent-to` |
+| `--success` / `--warning` / `--danger` | `text-success`, `bg-danger/10`, etc. |
+| `--streak-from` / `--streak-to` | `from-streak-from` / `to-streak-to` |
+| gradiente assinatura | `bg-gradient-accent`, `text-gradient-accent` |
+| gradiente da ofensiva | `bg-gradient-streak` |
+| sombras / raios | `shadow-card`, `shadow-glow`, `rounded-card`, `rounded-control` |
+
+Badges de modalidade e dificuldade: `getExerciseTypeTheme(type)` e
+`getDifficultyTheme(difficulty)` em `src/utils/exerciseTheme.ts`
+(retornam `label`, `shortLabel`, `badgeClass`, `textClass`).

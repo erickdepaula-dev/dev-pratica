@@ -3,6 +3,7 @@ import { UserProgress, Language } from '../types/exercise';
 import { getExercisesByLanguage } from '../data';
 import { calculateEffectiveStreak } from '../services/storage';
 import { getCurrentWeekDays, getFortalezaDateString } from '../utils/dateUtils';
+import { getDifficultyTheme, getExerciseTypeTheme } from '../utils/exerciseTheme';
 
 interface DashboardProps {
   progress: UserProgress;
@@ -50,23 +51,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
   // Streak calculations (America/Fortaleza)
   const streakInfo = calculateEffectiveStreak(progress.streak);
   const weekDays = getCurrentWeekDays(progress.streak?.activeDates || []);
-
-  const getExerciseTypeBadge = (type: string) => {
-    switch (type) {
-      case 'lacunas':
-        return { label: 'Completar Lacunas', color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30' };
-      case 'corrigir_erros':
-        return { label: 'Corrigir Erros', color: 'bg-rose-500/10 text-rose-400 border-rose-500/30' };
-      case 'prever_saida':
-        return { label: 'Prever a Saída', color: 'bg-amber-500/10 text-amber-400 border-amber-500/30' };
-      case 'desafio_pratico':
-        return { label: 'Desafio Prático', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' };
-      case 'codigo_livre':
-        return { label: 'Código Livre', color: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' };
-      default:
-        return { label: 'Exercício', color: 'bg-slate-800 text-slate-300 border-slate-700' };
-    }
-  };
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto px-4 sm:px-6 py-6 font-sans">
@@ -147,10 +131,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   </span>
                   <span
                     className={`text-[11px] px-2 py-0.5 rounded-md font-semibold border ${
-                      getExerciseTypeBadge(nextExercise.type).color
+                      getExerciseTypeTheme(nextExercise.type).badgeClass
                     }`}
                   >
-                    {getExerciseTypeBadge(nextExercise.type).label}
+                    {getExerciseTypeTheme(nextExercise.type).label}
                   </span>
                 </div>
 
@@ -163,7 +147,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </p>
 
                 <div className="flex items-center gap-2 text-[11px] text-slate-400">
-                  <span className="capitalize font-medium text-slate-300">{nextExercise.difficulty}</span>
+                  <span className={`font-medium ${getDifficultyTheme(nextExercise.difficulty).textClass}`}>
+                    {getDifficultyTheme(nextExercise.difficulty).label}
+                  </span>
                   <span>·</span>
                   <span>{nextExercise.topic}</span>
                 </div>
