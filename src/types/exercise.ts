@@ -91,6 +91,18 @@ export interface Exercise {
   }>;
 }
 
+/**
+ * Exercício da trilha TypeScript. O tipo amarra `id`, `language` e `difficulty`,
+ * fazendo o `tsc` rejeitar IDs fora da convenção `ts-<nivel>-<slug>`
+ * (ex.: `ts-basico-union-types`) ou com nível diferente do campo `difficulty`.
+ * Os IDs de PHP/JS não seguem 100% o padrão e não podem mudar (o Firestore os referencia).
+ */
+export type TsExercise<D extends Difficulty = Difficulty> = Exercise & {
+  language: 'typescript';
+  difficulty: D;
+  id: `ts-${D}-${string}`;
+};
+
 export interface ExerciseAttempt {
   exerciseId: string;
   passed: boolean;

@@ -21,7 +21,7 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 
 | Área | Detalhe |
 | :--- | :--- |
-| **Trilhas** | JavaScript (~211 exercícios) e PHP (~245 exercícios) |
+| **Trilhas** | PHP (88 exercícios) e JavaScript (87 exercícios) — contagem real de 2026-11-17; TypeScript com estrutura criada e sem conteúdo |
 | **Níveis** | `basico`, `intermediario`, `avancado`, `dev` |
 | **Modalidades** | `lacunas`, `codigo_livre`, `corrigir_erros`, `prever_saida`, `desafio_pratico` |
 | **Abas** | `dashboard`, `exercicios`, `desafios_ia`, `progresso`, `guia` |
@@ -63,7 +63,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 | Fase | Arquivo | Status |
 | :--- | :--- | :--- |
 | 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ✅ Concluída |
-| 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefa 2.1 concluída |
+| 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefas 2.1 e 2.2 concluídas |
 | 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | ⬜ Não iniciada |
 | 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefa 4.2 concluída (índice extraído) |
 
@@ -87,8 +87,14 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
   (testada com progresso antigo, corrompido e sem o campo); despacho exaustivo
   `evaluateCodeForLanguage` (antes, TS cairia no avaliador de PHP) com stub para TS;
   Desafios IA restritos a PHP/JS (`AiChallengeLanguage`); tema/cor da trilha TS.
+- 2.2 — `src/data/ts/` (7 arquivos + `index.ts`) registrado em `allExercises`; tipo
+  `TsExercise<nivel>` faz o `tsc` barrar IDs fora de `ts-<nivel>-<slug>`;
+  `findDuplicateExerciseIds()` com alerta em dev.
 
-**Próximo passo:** tarefa `2.2 — Estrutura de arquivos` (`src/data/ts/`).
+**Próximo passo:** tarefa `2.3 — Conteúdo: básico e intermediário` (meta ~40 + modalidades por nível).
+Lembrete: até a 2.6 a avaliação de TS é um stub — exercícios `lacunas` e `prever_saida`
+já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
+`desafio_pratico` em TS só serão avaliados de verdade após a 2.6.
 
 **Pendências / decisões em aberto:**
 - Paleta da Fase 1: implementada com a proposta inicial; ajustes finos só exigem editar `src/styles/tokens.css`.
@@ -115,3 +121,4 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 | 2026-11-17 | 1 | Tarefa 1.7 concluída e **Fase 1 finalizada**: toast animado, skeleton de sync, foco/cursor globais, reduced motion global; Progresso, Guia, Desafios IA e Tutor IA migrados para tokens. |
 | 2026-11-17 | 2 | Decisão da 2.6: validar TS com compilação real no navegador (pacote oficial, linha 5.x — o TS 7 nativo não tem API JS), pipeline extensível. |
 | 2026-11-17 | 2 | Tarefa 2.1 concluída: `Language` com TS, `utils/language.ts`, migração defensiva, avaliador com despacho exaustivo (stub TS), Desafios IA restritos a PHP/JS, tema da trilha TS. |
+| 2026-11-17 | 2 | Tarefa 2.2 concluída: `src/data/ts/` registrado; convenção `ts-<nivel>-<slug>` checada pelo tipo `TsExercise`; detecção de IDs duplicados em dev. Contagem real das trilhas corrigida (88 PHP / 87 JS). |

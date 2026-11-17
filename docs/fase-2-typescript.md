@@ -1,6 +1,6 @@
 # 📘 Fase 2 — Trilha TypeScript
 
-**Status:** 🟡 Em andamento (2.1 concluída)
+**Status:** 🟡 Em andamento (2.1 e 2.2 concluídas)
 **Depende de:** Fase 1 (usa os tokens de design para o seletor de linguagem e badges)
 **Objetivo:** adicionar TypeScript como terceira trilha, com a mesma profundidade de JS e PHP.
 
@@ -63,11 +63,11 @@ Decidir na tarefa 2.6 se entra nesta fase ou fica para depois.
 - [x] Rodar `npm run lint` e corrigir todos os erros de exaustividade antes de seguir
 
 ### 2.2 — Estrutura de arquivos
-- [ ] Criar `src/data/ts/` espelhando `src/data/js/`:
+- [x] Criar `src/data/ts/` espelhando `src/data/js/`:
       `basic.ts`, `intermediate.ts`, `advanced.ts`, `dev.ts`,
       `modalitiesBasic.ts`, `modalitiesIntermediate.ts`, `modalitiesAdvanced.ts`, `index.ts`
-- [ ] Registrar `tsExercises` em `src/data/index.ts`
-- [ ] Convenção de ID: `ts-<nivel>-<slug>` (ex.: `ts-basico-union-types`)
+- [x] Registrar `tsExercises` em `src/data/index.ts`
+- [x] Convenção de ID: `ts-<nivel>-<slug>` (ex.: `ts-basico-union-types`) — checada pelo tipo `TsExercise`
 
 ### 2.3 — Conteúdo: básico e intermediário
 - [ ] Exercícios do nível básico (meta: ~40, alinhado ao volume de JS)
@@ -162,5 +162,18 @@ tipo → não executa). O resultado final continua sendo um `EvaluationResult`.
   e `toAiChallengeLanguage()` (trilha TS abre o hub em JS). TS nos desafios IA está fora do escopo.
 - Tema da trilha em `exerciseTheme.ts` com tokens `--lang-typescript` (#3178C6) e
   `--lang-typescript-text` (#7FB3EF, contraste 8:1 — o azul puro tem 3,9:1, abaixo do AA para texto pequeno).
+### O que a 2.2 deixou pronto
+
+- `src/data/ts/` com os 7 arquivos (arrays vazios) + `index.ts` agregando na mesma ordem
+  das trilhas JS/PHP; `tsExercises` registrado em `allExercises`.
+- **Convenção de ID garantida pelo compilador:** cada arquivo é tipado como
+  `TsExercise<'basico' | 'intermediario' | 'avancado' | 'dev'>[]` (em `src/types/exercise.ts`),
+  que exige `language: 'typescript'`, `difficulty` igual ao do arquivo e
+  `id: \`ts-<nivel>-<slug>\``. Verificado: prefixo errado, nível trocado e linguagem
+  errada são erros de `tsc`. Use o nível por extenso (`intermediario`, não `inter`).
+- `findDuplicateExerciseIds()` em `src/data/index.ts`; em dev, IDs duplicados geram
+  `console.error` (hoje: zero duplicados entre os 175 exercícios).
+- IDs antigos de PHP/JS: 56 fogem do padrão (ex.: `php-inter-01`) e **não podem mudar**.
+
 - A trilha **ainda não aparece na UI** (seletor/Dashboard são a 2.5) — sem exercícios, ela
   ficaria vazia.
