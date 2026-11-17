@@ -1,4 +1,4 @@
-import { Difficulty, ExerciseType } from '../types/exercise';
+import { Difficulty, ExerciseType, Language } from '../types/exercise';
 
 /**
  * Tema visual por modalidade e por dificuldade de exercício.
@@ -100,4 +100,47 @@ export function getDifficultyTheme(difficulty: Difficulty | string): BadgeTheme 
       shortLabel: difficulty,
     }
   );
+}
+
+export interface LanguageTheme {
+  name: string;
+  emoji: string;
+  /** Selo exibido ao lado do nome (ex.: "Principal"). */
+  tag: string;
+  description: string;
+  /** Classes do selo. */
+  tagClass: string;
+  /** Cor da barra de progresso da trilha. */
+  barClass: string;
+  /** Borda + anel quando a trilha está selecionada. */
+  activeClass: string;
+}
+
+/**
+ * Tema por trilha de linguagem. `Record<Language, ...>` obriga a cadastrar
+ * o tema quando a trilha TypeScript entrar no tipo `Language` (Fase 2).
+ */
+const LANGUAGE_THEME: Record<Language, LanguageTheme> = {
+  php: {
+    name: 'PHP',
+    emoji: '🐘',
+    tag: 'Principal',
+    description: 'Backend, PDO, POO, Sessões & CRUD',
+    tagClass: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
+    barClass: 'bg-indigo-500',
+    activeClass: 'border-indigo-500/70 ring-1 ring-indigo-500/30',
+  },
+  javascript: {
+    name: 'JavaScript',
+    emoji: '⚡',
+    tag: 'Complementar',
+    description: 'ES6+, Promises, Métodos de Array & Async',
+    tagClass: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+    barClass: 'bg-amber-500',
+    activeClass: 'border-amber-500/70 ring-1 ring-amber-500/30',
+  },
+};
+
+export function getLanguageTheme(language: Language): LanguageTheme {
+  return LANGUAGE_THEME[language];
 }

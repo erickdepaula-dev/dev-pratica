@@ -1,6 +1,6 @@
 # 🎨 Fase 1 — UI Redesign
 
-**Status:** 🟡 Em andamento (1.1 e 1.2 concluídas)
+**Status:** 🟡 Em andamento (1.1 a 1.3 concluídas)
 **Objetivo:** dar ao DevPrática uma identidade visual própria — gradientes, animações e consistência — tendo o coddy.tech como referência.
 
 ---
@@ -71,11 +71,11 @@ move isso para um único lugar reutilizável, mantendo as cores atuais:
 - [x] Responsividade: navegação colapsa em menu no mobile
 
 ### 1.3 — Dashboard
-- [ ] Cards de estatística com fundo `bg-surface`, borda sutil e brilho no hover
-- [ ] Barra de progresso circular ou linear com o gradiente assinatura
-- [ ] Animação de entrada em cascata nos cards (`staggerChildren`)
-- [ ] Card "Continuar de onde parei" em destaque, com gradiente
-- [ ] Grid de progresso por trilha (PHP / JS / TS) lado a lado
+- [x] Cards de estatística com fundo `bg-surface`, borda sutil e brilho no hover
+- [x] Barra de progresso circular ou linear com o gradiente assinatura
+- [x] Animação de entrada em cascata nos cards (`staggerChildren`)
+- [x] Card "Continuar de onde parei" em destaque, com gradiente
+- [x] Grid de progresso por trilha (PHP / JS / TS) lado a lado
 
 ### 1.4 — Card de ofensiva (streak)
 - [ ] Gradiente laranja→vermelho com animação de pulso no ícone de fogo
@@ -148,4 +148,13 @@ Badges de modalidade e dificuldade: `getExerciseTypeTheme(type)` e
   Abaixo de `md`, menu hambúrguer (fecha com Esc ou ao escolher uma aba).
 - `MotionConfig reducedMotion="user"` em `src/main.tsx` faz todas as animações do motion
   respeitarem `prefers-reduced-motion`. Animações CSS usam `motion-reduce:animate-none`.
+### Dashboard (após a 1.3)
+
+- `src/components/ProgressRing.tsx`: anel SVG reutilizável com o gradiente assinatura.
+- `getLanguageTheme(language)` em `exerciseTheme.ts`: nome, emoji, selo e cores por trilha.
+  É um `Record<Language, ...>`, então a Fase 2 é obrigada (pelo tsc) a cadastrar o tema TS.
+- Lista `TRACKS` no `Dashboard.tsx` define as trilhas do grid; o card "TypeScript — Em breve"
+  (`UpcomingTrackCard`) deve ser removido quando a trilha TS existir.
+- Card de ofensiva e visão semanal só migraram para tokens — animações ficam para a 1.4.
+
 - O dev server roda com `watch: null` — reinicie `npm run dev` para ver alterações.
