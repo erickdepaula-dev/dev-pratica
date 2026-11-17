@@ -34,7 +34,6 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 
 ### Ainda não existe
 
-- ❌ Trilha TypeScript
 - ❌ Sistema de XP / níveis de carreira
 - ❌ Conquistas (badges)
 - ❌ Trilha de lógica pura (material em PDF ainda não convertido)
@@ -63,7 +62,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 | Fase | Arquivo | Status |
 | :--- | :--- | :--- |
 | 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ✅ Concluída |
-| 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 2.1 a 2.5 concluídas; 2.6 em andamento |
+| 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefas concluídas; 2 critérios aguardam verificação manual |
 | 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | ⬜ Não iniciada |
 | 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefa 4.2 concluída (índice extraído) |
 
@@ -112,8 +111,17 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
   mensagem real do compilador aparece ao acertar. Trilha TS com **118 exercícios**.
   Corrigidos bugs antigos: respostas de "prever saída" e checklist DEV não persistiam.
 
-**Próximo passo:** 2.6 — tutor IA ciente de TS (explicar erros de tipo com os diagnósticos) e
-roteiro TS no Guia de Estudo.
+- 2.6 — tutor IA ciente de TS (diretrizes de tipagem + diagnósticos reais nos prompts) e roteiro
+  TS no Guia de Estudo. **Todas as tarefas da Fase 2 concluídas.**
+
+**Pendente de verificação manual (você):**
+1. Com uma chave da API Gemini configurada, pedir dica/diálogo num exercício TS com erro de tipo
+   e conferir se o tutor explica o erro sem sugerir any/as/@ts-ignore.
+2. Logado com Google, concluir um exercício TS e conferir que o progresso volta após recarregar
+   (sincronização com o Firestore).
+
+**Próximo passo:** depois da verificação, marcar a Fase 2 como ✅ e abrir `docs/fase-3-gamificacao.md`.
+Atenção para a Fase 3: o XP por modalidade precisa incluir `prever_erro_de_tipo`.
 Lembrete: até a 2.6 a avaliação de TS é um stub — exercícios `lacunas` e `prever_saida`
 já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 `desafio_pratico` em TS só serão avaliados de verdade após a 2.6.
@@ -150,3 +158,4 @@ já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 | 2026-11-17 | 2 | Tarefa 2.5 concluída: trilha TS selecionável no Header, catálogo e Dashboard; seletor derivado de uma fonte única; realce de sintaxe TS; header sem overflow com 3 trilhas. |
 | 2026-11-17 | 2 | 2.6 parcial: avaliador TS com compilação real no navegador (typescript@5.9.3 via alias, lazy), pipeline compilar→executar→testar→regras, `npm run check:ts`. Corrigido: `npm run lint` rodava o TS 5.9 por colisão de binários. |
 | 2026-11-17 | 2 | 2.6 parcial: modalidade `prever_erro_de_tipo` (tipo, tela, avaliador, 30 exercícios validados). Corrigidos: persistência de `outputPrediction` e `checklistDone`; "1 dias" no header. |
+| 2026-11-17 | 2 | Tarefa 2.6 concluída: tutor IA ciente de TS (diagnósticos reais nos prompts, sem revelar respostas em `prever_erro_de_tipo`) e roteiro TS no Guia. Fase 2 com todas as tarefas feitas; 2 critérios aguardam verificação manual (Gemini e Firestore). |

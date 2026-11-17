@@ -20,6 +20,7 @@ import { requestGeminiContextualHint } from '../services/aiHint';
 import { AiTutorModal } from './AiTutorModal';
 import { getDifficultyTheme, getExerciseTypeTheme } from '../utils/exerciseTheme';
 import { assertNever } from '../utils/language';
+import { formatDiagnostic } from '../services/typescript/compilerCore';
 
 type WorkspaceTab = 'instrucoes' | 'po_brief' | 'requisitos' | 'dicas' | 'solucao';
 
@@ -162,6 +163,13 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     setShowAiHintBanner(false);
   }, [exercise.id]);
 
+  // Diagnósticos do compilador da última avaliação, enviados ao tutor IA (só TS).
+  // Em 'prever_erro_de_tipo' nunca são enviados: entregariam a resposta.
+  const compilerDiagnostics =
+    exercise.language === 'typescript' && exercise.type !== 'prever_erro_de_tipo'
+      ? (evaluationResult?.diagnostics ?? []).map(formatDiagnostic)
+      : undefined;
+
   const typeErrorAnswerToSave =
     exercise.type === 'prever_erro_de_tipo' && typeErrorLine !== null && typeErrorReason !== null
       ? { line: typeErrorLine, reason: typeErrorReason }
@@ -210,6 +218,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
         exercise,
         userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
         currentCode: assembledCode,
+        compilerDiagnostics,
       });
 
       setAiHintLoading(false);
@@ -971,6 +980,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
         exercise={exercise}
         currentAssembledCode={assembledCode}
         hasSolutionRevealed={showSolution}
+        compilerDiagnostics={compilerDiagnostics}
       />
     </div>
   );

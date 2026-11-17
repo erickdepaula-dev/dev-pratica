@@ -12,6 +12,8 @@ interface AiTutorModalProps {
   exercise: Exercise;
   currentAssembledCode: string;
   hasSolutionRevealed?: boolean;
+  /** Só TypeScript: diagnósticos do compilador da última avaliação. */
+  compilerDiagnostics?: string[];
 }
 
 export const AiTutorModal: React.FC<AiTutorModalProps> = ({
@@ -20,6 +22,7 @@ export const AiTutorModal: React.FC<AiTutorModalProps> = ({
   exercise,
   currentAssembledCode,
   hasSolutionRevealed = false,
+  compilerDiagnostics,
 }) => {
   const [activeTab, setActiveTab] = useState<'dialog' | 'explain_code'>('dialog');
 
@@ -53,6 +56,7 @@ export const AiTutorModal: React.FC<AiTutorModalProps> = ({
     const res = await requestTutorDialog({
       exercise,
       currentCode: currentAssembledCode,
+      compilerDiagnostics,
       userStatement: textToSend,
       dialogType: dialogType || (textToSend.toLowerCase().includes('não entendi o enunciado') ? 'statement_help' : 'doubt'),
     });
@@ -458,7 +462,7 @@ export const AiTutorModal: React.FC<AiTutorModalProps> = ({
 
         {/* Footer */}
         <div className="flex items-center justify-between px-5 py-3 border-t border-subtle bg-surface/90 text-xs text-muted">
-          <span>DevPrática IA • Mentor de Estudos em PHP & JS</span>
+          <span>DevPrática IA • Mentor de Estudos em PHP, JS & TS</span>
           <button
             type="button"
             onClick={onClose}

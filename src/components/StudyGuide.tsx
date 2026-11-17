@@ -41,8 +41,8 @@ export const StudyGuide: React.FC<StudyGuideProps> = ({ onStartTrack }) => {
         </div>
       </div>
 
-      {/* Two Roadmap tracks */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Roteiros das trilhas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* PHP Roadmap */}
         <div className="rounded-xl border border-accent-from/30 bg-surface/50 p-6 space-y-4 flex flex-col justify-between">
           <div className="space-y-3">
@@ -122,6 +122,53 @@ export const StudyGuide: React.FC<StudyGuideProps> = ({ onStartTrack }) => {
             className="w-full mt-4 py-2 px-4 rounded-lg bg-warning hover:bg-warning text-primary text-xs font-semibold shadow-sm transition-colors text-center"
           >
             Explorar Trilha JavaScript →
+          </button>
+        </div>
+
+        {/* Roteiro TypeScript */}
+        <div className="rounded-xl border border-typescript/40 bg-surface/50 p-6 space-y-4 flex flex-col justify-between md:col-span-2 lg:col-span-1">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl" aria-hidden="true">🔷</span>
+              <div>
+                <h3 className="font-bold text-primary text-base">Trilha de TypeScript</h3>
+                <span className="text-xs text-typescript-text">O sistema de tipos como ferramenta</span>
+              </div>
+            </div>
+
+            <p className="text-xs text-muted leading-relaxed">
+              TypeScript é JavaScript com um compilador que confere seus tipos antes de o código rodar. Aqui o código é
+              compilado de verdade (modo strict), e o erro de tipo é o protagonista:
+            </p>
+
+            <div className="space-y-2 text-xs">
+              <div className="p-2.5 rounded bg-canvas border border-subtle/80">
+                <span className="font-semibold text-primary block mb-0.5">1. Tipos que Documentam</span>
+                <span className="text-muted">Anotações, inferência, interfaces, uniões de literais, tuplas e funções tipadas.</span>
+              </div>
+
+              <div className="p-2.5 rounded bg-canvas border border-subtle/80">
+                <span className="font-semibold text-primary block mb-0.5">2. Narrowing & Reuso</span>
+                <span className="text-muted">unknown em vez de any, type guards, generics e utility types (Partial, Pick, Omit, Record).</span>
+              </div>
+
+              <div className="p-2.5 rounded bg-canvas border border-subtle/80">
+                <span className="font-semibold text-primary block mb-0.5">3. Tipos que Modelam o Domínio</span>
+                <span className="text-muted">Discriminated unions, exaustividade com never, mapped e template literal types, satisfies.</span>
+              </div>
+
+              <div className="p-2.5 rounded bg-canvas border border-subtle/80">
+                <span className="font-semibold text-primary block mb-0.5">Treino exclusivo: Erro de Tipo</span>
+                <span className="text-muted">Leia trechos que não compilam e aponte a linha e o motivo — como o compilador faria.</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => onStartTrack('typescript')}
+            className="w-full mt-4 py-2 px-4 rounded-lg bg-typescript hover:brightness-110 text-white text-xs font-semibold shadow-sm transition-[filter] text-center"
+          >
+            Explorar Trilha TypeScript →
           </button>
         </div>
       </div>

@@ -4,6 +4,8 @@ export interface ContextualHintRequest {
   exercise: Exercise;
   userBlanks?: Record<string, string>;
   currentCode?: string;
+  /** Só TypeScript: diagnósticos reais do compilador (ex.: "Linha 9 · TS2322: ..."). */
+  compilerDiagnostics?: string[];
 }
 
 export interface ContextualHintResponse {
@@ -16,6 +18,8 @@ export interface TutorDialogRequest {
   currentCode?: string;
   userStatement?: string;
   dialogType?: 'doubt' | 'statement_help' | 'check_logic' | 'syntax_help' | 'next_step';
+  /** Só TypeScript: diagnósticos reais do compilador. */
+  compilerDiagnostics?: string[];
 }
 
 export interface TutorDialogResponse {
@@ -41,7 +45,7 @@ export interface CodeExplanationResponse {
 export async function requestGeminiContextualHint(
   params: ContextualHintRequest
 ): Promise<ContextualHintResponse> {
-  const { exercise, userBlanks, currentCode } = params;
+  const { exercise, userBlanks, currentCode, compilerDiagnostics } = params;
 
   try {
     const controller = new AbortController();
@@ -64,6 +68,7 @@ export async function requestGeminiContextualHint(
         currentCode: currentCode || '',
         userBlanks: userBlanks || {},
         exerciseType: exercise.type,
+        compilerDiagnostics: compilerDiagnostics ?? [],
       }),
     });
 
@@ -87,7 +92,7 @@ export async function requestGeminiContextualHint(
 export async function requestTutorDialog(
   params: TutorDialogRequest
 ): Promise<TutorDialogResponse> {
-  const { exercise, currentCode, userStatement, dialogType } = params;
+  const { exercise, currentCode, userStatement, dialogType, compilerDiagnostics } = params;
 
   try {
     const controller = new AbortController();
@@ -109,6 +114,8 @@ export async function requestTutorDialog(
         currentCode: currentCode || '',
         userStatement: userStatement || '',
         dialogType: dialogType || 'doubt',
+        exerciseType: exercise.type,
+        compilerDiagnostics: compilerDiagnostics ?? [],
       }),
     });
 

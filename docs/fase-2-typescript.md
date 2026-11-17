@@ -1,6 +1,6 @@
 # 📘 Fase 2 — Trilha TypeScript
 
-**Status:** 🟡 Em andamento (2.1 a 2.5 concluídas; 2.6 em andamento)
+**Status:** 🟡 Todas as tarefas concluídas — 2 critérios de pronto aguardam verificação manual (ver abaixo)
 **Depende de:** Fase 1 (usa os tokens de design para o seletor de linguagem e badges)
 **Objetivo:** adicionar TypeScript como terceira trilha, com a mesma profundidade de JS e PHP.
 
@@ -91,20 +91,20 @@ Decidir na tarefa 2.6 se entra nesta fase ou fica para depois.
       (ver "Avaliador TS implementado" abaixo).
 - [x] Decidir se a modalidade `prever_erro_de_tipo` entra nesta fase — **entra**, com 10 exercícios por nível (básico, intermediário, avançado; o DEV é só de projetos)
 - [x] Implementar a modalidade `prever_erro_de_tipo` (tipo, tela, avaliador, 30 exercícios)
-- [ ] `src/services/aiHint.ts`: prompt do tutor ciente de TypeScript
+- [x] `src/services/aiHint.ts`: prompt do tutor ciente de TypeScript
       (deve explicar erros de tipo, não só de lógica)
-- [ ] `StudyGuide.tsx`: roteiro de estudo da trilha TS
+- [x] `StudyGuide.tsx`: roteiro de estudo da trilha TS
 
 ---
 
 ## Critérios de pronto
 
-- [ ] Trilha TS selecionável e com exercícios em todos os 4 níveis
-- [ ] Progresso da trilha TS persiste no localStorage e no Firestore
-- [ ] Tutor IA responde adequadamente a exercícios de TS
-- [ ] Progresso antigo (só JS/PHP) continua carregando sem erro
-- [ ] `npm run lint` e `npm run build` passam
-- [ ] `docs/CONTEXT.md` atualizado
+- [x] Trilha TS selecionável e com exercícios em todos os 4 níveis (118 exercícios)
+- [ ] Progresso da trilha TS persiste no localStorage e no Firestore — **localStorage verificado**; Firestore **pendente de verificação manual** (sem login Google no ambiente de desenvolvimento; o código é o mesmo das outras trilhas e `firestore.rules` não restringe a linguagem)
+- [ ] Tutor IA responde adequadamente a exercícios de TS — **pendente de verificação manual** (sem chave da API Gemini no ambiente; verificado que os diagnósticos do compilador são enviados e que nada é enviado em `prever_erro_de_tipo`)
+- [x] Progresso antigo (só JS/PHP) continua carregando sem erro (testado na 2.1)
+- [x] `npm run lint` e `npm run build` passam (+ `npm run check:ts` com 118 exercícios)
+- [x] `docs/CONTEXT.md` atualizado
 
 ---
 
@@ -213,6 +213,15 @@ tipo → não executa). O resultado final continua sendo um `EvaluationResult`.
 - O catálogo só mostra os chips de modalidade presentes na trilha atual ("Erro de Tipo" só em TS).
 - Despacho no workspace virou `switch` exaustivo com `assertNever` (antes, um `else` final mandaria
   modalidades novas para o avaliador de código).
+
+### Tutor IA ciente de TypeScript (2.6)
+
+- `server.ts` → `typeScriptGuidance()`: em exercícios TS, os prompts de dica, diálogo e explicação
+  linha a linha ganham diretrizes de tipagem (explicar "esperado × recebido", citar TSxxxx, **nunca**
+  sugerir any / as / ! / @ts-ignore) e até 5 diagnósticos reais do compilador.
+- O cliente (`aiHint.ts`, `ExerciseWorkspace`, `AiTutorModal`) envia `compilerDiagnostics` da última
+  avaliação. Em `prever_erro_de_tipo` **nada** é enviado (entregaria a resposta) e o prompt instrui o
+  tutor a não revelar linha nem motivo.
 
 ### Bugs pré-existentes corrigidos na 2.6
 
