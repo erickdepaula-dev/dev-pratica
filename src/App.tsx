@@ -3,8 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Header, ActiveTab } from './components/Header';
+import { SyncToast, ToastMessage, ToastTone } from './components/SyncToast';
+import { PageSkeleton } from './components/PageSkeleton';
 import { Dashboard } from './components/Dashboard';
 import { ExerciseList } from './components/ExerciseList';
 import { ExerciseWorkspace } from './components/ExerciseWorkspace';
@@ -38,13 +40,17 @@ export default function App() {
   const [activeAiChallenge, setActiveAiChallenge] = useState<AiChallenge | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
-  const [syncToast, setSyncToast] = useState<string | null>(null);
+  // true só enquanto o progresso é baixado do Firestore (mostra o skeleton).
+  const [isCloudLoading, setIsCloudLoading] = useState<boolean>(false);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
+  const toastIdRef = useRef(0);
 
-  // Show temporary toast message
-  const triggerToast = (msg: string) => {
-    setSyncToast(msg);
-    setTimeout(() => setSyncToast(null), 3500);
-  };
+  // Exibe um toast; o fechamento automático é controlado pelo <SyncToast>.
+  const triggerToast = useCallback((message: string, tone: ToastTone = 'success') => {
+    toastIdRef.current += 1;
+    setToast({ id: toastIdRef.current, message, tone });
+  }, []);
+  const dismissToast = useCallback(() => setToast(null), []);
 
   // Sync state on mount and listen to Firebase Auth
   useEffect(() => {
@@ -55,6 +61,7 @@ export default function App() {
       setCurrentUser(user);
       if (user) {
         setIsSyncing(true);
+        setIsCloudLoading(true);
         try {
           const cloudProgress = await loadProgressFromFirestore();
           if (cloudProgress) {
@@ -63,8 +70,10 @@ export default function App() {
           }
         } catch (e) {
           console.error('Falha ao carregar do Firestore:', e);
+          triggerToast('Não foi possível carregar o progresso da nuvem. Usando dados locais.', 'error');
         } finally {
           setIsSyncing(false);
+          setIsCloudLoading(false);
         }
       }
     });
@@ -114,18 +123,24 @@ export default function App() {
       setIsSyncing(true);
       const user = await loginWithGoogle();
       if (user) {
-        const cloudProgress = await loadProgressFromFirestore();
-        if (cloudProgress) {
-          setProgress(cloudProgress);
+        setIsCloudLoading(true);
+        try {
+          const cloudProgress = await loadProgressFromFirestore();
+          if (cloudProgress) {
+            setProgress(cloudProgress);
+          }
+        } finally {
+          setIsCloudLoading(false);
         }
         triggerToast(`Bem-vindo, ${user.displayName || 'Dev'}! Dados sincronizados.`);
       }
       // If user is null, user simply cancelled or closed the auth window voluntarily
-    } catch (error: any) {
-      if (error?.code === 'auth/popup-blocked' || error?.message === 'POPUP_BLOCKED') {
-        triggerToast('Janela pop-up bloqueada. Permita pop-ups no navegador para autenticar.');
+    } catch (error: unknown) {
+      const { code, message } = (error ?? {}) as { code?: string; message?: string };
+      if (code === 'auth/popup-blocked' || message === 'POPUP_BLOCKED') {
+        triggerToast('Janela pop-up bloqueada. Permita pop-ups no navegador para autenticar.', 'error');
       } else {
-        triggerToast('Não foi possível autenticar no momento. Tente novamente.');
+        triggerToast('Não foi possível autenticar no momento. Tente novamente.', 'error');
       }
     } finally {
       setIsSyncing(false);
@@ -136,7 +151,7 @@ export default function App() {
     try {
       await logoutFirebase();
       setCurrentUser(null);
-      triggerToast('Desconectado do Firebase. Progresso mantido localmente.');
+      triggerToast('Desconectado do Firebase. Progresso mantido localmente.', 'info');
     } catch (e) {
       console.error('Erro de logout:', e);
     }
@@ -154,7 +169,7 @@ export default function App() {
       triggerToast('Sincronização com o Firestore concluída com sucesso!');
     } catch (e) {
       console.error('Erro de sincronização manual:', e);
-      triggerToast('Erro ao sincronizar com o Firestore.');
+      triggerToast('Erro ao sincronizar com o Firestore.', 'error');
     } finally {
       setIsSyncing(false);
     }
@@ -166,14 +181,8 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
-      {/* Toast Notification */}
-      {syncToast && (
-        <div className="fixed bottom-6 right-6 z-50 rounded-xl border border-indigo-500/40 bg-slate-900 p-3.5 shadow-2xl text-xs text-white flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-3 duration-200">
-          <span className="text-emerald-400">🔥</span>
-          <span>{syncToast}</span>
-        </div>
-      )}
+    <div className="min-h-screen bg-canvas text-primary flex flex-col font-sans selection:bg-accent-from/30 selection:text-primary">
+      <SyncToast toast={toast} onDismiss={dismissToast} />
 
       {/* Top Bar Header */}
       <Header
@@ -198,7 +207,9 @@ export default function App() {
 
       {/* Main Content Router */}
       <main className="flex-1 pb-16">
-        {selectedExercise ? (
+        {isCloudLoading && !selectedExercise && !activeAiChallenge ? (
+          <PageSkeleton />
+        ) : selectedExercise ? (
           <ExerciseWorkspace
             exercise={selectedExercise}
             progress={progress}
@@ -266,22 +277,22 @@ export default function App() {
       </main>
 
       {/* Clean Developer Footer */}
-      <footer className="border-t border-slate-800/80 bg-slate-950 py-6 text-xs text-slate-500">
+      <footer className="border-t border-subtle/80 bg-canvas py-6 text-xs text-muted">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-400">DevPrática PHP & JS</span>
+            <span className="font-semibold text-muted">DevPrática PHP & JS</span>
             <span aria-hidden="true">·</span>
             <span>Plataforma interativa com foco em código real, PO briefs e persistência no Firebase</span>
           </div>
 
-          <div className="flex items-center gap-4 text-slate-400">
+          <div className="flex items-center gap-4 text-muted">
             <button
               onClick={() => {
                 setSelectedExerciseId(null);
                 setActiveAiChallenge(null);
                 setActiveTab('exercicios');
               }}
-              className="hover:text-white transition-colors cursor-pointer"
+              className="hover:text-primary transition-colors cursor-pointer"
             >
               Exercícios
             </button>
@@ -292,7 +303,7 @@ export default function App() {
                 setActiveAiChallenge(null);
                 setActiveTab('desafios_ia');
               }}
-              className="hover:text-white transition-colors cursor-pointer text-indigo-400"
+              className="hover:text-primary transition-colors cursor-pointer text-accent"
             >
               Desafios com IA
             </button>
@@ -303,7 +314,7 @@ export default function App() {
                 setActiveAiChallenge(null);
                 setActiveTab('progresso');
               }}
-              className="hover:text-white transition-colors cursor-pointer"
+              className="hover:text-primary transition-colors cursor-pointer"
             >
               Meu Progresso
             </button>
@@ -314,7 +325,7 @@ export default function App() {
                 setActiveAiChallenge(null);
                 setActiveTab('guia');
               }}
-              className="hover:text-white transition-colors cursor-pointer"
+              className="hover:text-primary transition-colors cursor-pointer"
             >
               Guia de Estudos
             </button>

@@ -83,3 +83,66 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
+
+/*
+ * Microinterações globais (Fase 1 — tarefa 1.7).
+ * Ficam em @layer base: utilitários do Tailwind no componente continuam podendo sobrescrever.
+ */
+@layer base {
+  /* Foco visível consistente em qualquer elemento interativo (só para teclado). */
+  :where(button, a, summary, [role='button'], [role='tab'], [role='radio'], [tabindex]):focus-visible {
+    outline: 2px solid var(--accent-from);
+    outline-offset: 2px;
+  }
+
+  :where(button, [role='button'], summary, select):not(:disabled) {
+    cursor: pointer;
+  }
+
+  :where(button):disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* Skeleton: brilho deslizante usando transform (sem reflow). */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--text-primary) 6%, transparent),
+    transparent
+  );
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/*
+ * prefers-reduced-motion: as animações do `motion` já obedecem via
+ * <MotionConfig reducedMotion="user"> (src/main.tsx). Isto cobre o que é CSS
+ * (animate-spin, animate-pulse, transições, shimmer) em todos os componentes.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .skeleton::after {
+    display: none;
+  }
+}

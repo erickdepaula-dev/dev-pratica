@@ -1,6 +1,6 @@
 # 🎨 Fase 1 — UI Redesign
 
-**Status:** 🟡 Em andamento (1.1 a 1.6 concluídas)
+**Status:** ✅ Concluída
 **Objetivo:** dar ao DevPrática uma identidade visual própria — gradientes, animações e consistência — tendo o coddy.tech como referência.
 
 ---
@@ -96,20 +96,20 @@ move isso para um único lugar reutilizável, mantendo as cores atuais:
 - [x] Estado vazio ilustrado quando nenhum filtro casa
 
 ### 1.7 — Microinterações e estados
-- [ ] Skeleton de carregamento para quando o Firestore está sincronizando
-- [ ] Toast de sincronização com entrada/saída animada (hoje é um `setTimeout` cru)
-- [ ] Hover e focus-visible consistentes em todos os botões
-- [ ] Respeitar `prefers-reduced-motion` em todas as animações
+- [x] Skeleton de carregamento para quando o Firestore está sincronizando
+- [x] Toast de sincronização com entrada/saída animada (hoje é um `setTimeout` cru)
+- [x] Hover e focus-visible consistentes em todos os botões
+- [x] Respeitar `prefers-reduced-motion` em todas as animações
 
 ---
 
 ## Critérios de pronto
 
-- [ ] Nenhuma cor hardcoded fora de `tokens.css` e `exerciseTheme.ts` nos componentes tocados
-- [ ] Todas as animações respeitam `prefers-reduced-motion`
-- [ ] `npm run lint` e `npm run build` passam
-- [ ] Layout testado em mobile (375px) e desktop (1440px)
-- [ ] `docs/CONTEXT.md` atualizado
+- [x] Nenhuma cor hardcoded fora de `tokens.css` e `exerciseTheme.ts` nos componentes tocados
+- [x] Todas as animações respeitam `prefers-reduced-motion`
+- [x] `npm run lint` e `npm run build` passam
+- [x] Layout testado em mobile (375px) e desktop (1440px)
+- [x] `docs/CONTEXT.md` atualizado
 
 ---
 
@@ -186,5 +186,18 @@ Badges de modalidade e dificuldade: `getExerciseTypeTheme(type)` e
 - Cards são `<button>` com `layout="position"` dentro de `AnimatePresence mode="popLayout"`;
   como o filho do popLayout precisa repassar `ref`, `ExerciseCard` recebe `ref` como prop (React 19).
 - Estado vazio com ilustração SVG em tokens, lista dos filtros ativos e botão para limpar.
+
+### Microinterações (após a 1.7)
+
+- `SyncToast.tsx`: toast com tom (`success` / `error` / `info`), entrada/saída animada e
+  fechamento automático por `useEffect` amarrado ao `id` (corrige a corrida do `setTimeout` antigo,
+  em que o timer de um toast apagava o seguinte). Chamar `triggerToast(msg, tone)` no `App.tsx`.
+- `PageSkeleton.tsx` (+ `Skeleton`): exibido no lugar da página enquanto `isCloudLoading`
+  (download do Firestore no login / ao abrir já logado). O sync manual não troca a tela.
+- `index.css` (`@layer base`): `focus-visible` e cursor globais para todo elemento interativo.
+- `index.css` (`prefers-reduced-motion`): zera animações/transições CSS em todos os componentes;
+  o `motion` já é coberto pelo `MotionConfig`.
+- Telas que a fase não redesenhou (Progresso, Guia, Desafios IA, Tutor IA) também foram migradas
+  para os tokens com o mesmo script de regras — sem cores de paleta fora de `exerciseTheme.ts`.
 
 - O dev server roda com `watch: null` — reinicie `npm run dev` para ver alterações.

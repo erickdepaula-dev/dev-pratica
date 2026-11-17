@@ -208,20 +208,20 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       {/* Top Navigation Bar & Meta */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-subtle">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={onBackToHub}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-semibold transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-subtle bg-surface hover:bg-surface-hover text-primary text-xs font-semibold transition-colors cursor-pointer"
           >
             ← Voltar para Desafios
           </button>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-indigo-500/10 border border-indigo-500/30 text-indigo-300">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-accent-from/10 border border-accent-from/30 text-accent">
               {challenge.language === 'php' ? '🐘 PHP' : '⚡ JavaScript'}
             </span>
-            <span className="px-2 py-0.5 rounded text-xs bg-slate-800 text-slate-300 font-mono">
+            <span className="px-2 py-0.5 rounded text-xs bg-surface-hover text-primary font-mono">
               {challenge.topic}
             </span>
           </div>
@@ -229,8 +229,8 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
 
         <div className="flex items-center gap-3">
           {/* Difficulty Indicators */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-xs">
-            <span className="text-slate-400">Nível {challenge.difficultyLevel}/5:</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface border border-subtle text-xs">
+            <span className="text-muted">Nível {challenge.difficultyLevel}/5:</span>
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map(d => (
                 <span
@@ -238,11 +238,11 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
                   className={`w-2 h-2 rounded-full ${
                     d <= challenge.difficultyLevel
                       ? d <= 2
-                        ? 'bg-emerald-400'
+                        ? 'bg-success'
                         : d <= 3
-                        ? 'bg-amber-400'
-                        : 'bg-rose-500'
-                      : 'bg-slate-700'
+                        ? 'bg-warning'
+                        : 'bg-danger'
+                      : 'bg-subtle'
                   }`}
                 />
               ))}
@@ -253,7 +253,7 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
           <button
             type="button"
             onClick={() => setIsTutorOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-200 text-xs font-semibold transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-from/20 hover:bg-accent-from/30 border border-accent-from/40 text-accent text-xs font-semibold transition-colors cursor-pointer"
             title="Abrir diálogo com o tutor IA, tirar dúvidas ou pedir explicação do código"
           >
             <span>💬</span>
@@ -263,7 +263,7 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
       </div>
 
       {challenge.fallbackNotice && (
-        <div className="rounded-xl border border-indigo-500/30 bg-indigo-950/30 px-4 py-3 flex items-center gap-3 text-xs text-indigo-300">
+        <div className="rounded-xl border border-accent-from/30 bg-accent-from/10 px-4 py-3 flex items-center gap-3 text-xs text-accent">
           <span className="text-base">✨</span>
           <p>{challenge.fallbackNotice}</p>
         </div>
@@ -274,31 +274,31 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
         {/* Left Column: Briefing, Requirements, Test Cases & Progressive Hints */}
         <div className="lg:col-span-5 space-y-6">
           {/* Challenge Description Card */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 sm:p-6 shadow-lg space-y-4">
+          <div className="rounded-2xl border border-subtle bg-surface/80 p-5 sm:p-6 shadow-lg space-y-4">
             <div>
-              <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-indigo-400 uppercase tracking-wider">
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-accent uppercase tracking-wider">
                 <span>🎯</span>
                 <span>Desafio Técnico Sênior</span>
               </div>
-              <h2 className="text-xl font-bold text-white tracking-tight mt-1">
+              <h2 className="text-xl font-bold text-primary tracking-tight mt-1">
                 {challenge.title}
               </h2>
             </div>
 
-            <div className="text-sm text-slate-300 leading-relaxed space-y-3">
+            <div className="text-sm text-primary leading-relaxed space-y-3">
               <p>{challenge.description}</p>
             </div>
 
             {/* Functional Requirements */}
             {challenge.functionalRequirements?.length > 0 && (
-              <div className="pt-3 border-t border-slate-800/80 space-y-2">
-                <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-                  <span className="text-indigo-400">📋</span> Requisitos Funcionais
+              <div className="pt-3 border-t border-subtle/80 space-y-2">
+                <h3 className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="text-accent">📋</span> Requisitos Funcionais
                 </h3>
-                <ul className="space-y-1.5 text-xs text-slate-300">
+                <ul className="space-y-1.5 text-xs text-primary">
                   {challenge.functionalRequirements.map((req, idx) => (
                     <li key={idx} className="flex items-start gap-2">
-                      <span className="text-indigo-400 shrink-0 font-bold">•</span>
+                      <span className="text-accent shrink-0 font-bold">•</span>
                       <span>{req}</span>
                     </li>
                   ))}
@@ -308,14 +308,14 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
 
             {/* Technical Constraints */}
             {challenge.technicalConstraints?.length > 0 && (
-              <div className="pt-3 border-t border-slate-800/80 space-y-2">
-                <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-                  <span className="text-amber-400">⚠️</span> Restrições Técnicas
+              <div className="pt-3 border-t border-subtle/80 space-y-2">
+                <h3 className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="text-warning">⚠️</span> Restrições Técnicas
                 </h3>
-                <ul className="space-y-1.5 text-xs text-slate-400">
+                <ul className="space-y-1.5 text-xs text-muted">
                   {challenge.technicalConstraints.map((tc, idx) => (
                     <li key={idx} className="flex items-start gap-2">
-                      <span className="text-amber-400 shrink-0 font-bold">•</span>
+                      <span className="text-warning shrink-0 font-bold">•</span>
                       <span>{tc}</span>
                     </li>
                   ))}
@@ -325,24 +325,24 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
 
             {/* Usage Examples */}
             {challenge.usageExamples?.length > 0 && (
-              <div className="pt-3 border-t border-slate-800/80 space-y-2.5">
-                <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-                  <span className="text-emerald-400">💡</span> Exemplos de Uso
+              <div className="pt-3 border-t border-subtle/80 space-y-2.5">
+                <h3 className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="text-success">💡</span> Exemplos de Uso
                 </h3>
                 <div className="space-y-2">
                   {challenge.usageExamples.map((ex, idx) => (
                     <div
                       key={idx}
-                      className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 text-xs font-mono space-y-1"
+                      className="p-3 rounded-xl bg-canvas/70 border border-subtle text-xs font-mono space-y-1"
                     >
-                      <div className="text-slate-400">
-                        <span className="text-indigo-400">Entrada:</span> {ex.input}
+                      <div className="text-muted">
+                        <span className="text-accent">Entrada:</span> {ex.input}
                       </div>
-                      <div className="text-emerald-300">
-                        <span className="text-emerald-400">Saída:</span> {ex.output}
+                      <div className="text-success">
+                        <span className="text-success">Saída:</span> {ex.output}
                       </div>
                       {ex.explanation && (
-                        <div className="text-[11px] text-slate-500 font-sans mt-1">
+                        <div className="text-[11px] text-muted font-sans mt-1">
                           {ex.explanation}
                         </div>
                       )}
@@ -354,12 +354,12 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
 
             {/* Test Cases Preview */}
             {challenge.testCases?.length > 0 && (
-              <div className="pt-3 border-t border-slate-800/80 space-y-2.5">
+              <div className="pt-3 border-t border-subtle/80 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-                    <span className="text-sky-400">🧪</span> Casos de Teste ({challenge.testCases.length})
+                  <h3 className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+                    <span className="text-syntax-variable">🧪</span> Casos de Teste ({challenge.testCases.length})
                   </h3>
-                  <span className="text-[11px] text-slate-500">
+                  <span className="text-[11px] text-muted">
                     Inclui edge cases
                   </span>
                 </div>
@@ -367,22 +367,22 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
                   {challenge.testCases.map((tc, idx) => (
                     <div
                       key={idx}
-                      className="p-2.5 rounded-lg bg-slate-950/50 border border-slate-800/70 text-[11px] space-y-1"
+                      className="p-2.5 rounded-lg bg-canvas/50 border border-subtle/70 text-[11px] space-y-1"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold text-slate-300">
+                        <span className="font-semibold text-primary">
                           {idx + 1}. {tc.description}
                         </span>
                         {tc.isEdgeCase && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-warning/10 text-warning border border-warning/20 font-mono">
                             Edge case
                           </span>
                         )}
                       </div>
-                      <div className="font-mono text-slate-400 flex items-center gap-2">
-                        <span>in: <code className="text-slate-300">{tc.input}</code></span>
+                      <div className="font-mono text-muted flex items-center gap-2">
+                        <span>in: <code className="text-primary">{tc.input}</code></span>
                         <span>→</span>
-                        <span>out: <code className="text-emerald-400">{tc.expectedOutput}</code></span>
+                        <span>out: <code className="text-success">{tc.expectedOutput}</code></span>
                       </div>
                     </div>
                   ))}
@@ -392,16 +392,16 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
           </div>
 
           {/* Progressive Hints Section */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 shadow-lg space-y-3">
+          <div className="rounded-2xl border border-subtle bg-surface/80 p-5 shadow-lg space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+              <h3 className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
                 <span>🔑</span> Dicas Progressivas ({unlockedHintsCount} de {challenge.hints.length})
               </h3>
               {unlockedHintsCount < challenge.hints.length && (
                 <button
                   type="button"
                   onClick={handleUnlockHint}
-                  className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer"
+                  className="text-xs text-accent hover:text-accent font-semibold cursor-pointer"
                 >
                   Liberar Dica {unlockedHintsCount + 1}
                 </button>
@@ -409,7 +409,7 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
             </div>
 
             {unlockedHintsCount === 0 ? (
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-muted">
                 Tente resolver por conta própria primeiro! Se travar, clique em &quot;Liberar Dica&quot; para desbloquear orientações graduais.
               </p>
             ) : (
@@ -417,9 +417,9 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
                 {challenge.hints.slice(0, unlockedHintsCount).map((hint, i) => (
                   <div
                     key={i}
-                    className="p-3 rounded-xl bg-indigo-950/20 border border-indigo-500/20 text-xs text-indigo-200 space-y-1"
+                    className="p-3 rounded-xl bg-accent-from/10 border border-accent-from/20 text-xs text-accent space-y-1"
                   >
-                    <span className="font-bold text-indigo-300 block text-[11px] uppercase tracking-wider">
+                    <span className="font-bold text-accent block text-[11px] uppercase tracking-wider">
                       Dica {i + 1}: {i === 0 ? 'Conceitual' : i === 1 ? 'Recurso da Linguagem' : 'Abordagem Detalhada'}
                     </span>
                     <p className="leading-relaxed">{hint}</p>
@@ -433,31 +433,31 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
         {/* Right Column: Code Editor (Fixed 15 lines height on Desktop) & Evaluation */}
         <div className="lg:col-span-7 space-y-5">
           {/* Integrated Code Editor Card */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 shadow-xl overflow-hidden flex flex-col">
+          <div className="rounded-2xl border border-subtle bg-surface shadow-xl overflow-hidden flex flex-col">
             {/* Editor Top Bar */}
-            <div className="flex items-center justify-between px-4 py-3 bg-slate-950 border-b border-slate-800 text-xs">
-              <div className="flex items-center gap-2 font-mono text-slate-400">
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block"></span>
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block"></span>
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block"></span>
-                <span className="text-slate-300 font-semibold ml-2">
+            <div className="flex items-center justify-between px-4 py-3 bg-canvas border-b border-subtle text-xs">
+              <div className="flex items-center gap-2 font-mono text-muted">
+                <span className="w-2.5 h-2.5 rounded-full bg-danger/80 inline-block"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-warning/80 inline-block"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-success/80 inline-block"></span>
+                <span className="text-primary font-semibold ml-2">
                   {challenge.language === 'php' ? 'solucao.php' : 'solucao.js'}
                 </span>
                 {autoSavedNotice && (
-                  <span className="text-[10px] text-emerald-400 font-sans ml-2">
+                  <span className="text-[10px] text-success font-sans ml-2">
                     ✓ Rascunho salvo
                   </span>
                 )}
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="hidden sm:inline text-[11px] text-slate-500 font-mono">
+                <span className="hidden sm:inline text-[11px] text-muted font-mono">
                   Ctrl + Enter para avaliar
                 </span>
                 <button
                   type="button"
                   onClick={handleResetCode}
-                  className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+                  className="text-muted hover:text-primary transition-colors cursor-pointer"
                   title="Restaurar código inicial do desafio"
                 >
                   Restaurar
@@ -466,11 +466,11 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
             </div>
 
             {/* Code Textarea with Line Numbers and Fixed Desktop Height (15 lines = ~390px) */}
-            <div className="relative flex bg-slate-950 text-slate-100 font-mono text-xs leading-6 overflow-hidden h-[390px]">
+            <div className="relative flex bg-canvas text-primary font-mono text-xs leading-6 overflow-hidden h-[390px]">
               {/* Line numbers gutter */}
               <div
                 ref={lineNumbersRef}
-                className="w-12 py-3 pr-2 text-right text-slate-600 bg-slate-950 border-r border-slate-800/80 select-none overflow-hidden"
+                className="w-12 py-3 pr-2 text-right text-muted/60 bg-canvas border-r border-subtle/80 select-none overflow-hidden"
               >
                 {Array.from({ length: lineCount }).map((_, i) => (
                   <div key={i} className="h-6">
@@ -492,7 +492,7 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
                     : '// Escreva sua função JavaScript aqui...\n'
                 }
                 spellCheck={false}
-                className="flex-1 py-3 px-4 bg-transparent text-slate-100 font-mono text-xs leading-6 resize-none focus:outline-none overflow-auto whitespace-pre tab-4"
+                className="flex-1 py-3 px-4 bg-transparent text-primary font-mono text-xs leading-6 resize-none focus:outline-none overflow-auto whitespace-pre tab-4"
                 style={{
                   tabSize: 4,
                 }}
@@ -500,12 +500,12 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
             </div>
 
             {/* Action Bar */}
-            <div className="p-4 bg-slate-950/80 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="p-4 bg-canvas/80 border-t border-subtle flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setIsTutorOpen(true)}
-                  className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl bg-surface hover:bg-surface-hover border border-subtle text-primary text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>💡</span>
                   <span>Tutor IA / Explicar Código</span>
@@ -514,7 +514,7 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
                 <button
                   type="button"
                   onClick={() => setHasRevealedSolution(!hasRevealedSolution)}
-                  className="px-3 py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-slate-200 text-xs transition-colors cursor-pointer"
+                  className="px-3 py-2 rounded-xl bg-surface/60 hover:bg-surface-hover border border-subtle text-muted hover:text-primary text-xs transition-colors cursor-pointer"
                 >
                   {hasRevealedSolution ? 'Ocultar Gabarito' : 'Ver Gabarito Sênior'}
                 </button>
@@ -524,12 +524,12 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
                 type="button"
                 onClick={handleEvaluate}
                 disabled={isEvaluating}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-accent-from hover:bg-accent-from text-primary text-xs font-bold shadow-md shadow-accent-from/30 transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isEvaluating ? (
                   <>
                     <svg
-                      className="animate-spin -ml-1 mr-1 h-3.5 w-3.5 text-white"
+                      className="animate-spin -ml-1 mr-1 h-3.5 w-3.5 text-primary"
                       fill="none"
                       viewBox="0 0 24 24"
                     >
@@ -561,25 +561,25 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
 
           {/* Solution Code Reveal (if toggled) */}
           {hasRevealedSolution && (
-            <div className="rounded-2xl border border-indigo-500/30 bg-indigo-950/20 p-5 space-y-3">
+            <div className="rounded-2xl border border-accent-from/30 bg-accent-from/10 p-5 space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-accent uppercase tracking-wider flex items-center gap-1.5">
                   <span>✨</span> Solução de Referência (Gabarito Sênior)
                 </h4>
                 <button
                   type="button"
                   onClick={() => setCode(challenge.solutionCode)}
-                  className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold cursor-pointer"
+                  className="text-xs text-accent hover:text-accent font-semibold cursor-pointer"
                 >
                   Copiar para meu editor
                 </button>
               </div>
-              <pre className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-slate-300 overflow-x-auto leading-5 max-h-[300px]">
+              <pre className="p-4 rounded-xl bg-canvas border border-subtle text-xs font-mono text-primary overflow-x-auto leading-5 max-h-[300px]">
                 {challenge.solutionCode}
               </pre>
               {challenge.explanation && (
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  <span className="font-semibold text-slate-300">Explicação: </span>
+                <p className="text-xs text-muted leading-relaxed">
+                  <span className="font-semibold text-primary">Explicação: </span>
                   {challenge.explanation}
                 </p>
               )}
@@ -588,10 +588,10 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
 
           {/* Evaluation Error Banner */}
           {evalError && (
-            <div className="rounded-xl border border-rose-500/30 bg-rose-950/30 p-4 text-xs text-rose-300 flex items-start gap-3">
+            <div className="rounded-xl border border-danger/30 bg-danger/10 p-4 text-xs text-danger flex items-start gap-3">
               <span className="text-base">⚠️</span>
               <div>
-                <p className="font-semibold text-rose-200">Não foi possível avaliar</p>
+                <p className="font-semibold text-danger">Não foi possível avaliar</p>
                 <p>{evalError}</p>
               </div>
             </div>
@@ -599,43 +599,43 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
 
           {/* Evaluation Results Card */}
           {evaluation && (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/90 p-5 sm:p-6 shadow-xl space-y-5 animate-in fade-in duration-300">
+            <div className="rounded-2xl border border-subtle bg-surface/90 p-5 sm:p-6 shadow-xl space-y-5 animate-in fade-in duration-300">
               {/* Score & Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-subtle">
                 <div className="flex items-center gap-4">
                   <div
                     className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center font-bold shadow-inner ${
                       isPassed
-                        ? 'bg-emerald-500/10 border-2 border-emerald-500/40 text-emerald-400'
-                        : 'bg-amber-500/10 border-2 border-amber-500/40 text-amber-400'
+                        ? 'bg-success/10 border-2 border-success/40 text-success'
+                        : 'bg-warning/10 border-2 border-warning/40 text-warning'
                     }`}
                   >
                     <span className="text-lg leading-none">{score.toFixed(1)}</span>
-                    <span className="text-[10px] text-slate-400 font-normal">/10</span>
+                    <span className="text-[10px] text-muted font-normal">/10</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-base font-bold text-white">
+                      <h3 className="text-base font-bold text-primary">
                         {isPassed ? 'Solução Aprovada! 🎉' : 'Revisão Necessária'}
                       </h3>
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                           isPassed
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                            : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                            ? 'bg-success/20 text-success border border-success/30'
+                            : 'bg-warning/20 text-warning border border-warning/30'
                         }`}
                       >
                         {isPassed ? 'Aprovado' : 'Ajustes pendentes'}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="text-xs text-muted mt-0.5">
                       {evaluation.testsPassedPercentage}% dos casos de teste passaram com sucesso.
                     </p>
                   </div>
                 </div>
 
                 {isPassed && (
-                  <div className="px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold flex items-center gap-1.5">
+                  <div className="px-3 py-1.5 rounded-xl bg-accent-from/10 border border-accent-from/30 text-accent text-xs font-semibold flex items-center gap-1.5">
                     <span>🔥</span>
                     <span>Ofensiva de estudos computada para hoje!</span>
                   </div>
@@ -644,8 +644,8 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
 
               {/* Senior Feedback Summary */}
               {evaluation.explanation && (
-                <div className="text-xs text-slate-300 bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 leading-relaxed">
-                  <span className="font-semibold text-white block mb-1">
+                <div className="text-xs text-primary bg-canvas/60 p-3.5 rounded-xl border border-subtle leading-relaxed">
+                  <span className="font-semibold text-primary block mb-1">
                     Feedback do Desenvolvedor Sênior:
                   </span>
                   {evaluation.explanation}
@@ -655,54 +655,54 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
               {/* Requirements Checked */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Requirements Met */}
-                <div className="space-y-2 p-3.5 rounded-xl bg-emerald-950/10 border border-emerald-500/20">
-                  <h4 className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                <div className="space-y-2 p-3.5 rounded-xl bg-success/10 border border-success/20">
+                  <h4 className="text-xs font-bold text-success flex items-center gap-1.5">
                     <span>✓</span> Requisitos Atendidos ({evaluation.requirementsMet?.length || 0})
                   </h4>
                   {evaluation.requirementsMet?.length > 0 ? (
-                    <ul className="space-y-1 text-xs text-slate-300">
+                    <ul className="space-y-1 text-xs text-primary">
                       {evaluation.requirementsMet.map((item, i) => (
                         <li key={i} className="flex items-start gap-1.5">
-                          <span className="text-emerald-400">✓</span>
+                          <span className="text-success">✓</span>
                           <span>{item}</span>
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-[11px] text-slate-500">Nenhum requisito atendido ainda.</p>
+                    <p className="text-[11px] text-muted">Nenhum requisito atendido ainda.</p>
                   )}
                 </div>
 
                 {/* Requirements Unmet */}
-                <div className="space-y-2 p-3.5 rounded-xl bg-amber-950/10 border border-amber-500/20">
-                  <h4 className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                <div className="space-y-2 p-3.5 rounded-xl bg-warning/10 border border-warning/20">
+                  <h4 className="text-xs font-bold text-warning flex items-center gap-1.5">
                     <span>✗</span> Requisitos Pendentes ({evaluation.requirementsUnmet?.length || 0})
                   </h4>
                   {evaluation.requirementsUnmet?.length > 0 ? (
-                    <ul className="space-y-1 text-xs text-slate-300">
+                    <ul className="space-y-1 text-xs text-primary">
                       {evaluation.requirementsUnmet.map((item, i) => (
                         <li key={i} className="flex items-start gap-1.5">
-                          <span className="text-amber-400">✗</span>
+                          <span className="text-warning">✗</span>
                           <span>{item}</span>
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-[11px] text-emerald-400">Todos os requisitos atendidos!</p>
+                    <p className="text-[11px] text-success">Todos os requisitos atendidos!</p>
                   )}
                 </div>
               </div>
 
               {/* Syntax & Functional Errors */}
               {evaluation.syntaxAndErrors?.length > 0 && (
-                <div className="space-y-2 p-3.5 rounded-xl bg-rose-950/20 border border-rose-500/30">
-                  <h4 className="text-xs font-bold text-rose-300 flex items-center gap-1.5">
+                <div className="space-y-2 p-3.5 rounded-xl bg-danger/10 border border-danger/30">
+                  <h4 className="text-xs font-bold text-danger flex items-center gap-1.5">
                     <span>⚠️</span> Erros Encontrados (Correção Necessária)
                   </h4>
-                  <ul className="space-y-1 text-xs text-rose-200">
+                  <ul className="space-y-1 text-xs text-danger">
                     {evaluation.syntaxAndErrors.map((err, i) => (
                       <li key={i} className="flex items-start gap-1.5">
-                        <span className="text-rose-400 font-bold">•</span>
+                        <span className="text-danger font-bold">•</span>
                         <span>{err}</span>
                       </li>
                     ))}
@@ -712,14 +712,14 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
 
               {/* Suggestions & Improvements */}
               {evaluation.improvements?.length > 0 && (
-                <div className="space-y-2 p-3.5 rounded-xl bg-indigo-950/20 border border-indigo-500/20">
-                  <h4 className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+                <div className="space-y-2 p-3.5 rounded-xl bg-accent-from/10 border border-accent-from/20">
+                  <h4 className="text-xs font-bold text-accent flex items-center gap-1.5">
                     <span>✨</span> Sugestões de Boas Práticas (Não impedem aprovação)
                   </h4>
-                  <ul className="space-y-1 text-xs text-indigo-200">
+                  <ul className="space-y-1 text-xs text-accent">
                     {evaluation.improvements.map((imp, i) => (
                       <li key={i} className="flex items-start gap-1.5">
-                        <span className="text-indigo-400 font-bold">•</span>
+                        <span className="text-accent font-bold">•</span>
                         <span>{imp}</span>
                       </li>
                     ))}
@@ -729,8 +729,8 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
 
               {/* Test Cases Results Detail */}
               {evaluation.testResults?.length > 0 && (
-                <div className="space-y-2.5 pt-2 border-t border-slate-800">
-                  <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                <div className="space-y-2.5 pt-2 border-t border-subtle">
+                  <h4 className="text-xs font-bold text-primary uppercase tracking-wider">
                     Execução dos Casos de Teste
                   </h4>
                   <div className="space-y-2">
@@ -739,37 +739,37 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
                         key={i}
                         className={`p-3 rounded-xl border text-xs font-mono space-y-1 ${
                           tr.passed
-                            ? 'bg-emerald-950/10 border-emerald-500/20 text-slate-300'
-                            : 'bg-rose-950/10 border-rose-500/20 text-slate-300'
+                            ? 'bg-success/10 border-success/20 text-primary'
+                            : 'bg-danger/10 border-danger/20 text-primary'
                         }`}
                       >
                         <div className="flex items-center justify-between font-sans">
-                          <span className="font-semibold text-slate-200">
+                          <span className="font-semibold text-primary">
                             {tr.description}
                           </span>
                           <span
                             className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                               tr.passed
-                                ? 'bg-emerald-500/20 text-emerald-300'
-                                : 'bg-rose-500/20 text-rose-300'
+                                ? 'bg-success/20 text-success'
+                                : 'bg-danger/20 text-danger'
                             }`}
                           >
                             {tr.passed ? 'PASSED' : 'FAILED'}
                           </span>
                         </div>
-                        <div className="text-slate-400">
-                          Entrada: <code className="text-slate-300">{tr.input}</code>
+                        <div className="text-muted">
+                          Entrada: <code className="text-primary">{tr.input}</code>
                         </div>
                         <div className="flex items-center gap-4 text-[11px]">
                           <div>
-                            Esperado: <span className="text-emerald-400">{tr.expected}</span>
+                            Esperado: <span className="text-success">{tr.expected}</span>
                           </div>
                           <div>
-                            Obtido: <span className={tr.passed ? 'text-emerald-400' : 'text-rose-400'}>{tr.actual}</span>
+                            Obtido: <span className={tr.passed ? 'text-success' : 'text-danger'}>{tr.actual}</span>
                           </div>
                         </div>
                         {tr.error && (
-                          <div className="text-[11px] text-rose-300 font-sans mt-1">
+                          <div className="text-[11px] text-danger font-sans mt-1">
                             Erro: {tr.error}
                           </div>
                         )}
@@ -781,7 +781,7 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
 
               {/* Environment Transparency Note */}
               {evaluation.environmentNote && (
-                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 text-[11px] text-slate-500 leading-relaxed flex items-start gap-2">
+                <div className="p-3 rounded-xl bg-canvas border border-subtle/80 text-[11px] text-muted leading-relaxed flex items-start gap-2">
                   <span>ℹ️</span>
                   <span>{evaluation.environmentNote}</span>
                 </div>

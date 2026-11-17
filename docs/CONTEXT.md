@@ -29,6 +29,7 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 | **Desafios IA** | Hub + workspace gerados dinamicamente (`src/components/AiChallenges/`) |
 | **Ofensiva** | Streak em dias, timezone `America/Fortaleza` (`src/utils/dateUtils.ts`) |
 | **Persistência** | localStorage + Firebase Firestore, login Google (`src/services/storage.ts`, `firestoreSync.ts`) |
+| **Design system** | Tokens em `src/styles/tokens.css` + `@theme` (`src/index.css`), temas em `src/utils/exerciseTheme.ts`, animações com `motion` e reduced motion global |
 | **Avaliação** | Validação de lacunas, regex e test cases (`src/services/evaluator.ts`) |
 
 ### Ainda não existe
@@ -36,8 +37,6 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 - ❌ Trilha TypeScript
 - ❌ Sistema de XP / níveis de carreira
 - ❌ Conquistas (badges)
-- 🟡 Design system: tokens criados (`src/styles/tokens.css`), aplicação nas telas em andamento
-- ❌ Animações consistentes (dependência `motion` instalada mas pouco usada)
 - ❌ Trilha de lógica pura (material em PDF ainda não convertido)
 
 ---
@@ -63,7 +62,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 
 | Fase | Arquivo | Status |
 | :--- | :--- | :--- |
-| 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | 🟡 Tarefas 1.1 a 1.6 concluídas |
+| 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ✅ Concluída |
 | 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | ⬜ Não iniciada |
 | 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | ⬜ Não iniciada |
 | 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefa 4.2 concluída (índice extraído) |
@@ -78,7 +77,7 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 
 **Última atualização:** 2026-11-17
 
-**Fase ativa:** Fase 1 — UI Redesign.
+**Fase ativa:** nenhuma — Fase 1 concluída; próxima é a Fase 2 (TypeScript).
 
 **Concluído:**
 - 1.1 — design tokens em `src/styles/tokens.css`, mapeados no `@theme inline` de `src/index.css`
@@ -98,8 +97,14 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
   foco visível nos editores. Testado com "prever saída" (erro e acerto) em 375 e 1440 px.
 - 1.6 — `ExerciseList.tsx` reescrito: chips com gradiente, cards com badges do helper,
   animação de layout ao filtrar, estado vazio ilustrado. `LanguagePills` extraído do Header.
+- 1.7 — `SyncToast` animado (corrige corrida do timer), `PageSkeleton` na carga do Firestore,
+  focus-visible/cursor globais, reduced motion global para CSS. Demais telas migradas para tokens.
+  Todas as abas verificadas em 375 e 1440 px sem overflow.
 
-**Próximo passo:** tarefa `1.7 — Microinterações e estados` (última da Fase 1).
+**Próximo passo:** abrir `docs/fase-2-typescript.md` e começar pela tarefa 2.1.
+Pontos de extensão já preparados para a trilha TS: `LANGUAGE_OPTIONS` em `LanguagePills.tsx`,
+`LANGUAGE_THEME` em `exerciseTheme.ts` (o tsc obriga a cadastrar), `TRACKS` e o
+`UpcomingTrackCard` (remover) em `Dashboard.tsx`.
 
 **Pendências / decisões em aberto:**
 - Paleta da Fase 1: implementada com a proposta inicial; ajustes finos só exigem editar `src/styles/tokens.css`.
@@ -120,3 +125,4 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 | 2026-11-17 | 1 | Tarefa 1.4 concluída: `StreakCard` com fogo pulsante, contador animado e semana animada; visão semanal unificada no card. |
 | 2026-11-17 | 1 | Tarefa 1.5 concluída: workspace e editores nos tokens, abas animadas, feedback de acerto/erro animado, foco visível. Tokens `--accent-text` e `--syntax-*`. |
 | 2026-11-17 | 1 | Tarefa 1.6 concluída: catálogo com chips em gradiente, cards animados ao filtrar, estado vazio ilustrado; `LanguagePills.tsx` extraído. |
+| 2026-11-17 | 1 | Tarefa 1.7 concluída e **Fase 1 finalizada**: toast animado, skeleton de sync, foco/cursor globais, reduced motion global; Progresso, Guia, Desafios IA e Tutor IA migrados para tokens. |
