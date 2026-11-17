@@ -21,9 +21,9 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 
 | Área | Detalhe |
 | :--- | :--- |
-| **Trilhas** | PHP (88), JavaScript (87) e TypeScript (88) — as três selecionáveis |
+| **Trilhas** | PHP (88), JavaScript (87) e TypeScript (118, incluindo 30 de `prever_erro_de_tipo`) |
 | **Níveis** | `basico`, `intermediario`, `avancado`, `dev` |
-| **Modalidades** | `lacunas`, `codigo_livre`, `corrigir_erros`, `prever_saida`, `desafio_pratico` |
+| **Modalidades** | `lacunas`, `codigo_livre`, `corrigir_erros`, `prever_saida`, `desafio_pratico` + `prever_erro_de_tipo` (só TS) |
 | **Abas** | `dashboard`, `exercicios`, `desafios_ia`, `progresso`, `guia` |
 | **Tutor IA** | Gemini — dica contextual, explicação do enunciado, análise linha a linha (`src/services/aiHint.ts`, `src/components/AiTutorModal.tsx`) |
 | **Desafios IA** | Hub + workspace gerados dinamicamente (`src/components/AiChallenges/`) |
@@ -108,8 +108,12 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
   `npm run check:ts` valida o conteúdo com o mesmo pipeline do app. `npm run lint` agora
   chama o TS 7 por caminho explícito (o alias sequestrava o `.bin/tsc`).
 
-**Próximo passo:** 2.6 — modalidade `prever_erro_de_tipo` (30 exercícios: 10 por nível),
-depois tutor IA ciente de TS e roteiro TS no Guia.
+- 2.6 (parcial) — modalidade **`prever_erro_de_tipo`** com 30 exercícios (10 por nível); a
+  mensagem real do compilador aparece ao acertar. Trilha TS com **118 exercícios**.
+  Corrigidos bugs antigos: respostas de "prever saída" e checklist DEV não persistiam.
+
+**Próximo passo:** 2.6 — tutor IA ciente de TS (explicar erros de tipo com os diagnósticos) e
+roteiro TS no Guia de Estudo.
 Lembrete: até a 2.6 a avaliação de TS é um stub — exercícios `lacunas` e `prever_saida`
 já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 `desafio_pratico` em TS só serão avaliados de verdade após a 2.6.
@@ -145,3 +149,4 @@ já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 | 2026-11-17 | 2 | Tarefa 2.4 concluída: +28 exercícios TS do avançado e 4 projetos DEV com projectBrief. Trilha TS com 88 exercícios, todos validados com o compilador TS 5.9.3. |
 | 2026-11-17 | 2 | Tarefa 2.5 concluída: trilha TS selecionável no Header, catálogo e Dashboard; seletor derivado de uma fonte única; realce de sintaxe TS; header sem overflow com 3 trilhas. |
 | 2026-11-17 | 2 | 2.6 parcial: avaliador TS com compilação real no navegador (typescript@5.9.3 via alias, lazy), pipeline compilar→executar→testar→regras, `npm run check:ts`. Corrigido: `npm run lint` rodava o TS 5.9 por colisão de binários. |
+| 2026-11-17 | 2 | 2.6 parcial: modalidade `prever_erro_de_tipo` (tipo, tela, avaliador, 30 exercícios validados). Corrigidos: persistência de `outputPrediction` e `checklistDone`; "1 dias" no header. |

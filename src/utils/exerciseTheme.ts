@@ -44,6 +44,12 @@ const EXERCISE_TYPE_THEME: Record<ExerciseType, BadgeTheme> = {
     badgeClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
     textClass: 'text-emerald-400',
   },
+  prever_erro_de_tipo: {
+    label: 'Prever o Erro de Tipo',
+    shortLabel: 'Erro de Tipo',
+    badgeClass: 'bg-typescript/10 text-typescript-text border-typescript/30',
+    textClass: 'text-typescript-text',
+  },
   codigo_livre: {
     label: 'Código Livre',
     shortLabel: 'Código Livre',

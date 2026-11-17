@@ -116,6 +116,7 @@ export function recordExerciseAttempt(
     hintsUsed?: number;
     revealedSolution?: boolean;
     outputPrediction?: string;
+    typeErrorAnswer?: { line: number; reason: number };
   }
 ): UserProgress {
   const current = loadUserProgress();
@@ -132,6 +133,10 @@ export function recordExerciseAttempt(
     userCode: data.userCode ?? existingAttempt?.userCode,
     hintsUsed: Math.max(data.hintsUsed ?? 0, existingAttempt?.hintsUsed ?? 0),
     revealedSolution: data.revealedSolution || existingAttempt?.revealedSolution || false,
+    // Antes da Fase 2 estes campos eram descartados a cada gravação:
+    outputPrediction: data.outputPrediction ?? existingAttempt?.outputPrediction,
+    checklistDone: existingAttempt?.checklistDone,
+    typeErrorAnswer: data.typeErrorAnswer ?? existingAttempt?.typeErrorAnswer,
   };
 
   current.attempts[exerciseId] = newAttempt;

@@ -161,7 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <span aria-hidden="true">🔥</span>
               <span className="tabular-nums font-mono">{streak}</span>
-              <span className="hidden xl:inline text-[11px] font-normal">dias</span>
+              <span className="hidden xl:inline text-[11px] font-normal">{streak === 1 ? 'dia' : 'dias'}</span>
             </div>
 
             <div className="hidden sm:block">

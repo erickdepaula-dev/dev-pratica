@@ -5,7 +5,8 @@ export type ExerciseType =
   | 'codigo_livre'
   | 'corrigir_erros'
   | 'prever_saida'
-  | 'desafio_pratico';
+  | 'desafio_pratico'
+  | 'prever_erro_de_tipo'; // só TypeScript: apontar a linha do erro e o motivo
 
 export interface Blank {
   id: string; // e.g. "blank_0"
@@ -39,6 +40,22 @@ export interface UserStory {
 export interface AcceptanceCriterion {
   id: string;
   label: string;
+}
+
+/**
+ * Modalidade 'prever_erro_de_tipo': o aluno lê um trecho (em `codeToPredict`) que NÃO
+ * compila, aponta a linha que o compilador acusa e escolhe o motivo entre alternativas.
+ * `errorLine` e `errorCode` são conferidos contra o compilador real por `npm run check:ts`.
+ */
+export interface TypeErrorChallenge {
+  /** Linha 1-based do (único) erro que o compilador reporta. */
+  errorLine: number;
+  /** Código do diagnóstico, ex.: 2322 (TS2322). */
+  errorCode: number;
+  /** Alternativas para "por que o compilador reclama?". */
+  reasonOptions: string[];
+  /** Índice da alternativa correta em reasonOptions. */
+  correctReason: number;
 }
 
 export interface ProjectBrief {
@@ -94,6 +111,8 @@ export interface Exercise {
    *   chamada (`function __typeAssertions() { ... }`), o que também isola o escopo.
    */
   typeAssertions?: string;
+
+  typeErrorChallenge?: TypeErrorChallenge; // For 'prever_erro_de_tipo'
   validationRules?: Array<{
     id: string;
     description: string;
@@ -126,6 +145,8 @@ export interface ExerciseAttempt {
   hintsUsed: number;
   checklistDone?: string[];
   outputPrediction?: string;
+  /** Resposta de 'prever_erro_de_tipo' (linha escolhida e índice do motivo). */
+  typeErrorAnswer?: { line: number; reason: number };
 }
 
 import { AiChallengeAttempt } from './aiChallenge';

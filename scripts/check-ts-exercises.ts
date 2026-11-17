@@ -12,7 +12,8 @@
  * - lacunas: o template preenchido com as respostas esperadas compila e as regex aceitam
  *   as respostas;
  * - corrigir_erros: o código bugado NÃO passa, e o erro do compilador cai em buggyLineNumbers;
- * - prever_saida: a saída real bate com o gabarito.
+ * - prever_saida: a saída real bate com o gabarito;
+ * - prever_erro_de_tipo: o trecho tem UM erro, na linha e com o código do gabarito.
  */
 import { createRequire } from 'node:module';
 import { readdirSync, readFileSync } from 'node:fs';
@@ -93,6 +94,22 @@ async function check(ex: Exercise): Promise<string[]> {
     const accepted = [ex.expectedOutputPrediction ?? '', ...(ex.acceptableOutputPredictions ?? [])];
     if (!accepted.some(e => normalizeOutputText(e) === normalizeOutputText(actual))) {
       issues.push(`saída real "${actual.replace(/\n/g, '⏎')}" ≠ gabarito "${ex.expectedOutputPrediction}"`);
+    }
+  }
+
+  if (ex.type === 'prever_erro_de_tipo') {
+    const desafio = ex.typeErrorChallenge;
+    if (!desafio) issues.push('sem typeErrorChallenge');
+    else {
+      const c = compile(ex.codeToPredict ?? '');
+      const first = c.diagnostics.find(d => d.origin === 'codigo');
+      if (!first) issues.push('codeToPredict compila sem erros (deveria ter um erro de tipo)');
+      else {
+        if (first.line !== desafio.errorLine) issues.push(`primeiro erro na linha ${first.line}, gabarito diz ${desafio.errorLine} (${first.message})`);
+        if (first.code !== desafio.errorCode) issues.push(`primeiro erro é TS${first.code}, gabarito diz TS${desafio.errorCode}`);
+      }
+      if (c.diagnostics.filter(d => d.origin === 'codigo').length > 1) issues.push(`mais de um erro no trecho (${c.diagnostics.length}); a resposta ficaria ambígua`);
+      if (desafio.correctReason < 0 || desafio.correctReason >= desafio.reasonOptions.length) issues.push('correctReason fora das alternativas');
     }
   }
 

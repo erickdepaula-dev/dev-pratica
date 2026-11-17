@@ -5,10 +5,12 @@ import { Exercise, UserProgress } from '../types/exercise';
 import { FillInBlanksEditor } from './FillInBlanksEditor';
 import { FreeCodeEditor } from './FreeCodeEditor';
 import { PredictOutputViewer } from './PredictOutputViewer';
+import { PredictTypeErrorViewer } from './PredictTypeErrorViewer';
 import {
   evaluateBlanks,
   evaluateCodeForLanguage,
   evaluateOutputPrediction,
+  evaluateTypeErrorPrediction,
   evaluateBugFix,
   evaluatePracticalChallenge,
   EvaluationResult,
@@ -17,6 +19,7 @@ import { recordExerciseAttempt } from '../services/storage';
 import { requestGeminiContextualHint } from '../services/aiHint';
 import { AiTutorModal } from './AiTutorModal';
 import { getDifficultyTheme, getExerciseTypeTheme } from '../utils/exerciseTheme';
+import { assertNever } from '../utils/language';
 
 type WorkspaceTab = 'instrucoes' | 'po_brief' | 'requisitos' | 'dicas' | 'solucao';
 
@@ -65,6 +68,10 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     return currentAttempt?.outputPrediction || '';
   });
 
+  // Resposta de 'prever_erro_de_tipo' (linha + motivo)
+  const [typeErrorLine, setTypeErrorLine] = useState<number | null>(() => currentAttempt?.typeErrorAnswer?.line ?? null);
+  const [typeErrorReason, setTypeErrorReason] = useState<number | null>(() => currentAttempt?.typeErrorAnswer?.reason ?? null);
+
   // Free code / bug fix state
   const [userCode, setUserCode] = useState<string>(() => {
     if (currentAttempt?.userCode) return currentAttempt.userCode;
@@ -105,7 +112,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
 
   // Reconstruct current assembled code for Tutor analysis
   const assembledCode = React.useMemo(() => {
-    if (exercise.type === 'prever_saida') {
+    if (exercise.type === 'prever_saida' || exercise.type === 'prever_erro_de_tipo') {
       return exercise.codeToPredict || exercise.templateCode;
     }
     if (exercise.type !== 'lacunas') {
@@ -130,6 +137,8 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     const completed = progress.completedIds.includes(exercise.id);
     setUserBlanks(attempt?.userBlanks || {});
     setUserPrediction(attempt?.outputPrediction || '');
+    setTypeErrorLine(attempt?.typeErrorAnswer?.line ?? null);
+    setTypeErrorReason(attempt?.typeErrorAnswer?.reason ?? null);
     setUserCode(
       attempt?.userCode ||
       (exercise.type === 'corrigir_erros' && exercise.initialBuggyCode ? exercise.initialBuggyCode : exercise.templateCode)
@@ -153,6 +162,11 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     setShowAiHintBanner(false);
   }, [exercise.id]);
 
+  const typeErrorAnswerToSave =
+    exercise.type === 'prever_erro_de_tipo' && typeErrorLine !== null && typeErrorReason !== null
+      ? { line: typeErrorLine, reason: typeErrorReason }
+      : undefined;
+
   // Navigation indices
   const currentIndex = allExercisesInTrack.findIndex(e => e.id === exercise.id);
   const prevExercise = currentIndex > 0 ? allExercisesInTrack[currentIndex - 1] : null;
@@ -173,8 +187,9 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
 
     const saved = recordExerciseAttempt(exercise.id, isAlreadyCompleted, {
       userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
-      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' ? userCode : undefined,
+      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
       outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
+      typeErrorAnswer: typeErrorAnswerToSave,
       hintsUsed: hintsUnlockedCount,
       revealedSolution: showSolution,
     });
@@ -215,16 +230,28 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
 
     let result: EvaluationResult;
 
-    if (exercise.type === 'lacunas') {
-      result = evaluateBlanks(exercise, userBlanks);
-    } else if (exercise.type === 'prever_saida') {
-      result = evaluateOutputPrediction(exercise, userPrediction);
-    } else if (exercise.type === 'corrigir_erros') {
-      result = await evaluateBugFix(exercise, userCode);
-    } else if (exercise.type === 'desafio_pratico') {
-      result = await evaluatePracticalChallenge(exercise, userCode);
-    } else {
-      result = await evaluateCodeForLanguage(exercise, userCode);
+    // switch exaustivo: uma modalidade nova sem avaliador quebra o tsc
+    switch (exercise.type) {
+      case 'lacunas':
+        result = evaluateBlanks(exercise, userBlanks);
+        break;
+      case 'prever_saida':
+        result = evaluateOutputPrediction(exercise, userPrediction);
+        break;
+      case 'prever_erro_de_tipo':
+        result = await evaluateTypeErrorPrediction(exercise, { line: typeErrorLine, reason: typeErrorReason });
+        break;
+      case 'corrigir_erros':
+        result = await evaluateBugFix(exercise, userCode);
+        break;
+      case 'desafio_pratico':
+        result = await evaluatePracticalChallenge(exercise, userCode);
+        break;
+      case 'codigo_livre':
+        result = await evaluateCodeForLanguage(exercise, userCode);
+        break;
+      default:
+        return assertNever(exercise.type, 'Modalidade do exercício');
     }
 
     setEvaluationResult(result);
@@ -236,8 +263,9 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     // Persist attempt and update streak if passed
     const updated = recordExerciseAttempt(exercise.id, result.passed, {
       userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
-      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' ? userCode : undefined,
+      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
       outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
+      typeErrorAnswer: typeErrorAnswerToSave,
       hintsUsed: hintsUnlockedCount,
       revealedSolution: showSolution,
     });
@@ -261,6 +289,8 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
   const handleReset = () => {
     setUserBlanks({});
     setUserPrediction('');
+    setTypeErrorLine(null);
+    setTypeErrorReason(null);
     setUserCode(
       exercise.type === 'corrigir_erros' && exercise.initialBuggyCode
         ? exercise.initialBuggyCode
@@ -278,8 +308,9 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
       setActiveTab('dicas');
       const updated = recordExerciseAttempt(exercise.id, false, {
         userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
-        userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' ? userCode : undefined,
+        userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
         outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
+        typeErrorAnswer: typeErrorAnswerToSave,
         hintsUsed: nextCount,
       });
       onProgressUpdated(updated);
@@ -293,8 +324,9 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     setActiveTab('solucao');
     const updated = recordExerciseAttempt(exercise.id, isAlreadyCompleted, {
       userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
-      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' ? userCode : undefined,
+      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
       outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
+      typeErrorAnswer: typeErrorAnswerToSave,
       hintsUsed: hintsUnlockedCount,
       revealedSolution: true,
     });
@@ -313,6 +345,8 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
         return 'Desafio Prático';
       case 'codigo_livre':
         return 'Código Livre';
+      case 'prever_erro_de_tipo':
+        return 'Previsão de Erro de Tipo';
       default:
         return 'Exercício';
     }
@@ -656,6 +690,28 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
               hasAttempted={hasAttempted}
               onChangeBlank={handleChangeBlank}
               onSubmit={handleVerify}
+            />
+          ) : exercise.type === 'prever_erro_de_tipo' && exercise.typeErrorChallenge ? (
+            <PredictTypeErrorViewer
+              code={exercise.codeToPredict || exercise.templateCode}
+              challenge={exercise.typeErrorChallenge}
+              selectedLine={typeErrorLine}
+              selectedReason={typeErrorReason}
+              onSelectLine={line => {
+                setTypeErrorLine(line);
+                setEvaluationResult(null);
+              }}
+              onSelectReason={reason => {
+                setTypeErrorReason(reason);
+                setEvaluationResult(null);
+              }}
+              lineFeedback={
+                evaluationResult
+                  ? typeErrorLine === exercise.typeErrorChallenge.errorLine
+                    ? 'correta'
+                    : 'incorreta'
+                  : null
+              }
             />
           ) : exercise.type === 'prever_saida' ? (
             <PredictOutputViewer

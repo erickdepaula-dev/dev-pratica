@@ -35,7 +35,7 @@ const STATUS_OPTIONS: ChipOption<StatusFilter>[] = [
 
 const TYPE_OPTIONS: ChipOption<ExerciseType | 'todos'>[] = [
   { id: 'todos', label: 'Todos os formatos' },
-  ...(['lacunas', 'corrigir_erros', 'prever_saida', 'codigo_livre', 'desafio_pratico'] as const).map(type => ({
+  ...(['lacunas', 'corrigir_erros', 'prever_saida', 'prever_erro_de_tipo', 'codigo_livre', 'desafio_pratico'] as const).map(type => ({
     id: type,
     label: getExerciseTypeTheme(type).shortLabel,
   })),
@@ -228,8 +228,15 @@ export const ExerciseList: React.FC<ExerciseListProps> = ({ progress, onSelectLa
   const exercises = useMemo(() => getExercisesByLanguage(currentLang), [currentLang]);
   const availableTopics = useMemo(() => getAvailableTopics(currentLang), [currentLang]);
 
+  // Só as modalidades que existem na trilha atual (ex.: "Erro de Tipo" é exclusiva de TS)
+  const typeOptions = useMemo(() => {
+    const present = new Set(exercises.map(ex => ex.type));
+    return TYPE_OPTIONS.filter(option => option.id === 'todos' || present.has(option.id));
+  }, [exercises]);
+
   useEffect(() => {
     setSelectedTopic('todos');
+    setSelectedType('todos');
   }, [currentLang]);
 
   const filteredExercises = useMemo(() => {
@@ -344,7 +351,7 @@ export const ExerciseList: React.FC<ExerciseListProps> = ({ progress, onSelectLa
           <ChipGroup
             groupId="type"
             label="Filtrar por modalidade"
-            options={TYPE_OPTIONS}
+            options={typeOptions}
             value={selectedType}
             onChange={setSelectedType}
           />

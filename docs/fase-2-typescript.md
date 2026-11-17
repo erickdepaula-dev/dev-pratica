@@ -90,7 +90,7 @@ Decidir na tarefa 2.6 se entra nesta fase ou fica para depois.
 - [x] `src/services/evaluator.ts`: validação para TS com **compilação real no navegador**
       (ver "Avaliador TS implementado" abaixo).
 - [x] Decidir se a modalidade `prever_erro_de_tipo` entra nesta fase — **entra**, com 10 exercícios por nível (básico, intermediário, avançado; o DEV é só de projetos)
-- [ ] Implementar a modalidade `prever_erro_de_tipo` (tipo, tela, avaliador, 30 exercícios)
+- [x] Implementar a modalidade `prever_erro_de_tipo` (tipo, tela, avaliador, 30 exercícios)
 - [ ] `src/services/aiHint.ts`: prompt do tutor ciente de TypeScript
       (deve explicar erros de tipo, não só de lógica)
 - [ ] `StudyGuide.tsx`: roteiro de estudo da trilha TS
@@ -197,6 +197,28 @@ tipo → não executa). O resultado final continua sendo um `EvaluationResult`.
 - **Medido no build de produção:** 1ª avaliação ~1 s (inclui download); seguintes ~100–200 ms de
   compilação. Por isso **não** há Web Worker por enquanto — se travar a UI, a etapa de compilação
   pode ser movida para um Worker sem mudar o pipeline.
+
+### Modalidade `prever_erro_de_tipo` (2.6)
+
+- Tipo `TypeErrorChallenge` (`errorLine`, `errorCode`, `reasonOptions`, `correctReason`) em
+  `Exercise.typeErrorChallenge`; o trecho fica em `codeToPredict`.
+- Tela `PredictTypeErrorViewer.tsx`: cada linha do código é um botão (radio, acessível por teclado);
+  motivo em `<fieldset>` com alternativas.
+- Avaliação `evaluateTypeErrorPrediction`: nota pelo gabarito (50% linha + 50% motivo, rápido e
+  determinístico). Ao acertar, o compilador é carregado e a **mensagem real** do TS é exibida.
+- Resposta persistida em `ExerciseAttempt.typeErrorAnswer` (campo opcional — progresso antigo continua válido).
+- 30 exercícios (10 por nível; DEV fica só com projetos) em `typeErrors{Basic,Intermediate,Advanced}.ts`,
+  montados pela fábrica `erroDeTipo()`. O verificador exige **exatamente um** diagnóstico por trecho
+  e confere linha e código (pegou 2 casos em que o TS sugere correção com outro código: TS2561, TS2820).
+- O catálogo só mostra os chips de modalidade presentes na trilha atual ("Erro de Tipo" só em TS).
+- Despacho no workspace virou `switch` exaustivo com `assertNever` (antes, um `else` final mandaria
+  modalidades novas para o avaliador de código).
+
+### Bugs pré-existentes corrigidos na 2.6
+
+- `recordExerciseAttempt` descartava `outputPrediction` (respostas de "prever saída" se perdiam ao
+  recarregar) e apagava `checklistDone` dos projetos DEV a cada nova gravação (ex.: ao liberar dica).
+- Header: "1 dias" → "1 dia".
 
 ### Verificador de conteúdo (QA)
 
