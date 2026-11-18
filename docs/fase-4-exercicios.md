@@ -84,10 +84,24 @@ de origem é uma publicação comercial e o repo é público, então o índice g
 títulos e tópicos. Os enunciados são escritos do zero na tarefa 4.3, no tom da plataforma.
 
 ### 4.3 — Conversão: 100 exercícios de lógica
-- [ ] Converter em lotes de 20 para o formato `Exercise` (lote 1 já tem o piloto, nº 1)
+- [ ] Converter em lotes de 20 para o formato `Exercise`
+  - [x] Lote 1 — nº 1–20 (módulo 01 completo + 16–20 do módulo 02)
+  - [ ] Lote 2 — nº 21–40
+  - [ ] Lote 3 — nº 41–60
+  - [ ] Lote 4 — nº 61–80
+  - [ ] Lote 5 — nº 81–100
 - [ ] Para cada um: `summary`, `description`, `goal`, `realWorldContext`, `testCases`, `explanation`
 - [ ] Escrever `solutionCode` em JS e TS
 - [ ] Classificar a dificuldade (nem todos os 100 são básicos)
+
+**Convenções (lote 1):** cada exercício é escrito com `logica()` (`src/data/logica/logicFactory.ts`):
+assinatura JS + assinatura TS + um corpo de solução (igual nas duas, salvo `tsBody`); o template sai
+automático. Funções puras no lugar de "leia do teclado / mostre na tela"; vários resultados viram
+objeto (`{ area, perimetro }`) ou tupla (`[number, number]`); categorias viram union de literais no
+TS (`'par' | 'ímpar'`); decimais são comparados com tolerância; cada exercício tem ao menos um teste
+que reprova o erro típico. Os nº 11–13 (sem enunciado na origem) foram criados: Idade em dias,
+Segundos em horas/minutos/segundos, Consumo médio de combustível. Dificuldade do lote 1: 17 básicos,
+3 intermediários (12, 19, 20).
 
 ### 4.4 — Conversão: condicionais e repetição
 - [ ] 30 exercícios de condicionais

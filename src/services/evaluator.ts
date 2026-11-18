@@ -432,9 +432,12 @@ export async function evaluateJavaScriptFreeCode(
     for (const tc of exercise.testCases) {
       if (tc.testFunction) {
         try {
+          // Cada teste roda no próprio escopo: um `const` do teste não colide com o código do aluno.
           const testRunner = new Function('console', `
             ${userCode}
-            ${tc.testFunction.replace('{{USER_CODE}}', userCode)}
+            return (function () {
+              ${tc.testFunction.replace('{{USER_CODE}}', userCode)}
+            })();
           `);
           const testResult = await Promise.resolve(testRunner(customConsole));
           const isSuccess = Boolean(testResult);
