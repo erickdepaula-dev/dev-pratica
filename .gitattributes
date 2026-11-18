@@ -1,0 +1,26 @@
+# Fim de linha: o repositório guarda LF, e o git normaliza na entrada.
+#
+# Sem este arquivo, um checkout no Windows pode gravar CRLF e aí TODO arquivo do
+# projeto aparece como modificado no `git status` sem nenhuma edição real — foi o que
+# aconteceu em 2026-11-18, com 118 arquivos fantasma. Com `text=auto eol=lf` o git
+# converte na hora de gravar no histórico, então o status fica limpo em qualquer sistema
+# e ninguém precisa configurar `core.autocrlf` na mão.
+* text=auto eol=lf
+
+# Binários: nunca converter.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.zip binary
+
+# Arquivos gerados: não poluem o diff nem contam na estatística de linguagem.
+package-lock.json -diff linguist-generated
+docs/material-apoio/dataset.json -diff linguist-generated
