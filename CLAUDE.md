@@ -9,6 +9,7 @@
 **SEMPRE siga esta ordem antes de escrever qualquer código:**
 
 1. **Ler `docs/CONTEXT.md`** — estado atual do projeto, o que já foi feito, onde parou.
+   A seção "Onde paramos" diz **em qual branch está o trabalho mais recente** (pode não ser a `main`).
 2. **Ler `docs/PLANO.md`** — visão geral das fases e ordem de execução.
 3. **Ler o arquivo da fase ativa** (`docs/fase-1-ui.md`, `docs/fase-2-typescript.md`, etc.) — tarefas detalhadas, checklist e critérios de pronto.
 4. **Confirmar com o usuário** qual tarefa atacar, caso a fase tenha mais de uma pendência.
@@ -16,7 +17,9 @@
 **Ao concluir qualquer tarefa:**
 
 1. Marcar o checkbox correspondente no arquivo da fase (`- [ ]` → `- [x]`).
-2. Atualizar a seção **"Onde paramos"** em `docs/CONTEXT.md`.
+2. Atualizar a seção **"Onde paramos"** em `docs/CONTEXT.md` — ela é um *retrato do estado atual*
+   (onde está o código, estado de cada fase, pendências, próximo passo), reescrito a cada tarefa;
+   o histórico vai no Changelog e nos arquivos das fases.
 3. Atualizar o **Changelog** em `docs/CONTEXT.md` com data e resumo.
 4. Rodar `npm run lint` para garantir que a tipagem está válida.
 
@@ -41,10 +44,15 @@ src/
 ├── data/                # Exercícios estáticos tipados
 │   ├── js/              # basic, intermediate, advanced, dev + modalities*
 │   ├── php/             # mesma estrutura
-│   └── index.ts         # agregador + helpers de consulta
-├── services/            # Lógica de IO: firebase, firestoreSync, storage, evaluator, aiHint
+│   ├── ts/              # mesma estrutura + typeErrors* (modalidade prever_erro_de_tipo)
+│   ├── logica/          # trilha de Lógica (Fase 4), resolvida em JS ou TS
+│   └── index.ts         # agregador + helpers de consulta (getExercisesByLanguage/ByTrack)
+├── services/            # IO e regras: firebase, firestoreSync, storage, evaluator, aiHint, xp, badges
+│   └── typescript/      # compilação real de TS no navegador (núcleo puro + pipeline)
+├── styles/              # tokens.css (design tokens)
 ├── types/               # Interfaces compartilhadas
-└── utils/               # Helpers puros (dateUtils)
+└── utils/               # Helpers puros (dateUtils, language, track, exerciseTheme)
+scripts/                 # check-ts-exercises.ts, check-gamification.ts (npm run check:*)
 ```
 
 ### Regras de código

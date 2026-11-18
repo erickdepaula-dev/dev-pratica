@@ -30,12 +30,12 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 | **Ofensiva** | Streak em dias, timezone `America/Fortaleza` (`src/utils/dateUtils.ts`) |
 | **Persistência** | localStorage + Firebase Firestore, login Google (`src/services/storage.ts`, `firestoreSync.ts`) |
 | **Design system** | Tokens em `src/styles/tokens.css` + `@theme` (`src/index.css`), temas em `src/utils/exerciseTheme.ts`, animações com `motion` e reduced motion global |
-| **Gamificação** | XP congelado por conclusão, 5 níveis de carreira, 11 conquistas, gráfico de XP por dia (`services/xp.ts`, `services/badges.ts`) |
-| **Avaliação** | Validação de lacunas, regex e test cases (`src/services/evaluator.ts`) |
+| **Gamificação** | XP congelado por conclusão, 5 níveis de carreira, 11 conquistas, gráfico de XP por dia (`services/xp.ts`, `services/badges.ts`) — *só na branch, ver "Onde paramos"* |
+| **Avaliação** | Lacunas, regex e test cases (`src/services/evaluator.ts`); **TypeScript compilado de verdade no navegador** (TS 5.9.3, pipeline compilar → executar → testar → regras em `src/services/typescript/`) |
 
 ### Ainda não existe
 
-- ❌ Trilha de lógica pura (material em PDF ainda não convertido)
+- 🟡 Trilha de Lógica: modelagem pronta (`Track`, `logicVariants`, `src/data/logica/` vazio); **sem exercícios e sem interface** ainda (Fase 4.3–4.6)
 
 ---
 
@@ -73,95 +73,68 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 
 ## 📌 Onde paramos
 
-**Última atualização:** 2026-11-17
+> **Retrato do estado atual** — reescrito a cada tarefa. O histórico completo está no
+> Changelog (abaixo) e nos arquivos de cada fase. Se você está retomando o trabalho sem
+> contexto, esta seção é suficiente para saber onde está tudo.
 
-**Fase ativa:** Fase 2 — Trilha TypeScript.
+**Última atualização:** 2026-11-18
 
-**Fase 1:** ✅ concluída (detalhes em `fase-1-ui.md` e no Changelog).
+### Onde está o código
 
-**Concluído na Fase 2:**
-- 2.1 — `Language` com `'typescript'`; `src/utils/language.ts` (`LANGUAGES`, `isLanguage`,
-  `assertNever`); migração defensiva de `selectedLanguage` no storage e no Firestore
-  (testada com progresso antigo, corrompido e sem o campo); despacho exaustivo
-  `evaluateCodeForLanguage` (antes, TS cairia no avaliador de PHP) com stub para TS;
-  Desafios IA restritos a PHP/JS (`AiChallengeLanguage`); tema/cor da trilha TS.
-- 2.2 — `src/data/ts/` (7 arquivos + `index.ts`) registrado em `allExercises`; tipo
-  `TsExercise<nivel>` faz o `tsc` barrar IDs fora de `ts-<nivel>-<slug>`;
-  `findDuplicateExerciseIds()` com alerta em dev.
-- 2.3 — **56 exercícios TS** (28 básico + 28 intermediário; por nível: 10 lacunas,
-  6 corrigir_erros, 6 prever_saida, 5 desafio_pratico, 1 codigo_livre), todos validados com o
-  compilador TS 5.9.3. Novo campo opcional `Exercise.typeAssertions` (testes de tipo; só
-  checados, nunca executados). Regras do avaliador para a 2.6 documentadas em `fase-2-typescript.md`.
-- 2.4 — +28 do avançado (constraints, keyof/T[K], conditional types, infer, mapped e template
-  literal types, discriminated unions, never, satisfies, declaration merging) e 4 projetos DEV
-  (validação de API a partir de unknown, formulário genérico, reducer exaustivo, cliente HTTP
-  tipado por endpoint). **Trilha TS com 88 exercícios**, todos validados com o compilador real.
+| O quê | Onde |
+| :--- | :--- |
+| Fases 1 e 2 | `main` (PR #1 mesclado em 2026-11-17, commit `835bc08`) |
+| Fase 3 inteira + Fase 4.1 | **só na branch `claude/gifted-wozniak-kif49s`** — ainda não está na `main` e não há PR aberto (o usuário pediu para não abrir por enquanto) |
 
-- 2.5 — Trilha TS na interface: seletor (Header, catálogo, menu mobile), card no Dashboard,
-  Progresso, realce de sintaxe TS. Seletor e grid derivam de `LANGUAGES` + `getLanguageTheme`.
-  Header ajustado para caber 3 trilhas sem overflow.
+Para trabalhar no estado mais recente: `git checkout claude/gifted-wozniak-kif49s`.
 
-- 2.6 (parcial) — **compilação real de TS no navegador** (pacote oficial 5.9.3 via alias,
-  carregado sob demanda) com pipeline extensível compilar → executar → testar → regras.
-  `npm run check:ts` valida o conteúdo com o mesmo pipeline do app. `npm run lint` agora
-  chama o TS 7 por caminho explícito (o alias sequestrava o `.bin/tsc`).
+### Estado de cada fase
 
-- 2.6 (parcial) — modalidade **`prever_erro_de_tipo`** com 30 exercícios (10 por nível); a
-  mensagem real do compilador aparece ao acertar. Trilha TS com **118 exercícios**.
-  Corrigidos bugs antigos: respostas de "prever saída" e checklist DEV não persistiam.
+| Fase | Estado | Detalhes |
+| :--- | :--- | :--- |
+| 1 — UI Redesign | ✅ Concluída | `fase-1-ui.md` |
+| 2 — Trilha TypeScript | 🟡 Tarefas feitas; 2 verificações manuais pendentes | `fase-2-typescript.md` |
+| 3 — Gamificação | 🟡 Tarefas feitas; 1 verificação manual pendente | `fase-3-gamificacao.md` |
+| 4 — Exercícios dos PDFs | 🟡 **Ativa** — 4.1 e 4.2 feitas | `fase-4-exercicios.md` |
 
-- 2.6 — tutor IA ciente de TS (diretrizes de tipagem + diagnósticos reais nos prompts) e roteiro
-  TS no Guia de Estudo. **Todas as tarefas da Fase 2 concluídas.**
+### Pendente de verificação manual (precisa do usuário)
 
-**Pendente de verificação manual (você):**
-1. Com uma chave da API Gemini configurada, pedir dica/diálogo num exercício TS com erro de tipo
-   e conferir se o tutor explica o erro sem sugerir any/as/@ts-ignore.
-2. Logado com Google, concluir um exercício TS e conferir que o progresso volta após recarregar
-   (sincronização com o Firestore).
+Não dá para testar no ambiente de desenvolvimento (sem chave Gemini e sem login Google):
+1. **Tutor IA em TS (Fase 2):** com `GEMINI_API_KEY` no `.env`, pedir dica/diálogo num exercício TS
+   com erro de tipo; o tutor deve explicar o erro sem sugerir `any`/`as`/`@ts-ignore`.
+2. **Sincronização da trilha TS (Fase 2):** logado com Google, concluir um exercício TS e conferir
+   que o progresso volta após recarregar.
+3. **Sincronização de XP e conquistas (Fase 3):** logado, concluir um exercício e conferir em outro
+   navegador que XP e conquistas aparecem.
 
-Depois da verificação, marcar a Fase 2 como ✅.
+Quando passarem: marcar as Fases 2 e 3 como ✅ (e os critérios correspondentes nos arquivos das fases).
 
-**Fase 3 em andamento** (o usuário pediu para seguir e testar tudo depois; PR #1 foi mesclado na
-`main` e a branch de trabalho recomeçou a partir dela).
-- 3.1 — tipos (`types/gamification.ts`), cálculo de XP e níveis (`services/xp.ts`), badges
-  declarativas (`services/badges.ts`) e `npm run check:xp` (15 testes + calibração). Níveis
-  recalibrados contra o volume real (Staff 15.000 → 8.000). XP total é derivado dos `xpEarned`
-  congelados — ver "Decisões de modelagem" em `fase-3-gamificacao.md`.
+### Próximo passo
 
-- 3.2 — persistência: `xpEarned` congelado na 1ª conclusão (exercícios e desafios IA),
-  `migrateProgress()` com XP/badges retroativos, merge no Firestore que nunca perde XP nem
-  conclusão, `badges` sincronizadas.
+**Aguardando o usuário decidir a ordem na Fase 4:**
+- **4.6 (interface da trilha de Lógica) antes da 4.3** — recomendado: cada lote de exercícios
+  convertido já pode ser testado na tela; ou
+- **4.3 direto** (converter os 100 exercícios de lógica em lotes de 20).
 
-- 3.3 — interface: `XpBar` no Header, "+N XP" no acerto, `CareerCard` no Dashboard, `BadgeGrid`
-  na aba Progresso, toast de conquista. Header reequilibrado (overflow em 1280+). Dicas/critérios
-  DEV não consomem mais a "1ª tentativa" (`countAttempt: false`).
+Contexto da Fase 4: trilha **"Lógica" própria** (decisão do usuário), resolvida em **JS ou TS**
+(PHP não roda no navegador). Modelagem pronta: `Track` separado de `Language`, `logicVariants`
+por exercício e `resolveLogicExercise()` — ver "Modelagem decidida (4.1)" em `fase-4-exercicios.md`.
 
-- 3.4 — integração: "+N XP" nos Desafios IA, "até +N XP" nos cards do catálogo, gráfico de XP
-  por dia (14 dias, fuso de Fortaleza, com tabela) na aba Progresso. **Todas as tarefas da Fase 3
-  concluídas.**
+### Como retomar uma sessão
 
-**Pendente de verificação manual (Fase 3):** logado com Google, concluir um exercício e conferir
-em outro navegador que o XP e as conquistas aparecem (sincronização com o Firestore).
+```bash
+git checkout claude/gifted-wozniak-kif49s
+npm install --legacy-peer-deps   # o projeto tem conflito de peer deps (vite 8)
+npm run lint && npm run check:ts && npm run check:xp && npm run build
+```
 
-**Fase 4 iniciada.** 4.1 — usuário decidiu por **trilha "Lógica" própria**. Modelagem: `Track`
-separado de `Language`; exercícios de Lógica com variantes JS e TS (`logicVariants`) e
-`resolveLogicExercise()` montando a versão escolhida (avaliador/XP sem mudanças); convenção de
-ID `logica-001-...`/`logica-c01-...`/`logica-r01-...`; `src/data/logica/` registrado (vazio).
-Acrescentada a tarefa 4.6 (interface da trilha), que o plano não tinha.
+- O dev server (`npm run dev`) **não recarrega arquivos alterados** (`watch: null`): reinicie para ver mudanças.
+- `npm run lint` usa o TS 7 por caminho explícito; o compilador do navegador é o TS 5.9.3
+  (alias `typescript-browser`). Não trocar um pelo outro — ver `fase-2-typescript.md`.
 
-**Próximo passo:** 4.6 (interface) antes da 4.3 — para cada lote convertido já poder ser testado
-na tela — ou 4.3 direto (conversão em lotes de 20). Confirmar a ordem com o usuário.
-Lembrete: até a 2.6 a avaliação de TS é um stub — exercícios `lacunas` e `prever_saida`
-já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
-`desafio_pratico` em TS só serão avaliados de verdade após a 2.6.
-
-**Pendências / decisões em aberto:**
+**Decisões em aberto (além da ordem da Fase 4):**
 - Paleta da Fase 1: implementada com a proposta inicial; ajustes finos só exigem editar `src/styles/tokens.css`.
-- ~~Fase 2, tarefa 2.6: regex vs transpilar~~ → **decidido:** compilação real no navegador
-  com o pacote oficial `typescript`, em pipeline extensível (compilar → executar → testar).
-  Atenção: o TS 7 do lint é nativo e não tem API JS; a 2.6 usa a linha 5.x via alias npm.
-  Detalhes em `fase-2-typescript.md`.
-- ~~Fase 4, tarefa 4.1: trilha própria vs distribuir~~ → **decidido: trilha "Lógica" própria**, resolvida em JS ou TS.
+- Botão "Continuar" foi removido do Header na Fase 3 (não cabia); pode voltar como atalho só com ícone se o usuário quiser.
 
 ---
 
@@ -193,3 +166,4 @@ já funcionam (não dependem do compilador); `codigo_livre`, `corrigir_erros` e
 | 2026-11-17 | 3 | Tarefa 3.3 concluída: barra de XP, +XP no acerto, card de carreira, grid e toast de conquistas. Header sem overflow de 375 a 1920 px; botão "Continuar" do Header removido. Dicas não consomem mais a 1ª tentativa. |
 | 2026-11-17 | 3 | Tarefa 3.4 concluída e Fase 3 com todas as tarefas feitas: XP nos Desafios IA e nos cards, gráfico de XP por dia. Pendente: verificação manual da sincronização com o Firestore. |
 | 2026-11-17 | 4 | Tarefa 4.1 concluída: trilha "Lógica" própria (decisão do usuário); `Track` separado de `Language`, variantes JS/TS por exercício com `resolveLogicExercise`, convenção de IDs, badges por trilha. Tarefa 4.6 (interface) acrescentada. |
+| 2026-11-18 | — | "Onde paramos" reescrito como retrato do estado atual (local do código por branch, estado por fase, verificações manuais pendentes, próximo passo e como retomar). Removidos trechos desatualizados (fase ativa errada, lembrete do stub de TS). |
