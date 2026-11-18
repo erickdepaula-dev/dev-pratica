@@ -12,6 +12,7 @@ O roadmap do projeto vive em [`docs/`](./docs/):
 | :--- | :--- |
 | [`CLAUDE.md`](./CLAUDE.md) | Protocolo para sessões de IA: convenções, stack e o que ler antes de codar |
 | [`docs/TESTANDO-LOCAL.md`](./docs/TESTANDO-LOCAL.md) | **Como rodar e testar na sua máquina** (instalação, `.env`, verificações, roteiro de teste) |
+| [`docs/DEPLOY.md`](./docs/DEPLOY.md) | Deploy na Vercel (atualiza a cada push na `main`) |
 | [`docs/CONTEXT.md`](./docs/CONTEXT.md) | **Estado atual** — o que já existe, onde paramos, changelog |
 | [`docs/PLANO.md`](./docs/PLANO.md) | Visão geral das 4 fases e ordem de execução |
 | [`docs/fase-1-ui.md`](./docs/fase-1-ui.md) | Fase 1 — UI redesign (design tokens, gradientes, animações) |

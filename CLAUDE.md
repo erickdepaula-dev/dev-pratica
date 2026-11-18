@@ -55,7 +55,8 @@ src/
 ├── styles/              # tokens.css (design tokens)
 ├── types/               # Interfaces compartilhadas
 └── utils/               # Helpers puros (dateUtils, language, track, exerciseTheme)
-scripts/                 # check-ts-exercises.ts, check-gamification.ts (npm run check:*)
+server/                  # apiApp.ts (rotas /api do Gemini) + vercelEntry.ts (função da Vercel)
+scripts/                 # check-ts-exercises.ts, check-gamification.ts, build-vercel.mjs
 ```
 
 ### Regras de código
@@ -73,11 +74,15 @@ npm run lint    # tsc --noEmit (TS 7, por caminho explícito) — validação de
 npm run check:ts # valida os exercícios TS com o compilador real (rodar ao criar/editar exercícios TS)
 npm run check:xp # testes de sanidade de XP, níveis e badges + calibração
 npm run build   # build de produção
+npm run build:vercel # build da Vercel (.vercel/output) — ver docs/DEPLOY.md
 npm start       # produção
 ```
 
 Roteiro para o usuário rodar e testar localmente: `docs/TESTANDO-LOCAL.md` (manter atualizado
 quando mudar comando, variável de ambiente ou o que há para testar).
+
+**Deploy:** Vercel, automático a cada push na `main` (`docs/DEPLOY.md`). As rotas `/api/*` ficam em
+`server/apiApp.ts` (usado pelo `server.ts` local e pela função da Vercel) — rota nova vai lá.
 
 ---
 

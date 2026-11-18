@@ -82,6 +82,10 @@ PORT=4000 npm run dev
 
 No PowerShell: `$env:PORT=4000; npm run dev`.
 
+### Build da Vercel (opcional)
+
+`npm run build:vercel` gera em `.vercel/output/` exatamente o que é publicado. Veja [`DEPLOY.md`](./DEPLOY.md).
+
 ### Versão de produção (opcional)
 
 Gera o build e serve os arquivos estáticos de `dist/`, como em produção:
