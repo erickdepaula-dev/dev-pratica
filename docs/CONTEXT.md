@@ -35,7 +35,7 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 
 ### Ainda não existe
 
-- 🟡 Trilha de Lógica: modelagem e interface prontas; 60 de 160 exercícios (lotes 1–3 da 4.3) — conversão segue nas Fases 4.3–4.4
+- 🟡 Trilha de Lógica: modelagem e interface prontas; 80 de 160 exercícios (lotes 1–4 da 4.3) — conversão segue nas Fases 4.3–4.4
 
 ---
 
@@ -83,7 +83,7 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 
 | O quê | Onde |
 | :--- | :--- |
-| Fases 1, 2, 3, a Fase 4 até o lote 3 da 4.3 e o setup de deploy | `main` (Fases 1–2 via PR #1; o resto por fast-forward — o último em 2026-11-18, a pedido do usuário no meio da Fase 4) |
+| Fases 1, 2, 3, a Fase 4 até o lote 4 da 4.3 e o setup de deploy | `main` (Fases 1–2 via PR #1; o resto por fast-forward — o último em 2026-11-18, a pedido do usuário no meio da Fase 4) |
 | Trabalho em andamento da fase ativa | branch `claude/gifted-wozniak-kif49s` (igual à `main` até o próximo commit) |
 
 **Regra (definida pelo usuário em 2026-11-18, ampliada no mesmo dia):** o trabalho é feito na branch
@@ -98,7 +98,7 @@ está no ar.
 | 1 — UI Redesign | ✅ Concluída | `fase-1-ui.md` |
 | 2 — Trilha TypeScript | 🟡 Tarefas feitas; 2 verificações manuais pendentes | `fase-2-typescript.md` |
 | 3 — Gamificação | 🟡 Tarefas feitas; 1 verificação manual pendente | `fase-3-gamificacao.md` |
-| 4 — Exercícios dos PDFs | 🟡 **Ativa** — 4.1, 4.2 e 4.6 feitas; 4.3 em andamento (lotes 1–3 de 5 feitos: nº 1–60) | `fase-4-exercicios.md` |
+| 4 — Exercícios dos PDFs | 🟡 **Ativa** — 4.1, 4.2 e 4.6 feitas; 4.3 em andamento (lotes 1–4 de 5 feitos: nº 1–80) | `fase-4-exercicios.md` |
 
 ### Pendente de verificação manual (precisa do usuário)
 
@@ -114,16 +114,18 @@ Quando passarem: marcar as Fases 2 e 3 como ✅ (e os critérios correspondentes
 
 ### Próximo passo
 
-**4.3 em andamento — lotes 1 a 3 de 5 feitos (exercícios 1 a 60).** Arquivos por módulo em
+**4.3 em andamento — lotes 1 a 4 de 5 feitos (exercícios 1 a 80).** Arquivos por módulo em
 `src/data/logica/`: `m01PrimeirosAlgoritmos.ts` (nº 1–15), `m02EstruturasCondicionais.ts` (nº 16–35)
-e `m03EstruturasDeRepeticao.ts` (nº 36–60) — os três módulos completos.
+`m03EstruturasDeRepeticao.ts` (nº 36–60) e `m04VetoresEMatrizes.ts` (nº 61–80) — os quatro módulos
+completos.
 Cada exercício é escrito com o helper `logica()` (`logicFactory.ts`): assinatura JS e TS + um corpo
 de solução (`tsBody` quando o TS precisa de anotação, ex.: `const numeros: number[] = []`); o
 template ("// Escreva aqui o seu algoritmo") sai automático. Os nº 11–13 (sem enunciado na origem)
 foram criados do zero: Idade em dias, Segundos em h/min/s, Consumo médio.
 
-**Próximo passo: lote 4 (nº 61–80, vetores e matrizes)** num novo `m04VetoresEMatrizes.ts`,
-registrado em `src/data/logica/index.ts`. Depois o lote 5 (81–100, funções → `m05FuncoesEDesafios.ts`).
+**Próximo passo: lote 5 (nº 81–100, funções e desafios combinados)** num novo
+`m05FuncoesEDesafios.ts`, registrado em `src/data/logica/index.ts`. Com ele a 4.3 fecha; depois 4.4
+(60 bônus), 4.5 (teste de mesa) e o material de referência.
 Convenções: funções puras (sem leitura de teclado;
 "mostrar na tela" vira devolver um array), resultados múltiplos em objeto ou tupla, categorias
 como union de literais no TS, decimais comparados com tolerância, testes que reprovam o erro
@@ -203,3 +205,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | — | Deploy na Vercel preparado: `server.ts` separado em `server/apiApp.ts` (rotas) + servidor local; `npm run build:vercel` gera `.vercel/output` (estático + API Express empacotada como função Node 22); `vercel.json`; guia `docs/DEPLOY.md`. Criação do projeto pelo conector recusada (403) — importação fica para o usuário no painel. Levado para a `main`. |
 | 2026-11-18 | — | Projeto `dev-pratica` criado na Vercel pela API (token do usuário; o conector MCP é só leitura), ligado ao GitHub com produção na `main`. Primeiro deploy de produção: build OK, função da API `READY`, domínio `dev-pratica.vercel.app`. |
 | 2026-11-18 | 4 | 4.3, lote 3 (nº 41–60): módulo 03 (repetição) completo — acumuladores, contadores, máximo/mínimo, sentinelas (`while`/`break`), duas passadas (acima da média), `number \| null` no TS. `check:ts`: 60 exercícios de Lógica, 0 problemas; 12 soluções erradas testadas (a de `else if` no nº 51 é correta — dica e explicação corrigidas). |
+| 2026-11-18 | 4 | 4.3, lote 4 (nº 61–80): módulo 04 (vetores e matrizes) completo — busca, contagem, filtro, intercalar, comparar, vetores paralelos, Bubble Sort, matrizes com laços aninhados; sem métodos prontos (reverse/sort/filter/indexOf). Primeiros 2 exercícios `avancado` (75, 79). `check:ts`: 80 de Lógica, 0 problemas; 14 soluções erradas testadas, todas reprovadas. Levado para a `main`. |
