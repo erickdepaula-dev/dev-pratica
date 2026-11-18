@@ -181,4 +181,5 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-17 | 4 | Tarefa 4.1 concluída: trilha "Lógica" própria (decisão do usuário); `Track` separado de `Language`, variantes JS/TS por exercício com `resolveLogicExercise`, convenção de IDs, badges por trilha. Tarefa 4.6 (interface) acrescentada. |
 | 2026-11-18 | — | "Onde paramos" reescrito como retrato do estado atual (local do código por branch, estado por fase, verificações manuais pendentes, próximo passo e como retomar). Removidos trechos desatualizados (fase ativa errada, lembrete do stub de TS). |
 | 2026-11-18 | 3 | Fase 3 (+ 4.1) levada para a `main` por fast-forward. Nova regra do usuário: levar para a `main` ao fim de cada fase. Ordem da Fase 4 decidida: 4.6 (interface) antes da 4.3. |
-\n| 2026-11-18 | 4 | 4.6 parcial (base): trilha selecionada e linguagem da Lógica no progresso (com migração e sync), tema da trilha de Lógica. Cor ameixa (#A44C8C) escolhida por busca de matiz: maior distância de todas as trilhas e status (ΔE ≥ 16); validada com a skill de dataviz. |\n
+
+| 2026-11-18 | 4 | 4.6 parcial (base): trilha selecionada e linguagem da Lógica no progresso (com migração e sync), tema da trilha de Lógica. Cor ameixa (#A44C8C) escolhida por busca de matiz: maior distância de todas as trilhas e status (ΔE ≥ 16); validada com a skill de dataviz. |
