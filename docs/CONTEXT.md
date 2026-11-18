@@ -145,8 +145,8 @@ publicado (leitura anônima recusada, como deve ser).
 sessão (navegador bloqueando armazenamento de terceiros, porque o `authDomain` era outro domínio).
 Correção: proxy `/__/auth` na Vercel + URI `https://dev-pratica.vercel.app/__/auth/handler` no
 cliente OAuth (feito pelo usuário) + `VITE_FIREBASE_AUTH_DOMAIN=dev-pratica.vercel.app` na Vercel,
-só em Production. Topo logado mostra "● Conectado" + "Sair". **Falta o usuário testar o login** (o
-Google pode levar alguns minutos para aplicar o URI novo) e então as 3 verificações manuais.
+só em Production. Topo logado mostra "● Conectado" + "Sair". **Login confirmado pelo usuário em produção
+(2026-11-18)**; o Painel cumprimenta pelo primeiro nome. Faltam só as 3 verificações manuais.
 
 **Como testar localmente:** [`TESTANDO-LOCAL.md`](./TESTANDO-LOCAL.md) (instalação, `.env`, verificações
 automáticas, roteiro de teste manual por fase, problemas comuns).
@@ -226,3 +226,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | — | Firestore `(default)` criado no projeto `dev-pratica` e `firestore.rules` publicado pelo usuário (conteúdo conferido, idêntico ao do repositório). Conferido pela API: leitura anônima recusada. Configuração do Firebase completa. |
 | 2026-11-18 | — | Login: no 1º teste em produção o usuário voltou do Google sem sessão. Topo logado agora mostra "● Conectado" (abre o menu da conta) e "Sair"; para caber de 375 a 1920 px, com login as pílulas de trilha ficam só com emoji e o nome da marca some abaixo de `lg` (deslogado, nada mudou). Aviso quando o redirecionamento volta sem sessão. Proxy `/__/auth` e `/__/firebase` na Vercel para servir o login no domínio do site (ativação depende do URI de redirecionamento no Google Cloud). |
 | 2026-11-18 | — | Login pelo domínio do site ativado: usuário adicionou o URI de redirecionamento e a origem no cliente OAuth; agente cadastrou `VITE_FIREBASE_AUTH_DOMAIN=dev-pratica.vercel.app` (só Production) e refez o deploy. Para desfazer: apagar a variável e refazer o deploy. |
+| 2026-11-18 | — | Login com Google confirmado pelo usuário em produção (topo em "● Conectado" + "Sair", progresso carregado). Painel passa a cumprimentar pelo primeiro nome da conta Google ("Olá, Desenvolvedor" só para visitante). |

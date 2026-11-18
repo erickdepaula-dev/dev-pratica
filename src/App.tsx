@@ -308,6 +308,7 @@ export default function App() {
                 onNavigateToProgress={() => setActiveTab('progresso')}
                 onNavigateToGuide={() => setActiveTab('guia')}
                 onNavigateToAiChallenges={() => setActiveTab('desafios_ia')}
+                userName={currentUser?.displayName}
               />
             )}
 

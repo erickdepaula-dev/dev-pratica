@@ -29,6 +29,8 @@ interface DashboardProps {
   onNavigateToProgress: () => void;
   onNavigateToGuide: () => void;
   onNavigateToAiChallenges?: () => void;
+  /** Nome de quem está conectado (primeiro nome no cumprimento); ausente = visitante. */
+  userName?: string | null;
 }
 
 
@@ -172,6 +174,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onNavigateToProgress,
   onNavigateToGuide,
   onNavigateToAiChallenges,
+  userName,
 }) => {
   const currentTrack = getSelectedTrack(progress);
   const currentTheme = getTrackTheme(currentTrack);
@@ -216,7 +219,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               Trilha {currentTheme.name} ({currentTheme.tag})
             </span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-primary tracking-tight">Olá, Desenvolvedor 👋</h1>
+          <h1 className="text-xl sm:text-2xl font-black text-primary tracking-tight">Olá, {userName?.trim().split(/\s+/)[0] || 'Desenvolvedor'} 👋</h1>
           <p className="text-xs text-muted">
             Foco no aprendizado prático com exercícios interativos e problemas reais de produção.
           </p>
