@@ -12,6 +12,14 @@ import type { Exercise } from '../../types/exercise';
 import type { PipelineStageName, PipelineStageReport, TsCompileOutput } from '../../types/typescriptEvaluation';
 import type { EvaluationResult } from '../evaluator';
 import { formatDiagnostic } from './compilerCore';
+import {
+  alvoDoExercicio,
+  codigoDaSonda,
+  diagnosticar,
+  lerSonda,
+  resumoDaAvaliacao,
+  type DiagnosticoDeCodigo,
+} from '../codeDiagnostics';
 
 type TestCaseResult = EvaluationResult['testCaseResults'][number];
 
@@ -142,7 +150,8 @@ export const testStage: PipelineStage = {
           description: tc.description,
           passed: ok,
           expected: tc.expectedOutput,
-          output: ok ? tc.expectedOutput : 'Resultado diferente do esperado',
+          // Definida no fim do pipeline, quando já se sabe se há um diagnóstico estrutural.
+          output: ok ? tc.expectedOutput : undefined,
         });
       } catch (e) {
         allPassed = false;
@@ -192,6 +201,32 @@ export async function runPipeline(
   const allPassed = ctx.checks.length > 0 && passedCount === ctx.checks.length;
   const scorePercent = ctx.checks.length > 0 ? Math.round((passedCount / ctx.checks.length) * 100) : 0;
 
+  // Procura a causa estrutural da falha, sondando o JS emitido pelo compilador. Só faz sentido
+  // quando o código chegou a compilar e rodar: sem isso, o erro já foi relatado pela etapa.
+  let diagnostico: DiagnosticoDeCodigo | null = null;
+  if (!allPassed && ctx.compiled?.js && !ctx.haltReason) {
+    const alvo = alvoDoExercicio(exercise.solutionCode);
+    if (alvo) {
+      try {
+        diagnostico = diagnosticar(
+          alvo,
+          lerSonda(await runInSandbox(ctx.compiled.js, codigoDaSonda(alvo.nome), [])),
+          exercise.solutionCode,
+        );
+      } catch {
+        // Sondagem é um extra: se falhar, o resultado sai com o feedback genérico.
+      }
+    }
+  }
+
+  // A tela mostra `output` e, na falta dele, `error`. Havendo diagnóstico, ele vem antes, e a
+  // mensagem do runtime continua no campo `error` para quem quiser o texto técnico.
+  for (const check of ctx.checks) {
+    if (check.passed || check.output !== undefined) continue;
+    if (diagnostico) check.output = diagnostico.resumo;
+    else if (!check.error) check.output = 'Resultado diferente do esperado';
+  }
+
   return {
     passed: allPassed,
     scorePercent,
@@ -203,6 +238,6 @@ export async function runPipeline(
       ? ctx.haltReason
       : allPassed
         ? 'Parabéns! O código compila sem erros de tipo e passou em todos os testes.'
-        : `${passedCount} de ${ctx.checks.length} verificações passaram. Veja os detalhes abaixo.`,
+        : resumoDaAvaliacao(passedCount, ctx.checks.length, diagnostico),
   };
 }

@@ -1,6 +1,14 @@
 import { Exercise, Blank } from '../types/exercise';
 import { assertNever } from '../utils/language';
 import type { TsDiagnostic } from '../types/typescriptEvaluation';
+import {
+  alvoDoExercicio,
+  codigoDaSonda,
+  diagnosticar,
+  lerSonda,
+  resumoDaAvaliacao,
+  type DiagnosticoDeCodigo,
+} from './codeDiagnostics';
 
 export interface BlankValidationResult {
   blankId: string;
@@ -445,7 +453,9 @@ export async function evaluateJavaScriptFreeCode(
             description: tc.description,
             passed: isSuccess,
             expected: tc.expectedOutput,
-            output: isSuccess ? tc.expectedOutput : 'Falhou no teste de validação',
+            // A mensagem do teste reprovado é definida depois, quando já se sabe se há um
+            // diagnóstico estrutural que explique a falha.
+            output: isSuccess ? tc.expectedOutput : undefined,
           });
         } catch (err: any) {
           testCaseResults.push({
@@ -486,6 +496,30 @@ export async function evaluateJavaScriptFreeCode(
   const allPassed = passedTests === testCaseResults.length && testCaseResults.length > 0;
   const scorePercent = testCaseResults.length > 0 ? Math.round((passedTests / testCaseResults.length) * 100) : 0;
 
+  // Sobrou teste reprovado: procura uma causa estrutural que explique a falha.
+  let diagnostico: DiagnosticoDeCodigo | null = null;
+  if (!allPassed) {
+    const alvo = alvoDoExercicio(exercise.solutionCode);
+    if (alvo) {
+      try {
+        const sonda = new Function('console', `${userCode}\n${codigoDaSonda(alvo.nome)}`);
+        diagnostico = diagnosticar(alvo, lerSonda(sonda(customConsole)), exercise.solutionCode);
+      } catch {
+        // O código do aluno já rodou acima; se a sondagem falhar mesmo assim, segue sem
+        // diagnóstico — o feedback genérico é pior, mas nunca errado.
+      }
+    }
+  }
+
+  // A tela mostra `output` e, na falta dele, `error`. Havendo diagnóstico, ele vem antes: para
+  // quem está começando, "a função somar não foi encontrada" diz mais que "somar is not defined"
+  // — e a mensagem original segue no campo `error`, para quem quiser o texto do runtime.
+  for (const resultado of testCaseResults) {
+    if (resultado.passed || resultado.output !== undefined) continue;
+    if (diagnostico) resultado.output = diagnostico.resumo;
+    else if (!resultado.error) resultado.output = 'Resultado diferente do esperado';
+  }
+
   return {
     passed: allPassed,
     scorePercent,
@@ -494,7 +528,7 @@ export async function evaluateJavaScriptFreeCode(
     testCaseResults,
     generalFeedback: allPassed
       ? 'Parabéns! Todos os testes unitários passaram com êxito.'
-      : `${passedTests} de ${testCaseResults.length} testes passaram. Verifique os critérios.`,
+      : resumoDaAvaliacao(passedTests, testCaseResults.length, diagnostico),
   };
 }
 
