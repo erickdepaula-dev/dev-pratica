@@ -20,6 +20,14 @@ Pasta local `C:\CURSO\programacao` (não versionada no repositório):
 | `Guia Rápido de Operadores.pdf` | Referência de operadores |
 | `Guia Visual de Teste de Mesa.pdf` | Método de teste de mesa |
 
+**Material extraído:** além do índice de títulos, os enunciados completos, requisitos e
+tabelas de teste estão em **[`material-apoio/BANCO_EXERCICIOS.md`](./material-apoio/BANCO_EXERCICIOS.md)**
+(e em `material-apoio/dataset.json`, estruturado). Use-o para saber a **especificação** de cada
+exercício — regra, fronteiras e valores de teste. A prosa (`description`, `realWorldContext`,
+`hints`, `explanation`) continua escrita do zero, como nos nº 1 a 80.
+
+Reproduzível com `python3 scripts/build-exercicios.py <pasta-dos-pdfs>`.
+
 **Total:** 160 exercícios de lógica, já catalogados em
 **[`fase-4-indice-exercicios.md`](./fase-4-indice-exercicios.md)** — número, módulo e título
 de cada um, com a progressão de tópicos. Comece por ali, não pelos PDFs.
