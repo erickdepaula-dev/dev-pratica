@@ -57,8 +57,9 @@ GEMINI_API_KEY="sua-chave-aqui"
 
 O `APP_URL` pode ficar como está para uso local.
 
-O login com Google e o Firestore **não precisam de configuração**: a configuração do Firebase já está em
-`firebase-applet-config.json`.
+A configuração do Firebase já está em `firebase-applet-config.json`. Para o **login com Google**
+funcionar localmente, porém, o domínio `localhost` precisa estar liberado no Firebase (Authentication →
+Settings → Authorized domains) — hoje não está; ver o passo 6 de [`DEPLOY.md`](./DEPLOY.md).
 
 ---
 
@@ -194,6 +195,6 @@ Você pode zerar de três formas:
 | Mudança no código não aparece | O servidor não observa arquivos | Pare e rode `npm run dev` de novo |
 | `EADDRINUSE: ... 3000` | Porta ocupada (outro `npm run dev` aberto?) | Feche o outro processo ou use `PORT=4000` |
 | Tutor responde sempre de forma genérica | Sem `GEMINI_API_KEY` (respostas de *fallback*) | Preencha o `.env` e reinicie o servidor |
-| Login Google abre e fecha / erro `auth/unauthorized-domain` | Domínio não autorizado no Firebase | Use `localhost` (não `127.0.0.1` nem IP da rede); outros domínios precisam ser adicionados no console do Firebase → Authentication → Settings → Authorized domains |
+| "Login bloqueado: o domínio … não está autorizado" (`auth/unauthorized-domain`) | Domínio fora da lista do Firebase | Adicione `localhost` (e `dev-pratica.vercel.app`) em Firebase → Authentication → Settings → Authorized domains. Use `localhost`, não `127.0.0.1` nem o IP da rede |
 | Erro de sintaxe estranho ao rodar | Node antigo | Atualize para o Node 22 |
 | Primeira verificação de TS demora ~1–2 s | O compilador TS é carregado sob demanda | Normal; as seguintes são rápidas |

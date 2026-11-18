@@ -152,8 +152,11 @@ export default function App() {
       const { code, message } = (error ?? {}) as { code?: string; message?: string };
       if (code === 'auth/popup-blocked' || message === 'POPUP_BLOCKED') {
         triggerToast('Janela pop-up bloqueada. Permita pop-ups no navegador para autenticar.', 'error');
+      } else if (code === 'auth/unauthorized-domain') {
+        // O domínio atual não está em Firebase → Authentication → Settings → Authorized domains.
+        triggerToast(`Login bloqueado: o domínio ${window.location.hostname} não está autorizado no Firebase (ver docs/DEPLOY.md).`, 'error');
       } else {
-        triggerToast('Não foi possível autenticar no momento. Tente novamente.', 'error');
+        triggerToast(`Não foi possível autenticar no momento${code ? ` (${code})` : ''}. Tente novamente.`, 'error');
       }
     } finally {
       setIsSyncing(false);

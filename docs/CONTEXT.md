@@ -140,7 +140,8 @@ por exercício e `resolveLogicExercise()` — ver "Modelagem decidida (4.1)" em 
 **Deploy:** Vercel, automático a cada push na `main` — produção em **https://dev-pratica.vercel.app**
 (projeto `dev-pratica`, ver [`DEPLOY.md`](./DEPLOY.md)). **Pendente do usuário:** cadastrar
 `GEMINI_API_KEY` nas variáveis do projeto na Vercel (sem ela o tutor usa respostas prontas) e liberar
-`dev-pratica.vercel.app` no Firebase Auth (Authorized domains), senão o login Google falha em produção.
+`dev-pratica.vercel.app` **e `localhost`** no Firebase Auth (Authorized domains). Confirmado em
+2026-11-18: nenhum dos dois está na lista — é a causa do erro ao clicar em "Entrar" (passo 6 do `DEPLOY.md`).
 
 **Como testar localmente:** [`TESTANDO-LOCAL.md`](./TESTANDO-LOCAL.md) (instalação, `.env`, verificações
 automáticas, roteiro de teste manual por fase, problemas comuns).
@@ -206,3 +207,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | — | Projeto `dev-pratica` criado na Vercel pela API (token do usuário; o conector MCP é só leitura), ligado ao GitHub com produção na `main`. Primeiro deploy de produção: build OK, função da API `READY`, domínio `dev-pratica.vercel.app`. |
 | 2026-11-18 | 4 | 4.3, lote 3 (nº 41–60): módulo 03 (repetição) completo — acumuladores, contadores, máximo/mínimo, sentinelas (`while`/`break`), duas passadas (acima da média), `number \| null` no TS. `check:ts`: 60 exercícios de Lógica, 0 problemas; 12 soluções erradas testadas (a de `else if` no nº 51 é correta — dica e explicação corrigidas). |
 | 2026-11-18 | 4 | 4.3, lote 4 (nº 61–80): módulo 04 (vetores e matrizes) completo — busca, contagem, filtro, intercalar, comparar, vetores paralelos, Bubble Sort, matrizes com laços aninhados; sem métodos prontos (reverse/sort/filter/indexOf). Primeiros 2 exercícios `avancado` (75, 79). `check:ts`: 80 de Lógica, 0 problemas; 14 soluções erradas testadas, todas reprovadas. Levado para a `main`. |
+| 2026-11-18 | — | Erro no "Entrar" investigado: os domínios autorizados do Firebase Auth só têm os do AI Studio (faltam `dev-pratica.vercel.app` e `localhost`); a chave de API não tem restrição de origem. O app agora mostra a causa (`auth/unauthorized-domain`) em vez de uma mensagem genérica. Docs corrigidas (o `TESTANDO-LOCAL.md` dizia que o login funcionava em `localhost`). |
