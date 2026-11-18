@@ -115,19 +115,21 @@ em janela anônima bloqueiam. Nesses navegadores o usuário volta do Google **se
 — foi o que aconteceu no primeiro teste em produção (2026-11-18). Desde então o app avisa
 ("Você voltou do Google, mas o navegador descartou a sessão…"), via `consumeRedirectLogin()`.
 
-**Correção definitiva (preparada, falta 1 passo do usuário):** servir o handler de login no próprio
-domínio do site.
+**Correção definitiva (✅ ativa desde 2026-11-18):** servir o handler de login no próprio domínio do site.
 1. ✅ Proxy na Vercel: `/__/auth/*` e `/__/firebase/*` → `https://dev-pratica.firebaseapp.com`
    (rota em `scripts/build-vercel.mjs`; variável `FIREBASE_AUTH_HOST` para outro projeto).
-2. ⏳ **Usuário:** no [Google Cloud Console](https://console.cloud.google.com/apis/credentials?project=dev-pratica)
+2. ✅ **Usuário:** no [Google Cloud Console](https://console.cloud.google.com/apis/credentials?project=dev-pratica)
    → projeto `dev-pratica` → **APIs e serviços → Credenciais** → em "IDs do cliente OAuth 2.0", abrir
    **Web client (auto created by Google Service)** → em **URIs de redirecionamento autorizados**,
    **Adicionar URI** → `https://dev-pratica.vercel.app/__/auth/handler` → **Salvar**.
-3. ⏳ Agente: cadastrar na Vercel, **só em Production**, `VITE_FIREBASE_AUTH_DOMAIN=dev-pratica.vercel.app`
+3. ✅ Agente: cadastrar na Vercel, **só em Production**, `VITE_FIREBASE_AUTH_DOMAIN=dev-pratica.vercel.app`
    (o código já lê essa variável em `src/config/firebase.config.ts`) e refazer o deploy. Previews e
    `localhost` seguem com o `authDomain` padrão.
 
 **Não inverter a ordem:** com o passo 3 antes do 2, o Google recusa o login com `redirect_uri_mismatch`.
+Também foi adicionada a origem `https://dev-pratica.vercel.app` em "Origens JavaScript autorizadas" (a
+lista de origens só aceita domínio, sem caminho). **Para desfazer**, se o login quebrar: apagar a
+variável `VITE_FIREBASE_AUTH_DOMAIN` na Vercel e refazer o deploy — volta ao `authDomain` padrão.
 
 Enquanto isso, o atalho para o usuário é permitir pop-ups para o site: no Chrome, o ícone de pop-up
 bloqueado na barra de endereço → *Sempre permitir pop-ups de…*.
