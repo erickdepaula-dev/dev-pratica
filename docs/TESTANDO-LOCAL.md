@@ -173,7 +173,7 @@ Marque conforme for testando. Para começar do zero, veja a [seção 7](#7-zerar
 - [ ] Corrija e verifique: "Tabela correta!", +XP, e a aba **Solução** mostra a tabela completa.
 - [ ] Em qualquer exercício de Lógica, a aba Instruções tem **📘 Consulta rápida: operadores**.
 - [ ] No **Guia de Estudos**, a seção **Trilha de Lógica** tem o teste de mesa, os operadores e a
-      tabela Portugol × Python × JavaScript.
+      tabela Portugol × PHP × JavaScript.
 
 ### Sincronização na nuvem (login Google)
 - [ ] Clique em **Entrar** e faça login com Google.

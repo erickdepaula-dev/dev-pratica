@@ -257,19 +257,19 @@ for (let i = 1; i <= 3; i++) {
         {/* Equivalência */}
         <div className="space-y-3">
           <h3 className="text-sm font-bold text-primary flex items-center gap-2">
-            <span aria-hidden="true">🔁</span> Portugol × Python × JavaScript
+            <span aria-hidden="true">🔁</span> Portugol × PHP × JavaScript
           </h3>
           <p className="text-xs text-muted leading-relaxed">
-            A lógica é a mesma; muda a escrita. Útil para quem aprendeu algoritmos em Portugol (VisuAlg) ou Python.
+            A lógica é a mesma; muda a escrita. Do Portugol (VisuAlg) para as duas linguagens das trilhas: em PHP as variáveis levam $, em JavaScript não.
           </p>
           <div className="overflow-x-auto rounded-lg border border-subtle bg-canvas">
             <table className="w-full text-[11px] sm:text-xs">
-              <caption className="sr-only">Equivalência de construções entre Portugol, Python e JavaScript</caption>
+              <caption className="sr-only">Equivalência de construções entre Portugol, PHP e JavaScript</caption>
               <thead>
                 <tr className="text-muted text-left">
                   <th scope="col" className="px-2 py-1.5 font-semibold">Conceito</th>
                   <th scope="col" className="px-2 py-1.5 font-semibold">Portugol</th>
-                  <th scope="col" className="px-2 py-1.5 font-semibold">Python</th>
+                  <th scope="col" className="px-2 py-1.5 font-semibold">PHP</th>
                   <th scope="col" className="px-2 py-1.5 font-semibold">JavaScript</th>
                 </tr>
               </thead>
@@ -278,7 +278,7 @@ for (let i = 1; i <= 3; i++) {
                   <tr key={row.concept} className="border-t border-subtle/70 align-top">
                     <th scope="row" className="px-2 py-1.5 text-left font-semibold text-primary whitespace-nowrap">{row.concept}</th>
                     <td className="px-2 py-1.5 font-mono text-muted whitespace-pre-wrap">{row.portugol}</td>
-                    <td className="px-2 py-1.5 font-mono text-muted whitespace-pre-wrap">{row.python}</td>
+                    <td className="px-2 py-1.5 font-mono text-muted whitespace-pre-wrap">{row.php}</td>
                     <td className="px-2 py-1.5 font-mono text-accent whitespace-pre-wrap">{row.javascript}</td>
                   </tr>
                 ))}

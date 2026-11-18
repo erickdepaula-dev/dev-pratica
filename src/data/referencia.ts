@@ -68,22 +68,22 @@ export const OPERATOR_PRECEDENCE: string[] = [
 ];
 
 export const LANGUAGE_EQUIVALENCE: EquivalenceRow[] = [
-  { concept: 'Declarar variável', portugol: 'var idade: inteiro', python: 'idade = 0', javascript: 'let idade = 0;' },
-  { concept: 'Constante', portugol: '—', python: 'TAXA = 0.1  # por convenção', javascript: 'const TAXA = 0.1;' },
-  { concept: 'Atribuir', portugol: 'idade <- 18', python: 'idade = 18', javascript: 'idade = 18;' },
-  { concept: 'Mostrar na tela', portugol: 'escreval("Oi")', python: 'print("Oi")', javascript: 'console.log("Oi");' },
-  { concept: 'Ler do teclado', portugol: 'leia(idade)', python: 'idade = int(input())', javascript: 'aqui: parâmetro da função' },
-  { concept: 'Se / senão', portugol: 'se x > 0 entao ... senao ... fimse', python: 'if x > 0:\n    ...\nelse:\n    ...', javascript: 'if (x > 0) { ... } else { ... }' },
-  { concept: 'Senão se', portugol: 'senao se ... entao', python: 'elif x < 0:', javascript: 'else if (x < 0) { ... }' },
-  { concept: 'Escolha / caso', portugol: 'escolha dia caso 1 ... fimescolha', python: 'match dia:\n    case 1: ...', javascript: 'switch (dia) { case 1: ... break; }' },
-  { concept: 'Para (contado)', portugol: 'para i de 1 ate 10 faca ... fimpara', python: 'for i in range(1, 11):', javascript: 'for (let i = 1; i <= 10; i++) { ... }' },
-  { concept: 'Enquanto', portugol: 'enquanto x > 0 faca ... fimenquanto', python: 'while x > 0:', javascript: 'while (x > 0) { ... }' },
-  { concept: 'Repita até', portugol: 'repita ... ate x = 0', python: 'while True: ... if x == 0: break', javascript: 'do { ... } while (x !== 0);' },
-  { concept: 'Vetor', portugol: 'v: vetor[1..5] de inteiro', python: 'v = [0] * 5', javascript: 'const v = [0, 0, 0, 0, 0];' },
-  { concept: 'Primeira posição', portugol: 'v[1]', python: 'v[0]', javascript: 'v[0]' },
-  { concept: 'Tamanho', portugol: '(fixo na declaração)', python: 'len(v)', javascript: 'v.length' },
-  { concept: 'Função', portugol: 'funcao dobro(n: inteiro): inteiro ... retorne n * 2', python: 'def dobro(n):\n    return n * 2', javascript: 'function dobro(n) { return n * 2; }' },
-  { concept: 'Verdadeiro / falso', portugol: 'verdadeiro / falso', python: 'True / False', javascript: 'true / false' },
+  { concept: 'Declarar variável', portugol: 'var idade: inteiro', php: '$idade = 0;', javascript: 'let idade = 0;' },
+  { concept: 'Constante', portugol: '—', php: 'const TAXA = 0.1;', javascript: 'const TAXA = 0.1;' },
+  { concept: 'Atribuir', portugol: 'idade <- 18', php: '$idade = 18;', javascript: 'idade = 18;' },
+  { concept: 'Mostrar na tela', portugol: 'escreval("Oi")', php: 'echo "Oi";', javascript: 'console.log("Oi");' },
+  { concept: 'Ler do teclado', portugol: 'leia(idade)', php: '$idade = (int) readline();', javascript: 'aqui: parâmetro da função' },
+  { concept: 'Se / senão', portugol: 'se x > 0 entao ... senao ... fimse', php: 'if ($x > 0) { ... } else { ... }', javascript: 'if (x > 0) { ... } else { ... }' },
+  { concept: 'Senão se', portugol: 'senao se ... entao', php: 'elseif ($x < 0) { ... }', javascript: 'else if (x < 0) { ... }' },
+  { concept: 'Escolha / caso', portugol: 'escolha dia caso 1 ... fimescolha', php: 'switch ($dia) { case 1: ... break; }', javascript: 'switch (dia) { case 1: ... break; }' },
+  { concept: 'Para (contado)', portugol: 'para i de 1 ate 10 faca ... fimpara', php: 'for ($i = 1; $i <= 10; $i++) { ... }', javascript: 'for (let i = 1; i <= 10; i++) { ... }' },
+  { concept: 'Enquanto', portugol: 'enquanto x > 0 faca ... fimenquanto', php: 'while ($x > 0) { ... }', javascript: 'while (x > 0) { ... }' },
+  { concept: 'Repita até', portugol: 'repita ... ate x = 0', php: 'do { ... } while ($x !== 0);', javascript: 'do { ... } while (x !== 0);' },
+  { concept: 'Vetor', portugol: 'v: vetor[1..5] de inteiro', php: '$v = [0, 0, 0, 0, 0];', javascript: 'const v = [0, 0, 0, 0, 0];' },
+  { concept: 'Primeira posição', portugol: 'v[1]', php: '$v[0]', javascript: 'v[0]' },
+  { concept: 'Tamanho', portugol: '(fixo na declaração)', php: 'count($v)', javascript: 'v.length' },
+  { concept: 'Função', portugol: 'funcao dobro(n: inteiro): inteiro ... retorne n * 2', php: 'function dobro(int $n): int { return $n * 2; }', javascript: 'function dobro(n) { return n * 2; }' },
+  { concept: 'Verdadeiro / falso', portugol: 'verdadeiro / falso', php: 'true / false', javascript: 'true / false' },
 ];
 
 export const DESK_CHECK_GUIDE: DeskCheckGuideStep[] = [

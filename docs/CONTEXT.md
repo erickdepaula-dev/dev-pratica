@@ -125,7 +125,7 @@ A trilha de Lógica tem **133 exercícios** em `src/data/logica/`: os 100 princi
 gabarito é gerado executando o código do exercício (cada `anotar(...)` = uma linha), então não há
 tabela digitada à mão para dessincronizar. Detalhes em "Como ficou (4.5)" no `fase-4-exercicios.md`.
 **Material de referência (4.6):** operadores + precedência (no StudyGuide e como "Consulta rápida"
-em todo exercício de Lógica) e a tabela Portugol × Python × JavaScript (`src/data/referencia.ts`).
+em todo exercício de Lógica) e a tabela Portugol × PHP × JavaScript (`src/data/referencia.ts`).
 
 **O que falta, tudo do lado do usuário:**
 1. **As 3 verificações manuais** da seção acima (o Firebase está configurado; é entrar no site e testar).
@@ -227,3 +227,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | — | Login: no 1º teste em produção o usuário voltou do Google sem sessão. Topo logado agora mostra "● Conectado" (abre o menu da conta) e "Sair"; para caber de 375 a 1920 px, com login as pílulas de trilha ficam só com emoji e o nome da marca some abaixo de `lg` (deslogado, nada mudou). Aviso quando o redirecionamento volta sem sessão. Proxy `/__/auth` e `/__/firebase` na Vercel para servir o login no domínio do site (ativação depende do URI de redirecionamento no Google Cloud). |
 | 2026-11-18 | — | Login pelo domínio do site ativado: usuário adicionou o URI de redirecionamento e a origem no cliente OAuth; agente cadastrou `VITE_FIREBASE_AUTH_DOMAIN=dev-pratica.vercel.app` (só Production) e refez o deploy. Para desfazer: apagar a variável e refazer o deploy. |
 | 2026-11-18 | — | Login com Google confirmado pelo usuário em produção (topo em "● Conectado" + "Sair", progresso carregado). Painel passa a cumprimentar pelo primeiro nome da conta Google ("Olá, Desenvolvedor" só para visitante). |
+| 2026-11-18 | 4 | Tabela de equivalência do Guia de Estudos: coluna Python trocada por PHP (pedido do usuário) — agora Portugol × PHP × JavaScript, as linguagens das trilhas. |

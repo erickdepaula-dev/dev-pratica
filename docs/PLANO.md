@@ -90,7 +90,7 @@ Converter o material de estudo em PDF para exercícios da plataforma.
 **Entrega:** +160 exercícios de lógica disponíveis na plataforma.
 
 **Resultado (2026-11-18):** ✅ 133 exercícios na trilha "Lógica" (os 39 bônus restantes duplicavam
-exercícios) + modalidade `teste_de_mesa` + guia de operadores e tabela Portugol/Python/JS.
+exercícios) + modalidade `teste_de_mesa` + guia de operadores e tabela Portugol/PHP/JS.
 
 ---
 

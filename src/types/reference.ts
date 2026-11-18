@@ -20,7 +20,7 @@ export interface OperatorGroup {
 export interface EquivalenceRow {
   concept: string;
   portugol: string;
-  python: string;
+  php: string;
   javascript: string;
 }
 

@@ -211,13 +211,13 @@ os dois e estranhe.
 
 ### 4.6 — Material de referência ✅ CONCLUÍDA
 - [x] Adicionar o `Guia Rápido de Operadores` como consulta dentro do workspace
-- [x] Adicionar a tabela de equivalência Portugol/Python/JS ao `StudyGuide`
+- [x] Adicionar a tabela de equivalência Portugol/PHP/JS (PHP no lugar do Python do material original, a pedido do usuário) ao `StudyGuide`
 
 **Como ficou:** conteúdo escrito do zero em `src/data/referencia.ts` (tipos em
 `src/types/reference.ts`). Operadores aritméticos, relacionais, lógicos e de atribuição, com o
 equivalente em Portugol, exemplos, pegadinhas (`-7 % 2`, `==` × `===`, `1 <= n <= 10`) e a ordem de
 precedência — componente `OperatorReference.tsx`, usado no StudyGuide e num painel recolhível
-"Consulta rápida" na aba Instruções de todo exercício de Lógica. A tabela Portugol × Python ×
+"Consulta rápida" na aba Instruções de todo exercício de Lógica. A tabela Portugol × PHP ×
 JavaScript (16 construções) fica no StudyGuide.
 
 ---
