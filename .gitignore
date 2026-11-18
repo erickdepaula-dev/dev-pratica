@@ -6,3 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Saída do build da Vercel (npm run build:vercel)
+.vercel/
