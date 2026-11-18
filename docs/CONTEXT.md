@@ -143,7 +143,7 @@ Contexto da Fase 4: trilha **"Lógica" própria** (decisão do usuário), resolv
 por exercício e `resolveLogicExercise()` — ver "Modelagem decidida (4.1)" em `fase-4-exercicios.md`.
 
 **Deploy:** Vercel, automático a cada push na `main` — produção em **https://dev-pratica.vercel.app**
-(projeto `dev-pratica`, ver [`DEPLOY.md`](./DEPLOY.md)). **Pendente do usuário:** cadastrar
+(projeto `dev-pratica`, ver [`DEPLOY.md`](./DEPLOY.md)). **Pendente do usuário:** liberar
 `dev-pratica.vercel.app` **e `localhost`** no Firebase Auth. Nenhum dos dois está na lista do projeto do
 AI Studio (`gen-lang-client-0954454406`), conferido de novo em 2026-11-18 depois de o usuário dizer que
 tinha adicionado. É essa a causa do erro ao clicar em "Entrar". **Encaminhamento:** o usuário cria um
