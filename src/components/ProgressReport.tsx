@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { UserProgress, Language } from '../types/exercise';
-import { allExercises, getExercisesByLanguage } from '../data';
-import { getLanguageTheme } from '../utils/exerciseTheme';
+import { UserProgress, Track } from '../types/exercise';
+import { allExercises, getExercisesByTrack } from '../data';
+import { getSelectedTrack } from '../utils/track';
+import { getTrackTheme } from '../utils/exerciseTheme';
 import { BadgeGrid } from './BadgeGrid';
 import { XpHistoryChart } from './XpHistoryChart';
 import { BADGES } from '../services/badges';
@@ -9,19 +10,19 @@ import { exportProgressJSON, importProgressJSON, resetProgress } from '../servic
 
 interface ProgressReportProps {
   progress: UserProgress;
-  onSelectLanguage: (lang: Language) => void;
+  onSelectTrack: (track: Track) => void;
   onStartExercise: (id: string) => void;
   onProgressUpdated: (newProgress: UserProgress) => void;
 }
 
 export const ProgressReport: React.FC<ProgressReportProps> = ({
   progress,
-  onSelectLanguage,
+  onSelectTrack,
   onStartExercise,
   onProgressUpdated,
 }) => {
-  const currentLang = progress.selectedLanguage;
-  const langExercises = getExercisesByLanguage(currentLang);
+  const currentTrack = getSelectedTrack(progress);
+  const langExercises = getExercisesByTrack(currentTrack);
 
   const [importText, setImportText] = useState('');
   const [showImportBox, setShowImportBox] = useState(false);
@@ -110,7 +111,7 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
           <div className="flex items-center gap-2 text-xs text-accent font-medium mb-1">
             <span>Relatório Analítico</span>
             <span aria-hidden="true">·</span>
-            <span>{getLanguageTheme(currentLang).name}</span>
+            <span>{getTrackTheme(currentTrack).name}</span>
             <span aria-hidden="true">·</span>
             <span>Histórico Local Persistente</span>
           </div>
@@ -197,7 +198,7 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
         {/* Topic Breakdown */}
         <div className="rounded-xl border border-subtle bg-surface/40 p-6 space-y-4">
           <div>
-            <h2 className="text-base font-bold text-primary">Domínio por Assunto ({getLanguageTheme(currentLang).name})</h2>
+            <h2 className="text-base font-bold text-primary">Domínio por Assunto ({getTrackTheme(currentTrack).name})</h2>
             <p className="text-xs text-muted">Distribuição do seu avanço em cada tema do dia a dia</p>
           </div>
 
@@ -230,7 +231,7 @@ export const ProgressReport: React.FC<ProgressReportProps> = ({
             <div className="space-y-3 pt-4">
               {weakTopics.length === 0 ? (
                 <div className="p-4 rounded-lg bg-success/10 border border-success/30 text-success text-xs text-center">
-                  🎉 Parabéns! Você concluiu todos os tópicos disponíveis de {getLanguageTheme(currentLang).name}.
+                  🎉 Parabéns! Você concluiu todos os tópicos disponíveis de {getTrackTheme(currentTrack).name}.
                 </div>
               ) : (
                 weakTopics.slice(0, 4).map(w => {

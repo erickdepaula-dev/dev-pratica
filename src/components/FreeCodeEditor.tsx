@@ -138,7 +138,7 @@ export const FreeCodeEditor: React.FC<FreeCodeEditorProps> = ({
       </div>
 
       {/* Editor Body: Fixed 15 lines on desktop (~390px) with smooth inner scrolling */}
-      <div className="relative flex flex-1 h-[390px] min-h-[320px] max-h-[390px] bg-canvas overflow-hidden">
+      <div className="relative flex h-[390px] min-h-[320px] max-h-[390px] bg-canvas overflow-hidden">
         {/* Line Numbers Gutter */}
         <div
           ref={lineNumbersRef}

@@ -35,7 +35,7 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 
 ### Ainda não existe
 
-- 🟡 Trilha de Lógica: modelagem pronta (`Track`, `logicVariants`, `src/data/logica/` vazio); **sem exercícios e sem interface** ainda (Fase 4.3–4.6)
+- 🟡 Trilha de Lógica: modelagem e interface prontas (seletor, JS/TS no workspace, verificador); só 1 exercício (piloto) — conversão nas Fases 4.3–4.4
 
 ---
 
@@ -63,7 +63,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 | 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ✅ Concluída |
 | 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefas concluídas; 2 critérios aguardam verificação manual |
 | 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | 🟡 Tarefas concluídas (na `main`); sync com Firestore aguarda verificação manual |
-| 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefas 4.1 e 4.2 concluídas |
+| 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefas 4.1, 4.2 e 4.6 concluídas |
 
 **Índice de apoio:** [`fase-4-indice-exercicios.md`](./fase-4-indice-exercicios.md) — catálogo dos 160 exercícios.
 
@@ -97,7 +97,7 @@ fonte de verdade das fases concluídas; a fase em andamento pode estar à frente
 | 1 — UI Redesign | ✅ Concluída | `fase-1-ui.md` |
 | 2 — Trilha TypeScript | 🟡 Tarefas feitas; 2 verificações manuais pendentes | `fase-2-typescript.md` |
 | 3 — Gamificação | 🟡 Tarefas feitas; 1 verificação manual pendente | `fase-3-gamificacao.md` |
-| 4 — Exercícios dos PDFs | 🟡 **Ativa** — 4.1 e 4.2 feitas | `fase-4-exercicios.md` |
+| 4 — Exercícios dos PDFs | 🟡 **Ativa** — 4.1, 4.2 e 4.6 feitas; próxima: 4.3 | `fase-4-exercicios.md` |
 
 ### Pendente de verificação manual (precisa do usuário)
 
@@ -113,17 +113,15 @@ Quando passarem: marcar as Fases 2 e 3 como ✅ (e os critérios correspondentes
 
 ### Próximo passo
 
-**Tarefa 4.6 — interface da trilha de Lógica — EM ANDAMENTO** (o usuário decidiu fazê-la antes da
-conversão 4.3, para cada lote convertido já poder ser testado na tela).
-- ✅ Base: `UserProgress.selectedTrack` / `logicLanguage` (opcionais, migração defensiva),
-  `ExerciseAttempt.logicLanguage`, `setSelectedTrack` / `setLogicLanguage` no storage, sync no
-  Firestore, `getSelectedTrack` / `getLogicLanguage` em `utils/track.ts`, tema da trilha
-  (`getTrackTheme`, token `--track-logica` ameixa #A44C8C — escolhido por busca de matiz, ver Changelog).
-- ⬜ Falta: seletor de trilha com Lógica (Header/catálogo/Dashboard), seletor JS/TS no workspace
-  (lembrando a escolha e sem misturar código salvo de outra linguagem), card da trilha no Dashboard,
-  verificador das variantes JS/TS, 1 exercício piloto para testar a tela.
+**4.6 (interface da trilha de Lógica) concluída** — a trilha aparece no seletor (Header,
+catálogo, Dashboard), o workspace tem "Resolver em: JavaScript | TypeScript", e `check:ts`
+valida as duas variantes. Há 1 exercício piloto (`logica-001`). Detalhes em "Como ficou (4.6)"
+no `fase-4-exercicios.md`.
 
-Depois: 4.3 (100 exercícios em lotes de 20), 4.4 (60 bônus), 4.5 (teste de mesa).
+**Próximo passo: 4.3** — converter os 100 exercícios de lógica em lotes de 20 (o lote 1 já tem o
+nº 1). Cada exercício: enunciado escrito do zero (ver `fase-4-indice-exercicios.md`), variantes JS e
+TS, testes; rodar `npm run check:ts` a cada lote.
+Depois: 4.4 (60 bônus) e 4.5 (teste de mesa). Ao fim da Fase 4, levar para a `main`.
 
 Contexto da Fase 4: trilha **"Lógica" própria** (decisão do usuário), resolvida em **JS ou TS**
 (PHP não roda no navegador). Modelagem pronta: `Track` separado de `Language`, `logicVariants`
@@ -182,3 +180,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | — | "Onde paramos" reescrito como retrato do estado atual (local do código por branch, estado por fase, verificações manuais pendentes, próximo passo e como retomar). Removidos trechos desatualizados (fase ativa errada, lembrete do stub de TS). |
 | 2026-11-18 | 3 | Fase 3 (+ 4.1) levada para a `main` por fast-forward. Nova regra do usuário: levar para a `main` ao fim de cada fase. Ordem da Fase 4 decidida: 4.6 (interface) antes da 4.3. |
 | 2026-11-18 | 4 | 4.6 parcial (base): trilha selecionada e linguagem da Lógica no progresso (com migração e sync), tema da trilha de Lógica. Cor ameixa (#A44C8C) escolhida por busca de matiz: maior distância de todas as trilhas e status (ΔE ≥ 16); validada com a skill de dataviz. |
+| 2026-11-18 | 4 | Tarefa 4.6 concluída: trilha de Lógica no seletor, catálogo, Dashboard e Progresso; "Resolver em JS/TS" no workspace (código salvo por linguagem); `check:ts` valida as variantes; piloto `logica-001`. Header sem overflow com 4 trilhas. Corrigido bug antigo do editor de código com 80 px úteis. |

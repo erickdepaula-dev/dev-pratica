@@ -17,17 +17,19 @@ import { ProgressReport } from './components/ProgressReport';
 import { StudyGuide } from './components/StudyGuide';
 import { AiChallengesHub } from './components/AiChallenges/AiChallengesHub';
 import { AiChallengeWorkspace } from './components/AiChallenges/AiChallengeWorkspace';
-import { Language, UserProgress } from './types/exercise';
+import { Track, UserProgress } from './types/exercise';
+import { getLogicLanguage, getSelectedTrack, resolveLogicExercise, trackOf } from './utils/track';
 import { AiChallenge } from './types/aiChallenge';
 import {
   loadUserProgress,
-  setSelectedLanguage,
+  setSelectedTrack,
+  setLogicLanguage,
   saveUserProgress,
 } from './services/storage';
 import {
   allExercises,
   getExerciseById,
-  getExercisesByLanguage,
+  getExercisesByTrack,
 } from './data';
 import { auth, loginWithGoogle, logoutFirebase } from './services/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
@@ -115,9 +117,8 @@ export default function App() {
     }
   }, []);
 
-  const handleSelectLanguage = (lang: Language) => {
-    const updated = setSelectedLanguage(lang);
-    handleProgressUpdated(updated);
+  const handleSelectTrack = (track: Track) => {
+    handleProgressUpdated(setSelectedTrack(track));
   };
 
   const handleStartExercise = (exerciseId: string) => {
@@ -187,9 +188,13 @@ export default function App() {
     }
   };
 
-  const selectedExercise = selectedExerciseId ? getExerciseById(selectedExerciseId) : null;
-  const currentTrackExercises = getExercisesByLanguage(
-    selectedExercise ? selectedExercise.language : progress.selectedLanguage
+  // Exercícios de Lógica são montados na linguagem preferida (JS ou TS) — ver utils/track.ts
+  const rawSelectedExercise = selectedExerciseId ? getExerciseById(selectedExerciseId) : null;
+  const selectedExercise = rawSelectedExercise
+    ? resolveLogicExercise(rawSelectedExercise, getLogicLanguage(progress))
+    : null;
+  const currentTrackExercises = getExercisesByTrack(
+    selectedExercise ? trackOf(selectedExercise) : getSelectedTrack(progress)
   );
 
   return (
@@ -204,8 +209,8 @@ export default function App() {
           setActiveAiChallenge(null);
           setActiveTab(tab);
         }}
-        selectedLanguage={progress.selectedLanguage}
-        onSelectLanguage={handleSelectLanguage}
+        selectedTrack={getSelectedTrack(progress)}
+        onSelectTrack={handleSelectTrack}
         totalCompleted={progress.completedIds.length}
         totalExercises={allExercises.length}
         progress={progress}
@@ -223,7 +228,10 @@ export default function App() {
           <PageSkeleton />
         ) : selectedExercise ? (
           <ExerciseWorkspace
+            // A troca de linguagem na Lógica remonta o workspace (código e estado são por linguagem)
+            key={selectedExercise.id + ':' + selectedExercise.language}
             exercise={selectedExercise}
+            onChangeLogicLanguage={language => handleProgressUpdated(setLogicLanguage(language))}
             progress={progress}
             allExercisesInTrack={currentTrackExercises}
             onBackToList={handleBackToList}
@@ -242,7 +250,7 @@ export default function App() {
             {activeTab === 'dashboard' && (
               <Dashboard
                 progress={progress}
-                onSelectLanguage={handleSelectLanguage}
+                onSelectTrack={handleSelectTrack}
                 onStartExercise={handleStartExercise}
                 onNavigateToExercises={() => setActiveTab('exercicios')}
                 onNavigateToProgress={() => setActiveTab('progresso')}
@@ -254,7 +262,7 @@ export default function App() {
             {activeTab === 'exercicios' && (
               <ExerciseList
                 progress={progress}
-                onSelectLanguage={handleSelectLanguage}
+                onSelectTrack={handleSelectTrack}
                 onSelectExercise={handleStartExercise}
               />
             )}
@@ -270,7 +278,7 @@ export default function App() {
             {activeTab === 'progresso' && (
               <ProgressReport
                 progress={progress}
-                onSelectLanguage={handleSelectLanguage}
+                onSelectTrack={handleSelectTrack}
                 onStartExercise={handleStartExercise}
                 onProgressUpdated={handleProgressUpdated}
               />
@@ -279,7 +287,7 @@ export default function App() {
             {activeTab === 'guia' && (
               <StudyGuide
                 onStartTrack={lang => {
-                  handleSelectLanguage(lang);
+                  handleSelectTrack(lang);
                   setActiveTab('exercicios');
                 }}
               />

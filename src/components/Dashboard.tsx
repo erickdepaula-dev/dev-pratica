@@ -12,18 +12,18 @@ import {
   Sparkles,
   Trophy,
 } from 'lucide-react';
-import { UserProgress, Language } from '../types/exercise';
-import { getExercisesByLanguage } from '../data';
-import { getDifficultyTheme, getExerciseTypeTheme, getLanguageTheme } from '../utils/exerciseTheme';
+import { UserProgress, Track } from '../types/exercise';
+import { getExercisesByTrack } from '../data';
+import { getDifficultyTheme, getExerciseTypeTheme, getTrackTheme } from '../utils/exerciseTheme';
 import { ProgressRing } from './ProgressRing';
-import { LANGUAGES } from '../utils/language';
+import { getSelectedTrack, TRACKS } from '../utils/track';
 import { StreakCard } from './StreakCard';
 import { CareerCard } from './CareerCard';
 import { totalXp } from '../services/xp';
 
 interface DashboardProps {
   progress: UserProgress;
-  onSelectLanguage: (lang: Language) => void;
+  onSelectTrack: (track: Track) => void;
   onStartExercise: (exerciseId: string) => void;
   onNavigateToExercises: () => void;
   onNavigateToProgress: () => void;
@@ -69,15 +69,16 @@ const StatCard: React.FC<StatCardProps> = ({ icon: Icon, label, value, hint }) =
 );
 
 interface TrackCardProps {
-  language: Language;
+  track: Track;
   isActive: boolean;
   done: number;
   total: number;
   onSelect: () => void;
 }
 
-const TrackCard: React.FC<TrackCardProps> = ({ language, isActive, done, total, onSelect }) => {
-  const theme = getLanguageTheme(language);
+const TrackCard: React.FC<TrackCardProps> = ({ track, isActive, done, total, onSelect }) => {
+  const theme = getTrackTheme(track);
+  const isEmpty = total === 0;
   const percent = total > 0 ? Math.round((done / total) * 100) : 0;
 
   return (
@@ -106,10 +107,16 @@ const TrackCard: React.FC<TrackCardProps> = ({ language, isActive, done, total, 
           </div>
         </div>
         <span className="font-mono text-xs font-bold text-primary shrink-0">
-          {done}/{total}
+          {isEmpty ? '' : done + '/' + total}
         </span>
       </div>
 
+      {isEmpty ? (
+        <span className="inline-block text-[10px] uppercase font-bold tracking-wider text-muted bg-surface-hover border border-subtle px-2 py-0.5 rounded">
+          Em construção
+        </span>
+      ) : (
+        <>
       {/* Barra animada com scaleX (evita animar width) */}
       <div className="w-full bg-subtle rounded-full h-2 mb-1.5 overflow-hidden">
         <motion.div
@@ -122,8 +129,10 @@ const TrackCard: React.FC<TrackCardProps> = ({ language, isActive, done, total, 
 
       <div className="flex justify-between text-[11px] text-muted">
         <span>{percent}% concluído</span>
-        <span>{total - done} restantes</span>
+        <span>{total - done} {total - done === 1 ? 'restante' : 'restantes'}</span>
       </div>
+        </>
+      )}
     </motion.button>
   );
 };
@@ -157,16 +166,16 @@ const QuickLink: React.FC<QuickLinkProps> = ({ icon: Icon, title, subtitle, onCl
 
 export const Dashboard: React.FC<DashboardProps> = ({
   progress,
-  onSelectLanguage,
+  onSelectTrack,
   onStartExercise,
   onNavigateToExercises,
   onNavigateToProgress,
   onNavigateToGuide,
   onNavigateToAiChallenges,
 }) => {
-  const currentLang = progress.selectedLanguage;
-  const currentTheme = getLanguageTheme(currentLang);
-  const langExercises = getExercisesByLanguage(currentLang);
+  const currentTrack = getSelectedTrack(progress);
+  const currentTheme = getTrackTheme(currentTrack);
+  const langExercises = getExercisesByTrack(currentTrack);
   const totalInLang = langExercises.length;
   const completedInLang = langExercises.filter(ex => progress.completedIds.includes(ex.id)).length;
   const overallPercent = totalInLang > 0 ? (completedInLang / totalInLang) * 100 : 0;
@@ -174,10 +183,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
   // Próximo exercício não concluído da trilha ativa
   const nextExercise = langExercises.find(ex => !progress.completedIds.includes(ex.id));
 
-  const trackStats = LANGUAGES.map(language => {
-    const exercises = getExercisesByLanguage(language);
+  const trackStats = TRACKS.map(track => {
+    const exercises = getExercisesByTrack(track);
     return {
-      language,
+      track,
       total: exercises.length,
       done: exercises.filter(e => progress.completedIds.includes(e.id)).length,
     };
@@ -222,7 +231,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
       {/* 2. Continuar de onde parei — destaque com borda em gradiente */}
       <motion.div variants={itemVariants} className="rounded-card p-px bg-gradient-accent shadow-glow">
         <div className="rounded-[calc(var(--radius-card)-1px)] bg-surface bg-[radial-gradient(ellipse_at_top_left,color-mix(in_srgb,var(--accent-from)_22%,transparent),transparent_60%)] p-5 sm:p-6">
-          {nextExercise ? (
+          {totalInLang === 0 ? (
+            <div className="py-4 text-center space-y-2">
+              <span className="text-3xl" aria-hidden="true">{currentTheme.emoji}</span>
+              <h3 className="text-base font-bold text-primary">Trilha {currentTheme.name} em construção</h3>
+              <p className="text-xs text-muted max-w-sm mx-auto">
+                Os exercícios desta trilha ainda estão sendo preparados. Escolha outra trilha para continuar estudando.
+              </p>
+            </div>
+          ) : nextExercise ? (
             <div className="flex flex-col sm:flex-row sm:items-center gap-5">
               <ProgressRing percent={overallPercent} label={`Progresso na trilha ${currentTheme.name}`} />
 
@@ -273,7 +290,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <Trophy className="w-8 h-8 mx-auto text-warning" aria-hidden="true" />
               <h3 className="text-base font-bold text-primary">Parabéns! Trilha {currentTheme.name} concluída</h3>
               <p className="text-xs text-muted max-w-sm mx-auto">
-                Você concluiu todos os {totalInLang} desafios desta linguagem. Alterne para outra trilha ou revise
+                Você concluiu todos os {totalInLang} desafios desta trilha. Alterne para outra trilha ou revise
                 suas soluções.
               </p>
               <button
@@ -320,15 +337,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
         >
           Suas trilhas
         </motion.h2>
-        <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <motion.div variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {trackStats.map(track => (
             <TrackCard
-              key={track.language}
-              language={track.language}
-              isActive={currentLang === track.language}
+              key={track.track}
+              track={track.track}
+              isActive={currentTrack === track.track}
               done={track.done}
               total={track.total}
-              onSelect={() => onSelectLanguage(track.language)}
+              onSelect={() => onSelectTrack(track.track)}
             />
           ))}
         </motion.div>

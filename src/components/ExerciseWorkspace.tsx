@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion, useAnimate, useReducedMotion } from 'motion/react';
 import { Check, X } from 'lucide-react';
-import { Exercise, UserProgress } from '../types/exercise';
+import { Exercise, ExerciseAttempt, LogicLanguage, UserProgress } from '../types/exercise';
+import { getLanguageTheme } from '../utils/exerciseTheme';
+import { LOGIC_LANGUAGES } from '../utils/track';
 import { FillInBlanksEditor } from './FillInBlanksEditor';
 import { FreeCodeEditor } from './FreeCodeEditor';
 import { PredictOutputViewer } from './PredictOutputViewer';
@@ -46,6 +48,18 @@ interface ExerciseWorkspaceProps {
   onNavigateToExercise: (id: string) => void;
   allExercisesInTrack: Exercise[];
   onProgressUpdated: (newProgress: UserProgress) => void;
+  /** Trilha de Lógica: troca a linguagem em que o exercício é resolvido (JS ou TS). */
+  onChangeLogicLanguage?: (language: LogicLanguage) => void;
+}
+
+/**
+ * Código salvo que pode ser restaurado. Na trilha de Lógica, o código só volta se foi escrito
+ * na mesma linguagem exibida agora (senão o editor TS mostraria o código JS, e vice-versa).
+ */
+function restorableCode(exercise: Exercise, attempt: ExerciseAttempt | undefined): string | undefined {
+  if (!attempt?.userCode) return undefined;
+  if (exercise.track === 'logica' && (attempt.logicLanguage ?? 'javascript') !== exercise.language) return undefined;
+  return attempt.userCode;
 }
 
 export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
@@ -55,6 +69,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
   onNavigateToExercise,
   allExercisesInTrack,
   onProgressUpdated,
+  onChangeLogicLanguage,
 }) => {
   const currentAttempt = progress.attempts[exercise.id];
   const isAlreadyCompleted = progress.completedIds.includes(exercise.id);
@@ -75,7 +90,8 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
 
   // Free code / bug fix state
   const [userCode, setUserCode] = useState<string>(() => {
-    if (currentAttempt?.userCode) return currentAttempt.userCode;
+    const saved = restorableCode(exercise, currentAttempt);
+    if (saved) return saved;
     if (exercise.type === 'corrigir_erros' && exercise.initialBuggyCode) {
       return exercise.initialBuggyCode;
     }
@@ -143,7 +159,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     setTypeErrorLine(attempt?.typeErrorAnswer?.line ?? null);
     setTypeErrorReason(attempt?.typeErrorAnswer?.reason ?? null);
     setUserCode(
-      attempt?.userCode ||
+      restorableCode(exercise, attempt) ||
       (exercise.type === 'corrigir_erros' && exercise.initialBuggyCode ? exercise.initialBuggyCode : exercise.templateCode)
     );
     setEvaluationResult(null);
@@ -171,6 +187,11 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
   const compilerDiagnostics =
     exercise.language === 'typescript' && exercise.type !== 'prever_erro_de_tipo'
       ? (evaluationResult?.diagnostics ?? []).map(formatDiagnostic)
+      : undefined;
+
+  const logicLanguageToSave: LogicLanguage | undefined =
+    exercise.track === 'logica' && (exercise.language === 'javascript' || exercise.language === 'typescript')
+      ? exercise.language
       : undefined;
 
   const typeErrorAnswerToSave =
@@ -202,6 +223,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
       userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
       outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
       typeErrorAnswer: typeErrorAnswerToSave,
+      logicLanguage: logicLanguageToSave,
       hintsUsed: hintsUnlockedCount,
       revealedSolution: showSolution,
     });
@@ -279,6 +301,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
       userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
       outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
       typeErrorAnswer: typeErrorAnswerToSave,
+      logicLanguage: logicLanguageToSave,
       hintsUsed: hintsUnlockedCount,
       revealedSolution: showSolution,
     });
@@ -326,6 +349,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
         userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
         outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
         typeErrorAnswer: typeErrorAnswerToSave,
+        logicLanguage: logicLanguageToSave,
         hintsUsed: nextCount,
       });
       onProgressUpdated(updated);
@@ -343,6 +367,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
       userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
       outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
       typeErrorAnswer: typeErrorAnswerToSave,
+      logicLanguage: logicLanguageToSave,
       hintsUsed: hintsUnlockedCount,
       revealedSolution: true,
     });
@@ -457,6 +482,32 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
             <h1 className="text-xl sm:text-2xl font-black text-primary tracking-tight">
               {exercise.title}
             </h1>
+            {exercise.track === 'logica' && onChangeLogicLanguage && (
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                <span className="text-[11px] text-muted">Resolver em:</span>
+                <div role="radiogroup" aria-label="Linguagem da solução" className="flex items-center p-0.5 bg-canvas border border-subtle rounded-full">
+                  {LOGIC_LANGUAGES.map(language => {
+                    const theme = getLanguageTheme(language);
+                    const isActive = exercise.language === language;
+                    return (
+                      <button
+                        key={language}
+                        type="button"
+                        role="radio"
+                        aria-checked={isActive}
+                        onClick={() => !isActive && onChangeLogicLanguage(language)}
+                        className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${
+                          isActive ? 'bg-logica text-white' : 'text-muted hover:text-primary'
+                        }`}
+                      >
+                        <span aria-hidden="true">{theme.emoji}</span> {theme.name}
+                      </button>
+                    );
+                  })}
+                </div>
+                <span className="text-[11px] text-muted">o progresso do exercício vale para as duas</span>
+              </div>
+            )}
             <p className="text-xs text-muted leading-relaxed">
               {exercise.summary}
             </p>

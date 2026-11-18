@@ -1,6 +1,6 @@
 # 📚 Fase 4 — Exercícios dos PDFs
 
-**Status:** 🟡 Em andamento (4.1 e 4.2 concluídas)
+**Status:** 🟡 Em andamento (4.1, 4.2 e 4.6 concluídas)
 **Depende de:** Fases 1, 2 e 3 (usa tokens, trilha TS e sistema de XP já estabilizados)
 **Objetivo:** converter o material de estudo em PDF em exercícios da plataforma.
 
@@ -84,7 +84,7 @@ de origem é uma publicação comercial e o repo é público, então o índice g
 títulos e tópicos. Os enunciados são escritos do zero na tarefa 4.3, no tom da plataforma.
 
 ### 4.3 — Conversão: 100 exercícios de lógica
-- [ ] Converter em lotes de 20 para o formato `Exercise`
+- [ ] Converter em lotes de 20 para o formato `Exercise` (lote 1 já tem o piloto, nº 1)
 - [ ] Para cada um: `summary`, `description`, `goal`, `realWorldContext`, `testCases`, `explanation`
 - [ ] Escrever `solutionCode` em JS e TS
 - [ ] Classificar a dificuldade (nem todos os 100 são básicos)
@@ -95,11 +95,33 @@ títulos e tópicos. Os enunciados são escritos do zero na tarefa 4.3, no tom d
 - [ ] Agrupar por tópico para os filtros da lista
 
 ### 4.6 — Interface da trilha de Lógica *(acrescentada na 4.1 — o plano não tinha tarefa de UI)*
-- [ ] Seletor de trilha com "Lógica" (Header, catálogo, Dashboard); `UserProgress.selectedTrack`
+- [x] Seletor de trilha com "Lógica" (Header, catálogo, Dashboard); `UserProgress.selectedTrack`
       com migração defensiva (progresso antigo: `selectedTrack = selectedLanguage`)
-- [ ] No workspace de um exercício de Lógica: escolher JS ou TS (lembrar a última escolha)
-- [ ] `check:ts` (ou um `check:logica`) validando as duas variantes de cada exercício de Lógica
-- [ ] Card da trilha no Dashboard, XP e conquistas funcionando para a Lógica
+- [x] No workspace de um exercício de Lógica: escolher JS ou TS (lembrar a última escolha)
+- [x] `check:ts` (ou um `check:logica`) validando as duas variantes de cada exercício de Lógica
+- [x] Card da trilha no Dashboard, XP e conquistas funcionando para a Lógica
+
+**Como ficou (4.6):**
+- `TrackPills.tsx` (antigo `LanguagePills`) percorre `TRACKS` com `getTrackTheme`; no Header, entre
+  768 e 1023 px, mostra só o emoji. Header sem overflow de 375 a 1920 px — para caber a 4ª trilha,
+  o Header deixou de mostrar o número de XP e a palavra "dias" (o XP fica no tooltip da barra e no
+  card de carreira).
+- Catálogo, Dashboard e Progresso usam a trilha selecionada (`getSelectedTrack`,
+  `getExercisesByTrack`). Trilha vazia mostra "Em construção" (e não "Parabéns, trilha concluída").
+- Workspace: seletor "Resolver em: JavaScript | TypeScript"; trocar remonta o workspace com a variante
+  da linguagem (`App` resolve via `resolveLogicExercise` + `getLogicLanguage`). O código salvo só é
+  restaurado na linguagem em que foi escrito (`ExerciseAttempt.logicLanguage`); o progresso (concluído,
+  XP) é do exercício e vale para as duas.
+- Cor da trilha: ameixa `#A44C8C` (token `--track-logica`), escolhida por busca de matiz — a maior
+  distância (OKLab ΔE ≥ 16) de todas as trilhas e cores de status; texto `#ECAED8` (contraste 9,8:1).
+- `check:ts` valida a Lógica: solução TS no pipeline, solução JS no avaliador de JS do app e
+  templates que **não** passam (o exercício não vem resolvido).
+- **Piloto:** `logica-001-soma-de-dois-numeros` (`src/data/logica/m01PrimeirosAlgoritmos.ts`) —
+  primeiro exercício do lote 1 da 4.3. Testado no navegador: resolver em JS (+15 XP), trocar para TS
+  (editor com o template TS, exercício segue concluído), voltar para JS (código salvo volta).
+- **Bug antigo corrigido:** o editor de código livre tinha só 80 px úteis (o contêiner de 390 px tinha
+  `flex-1` numa coluna sem altura definida, então o `h-full` dos filhos não resolvia) — rolava com
+  3–4 linhas e desalinhava a numeração, em todas as trilhas, desde o commit inicial do projeto.
 
 ### 4.5 — Teste de mesa como modalidade
 - [ ] Avaliar criar a modalidade `teste_de_mesa`: usuário preenche a tabela de

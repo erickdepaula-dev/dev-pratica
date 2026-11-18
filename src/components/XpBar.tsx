@@ -49,7 +49,7 @@ export const XpBar: React.FC<XpBarProps> = ({ xp, compact = false }) => {
         {career.level.name}
       </span>
       <div
-        className={`${compact ? 'w-14' : 'w-14 2xl:w-20'} h-1.5 rounded-full bg-subtle overflow-hidden`}
+        className="w-14 h-1.5 rounded-full bg-subtle overflow-hidden"
         role="progressbar"
         aria-label={label}
         aria-valuemin={0}
@@ -64,7 +64,7 @@ export const XpBar: React.FC<XpBarProps> = ({ xp, compact = false }) => {
         />
       </div>
       {!compact && (
-        <span className="hidden 2xl:inline text-[11px] font-mono tabular-nums text-muted whitespace-nowrap">{displayXp} XP</span>
+        <span className="sr-only">{displayXp} XP</span>
       )}
 
       <AnimatePresence>

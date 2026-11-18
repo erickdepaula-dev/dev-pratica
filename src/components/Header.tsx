@@ -12,10 +12,10 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import { Language, UserProgress } from '../types/exercise';
+import { Track, UserProgress } from '../types/exercise';
 import { User } from 'firebase/auth';
 import { calculateEffectiveStreak } from '../services/storage';
-import { LanguagePills } from './LanguagePills';
+import { TrackPills } from './TrackPills';
 
 export type ActiveTab = 'dashboard' | 'exercicios' | 'desafios_ia' | 'progresso' | 'guia';
 
@@ -42,8 +42,8 @@ const INDICATOR_TRANSITION = { type: 'spring', stiffness: 500, damping: 38 } as 
 interface HeaderProps {
   activeTab: ActiveTab;
   onChangeTab: (tab: ActiveTab) => void;
-  selectedLanguage: Language;
-  onSelectLanguage: (lang: Language) => void;
+  selectedTrack: Track;
+  onSelectTrack: (track: Track) => void;
   totalCompleted: number;
   totalExercises: number;
   progress: UserProgress;
@@ -59,8 +59,8 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   activeTab,
   onChangeTab,
-  selectedLanguage,
-  onSelectLanguage,
+  selectedTrack,
+  onSelectTrack,
   progress,
   currentUser,
   isSyncing,
@@ -158,13 +158,13 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <span aria-hidden="true">🔥</span>
               <span className="tabular-nums font-mono">{streak}</span>
-              <span className="hidden 2xl:inline text-[11px] font-normal">{streak === 1 ? 'dia' : 'dias'}</span>
             </div>
 
             <div className="hidden sm:block">
-              <LanguagePills
-                selectedLanguage={selectedLanguage}
-                onSelectLanguage={onSelectLanguage}
+              <TrackPills
+                selectedTrack={selectedTrack}
+                onSelectTrack={onSelectTrack}
+                compactBelowLg
                 indicatorId="lang-active-indicator"
               />
             </div>
@@ -310,9 +310,9 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="sm:hidden flex items-center justify-between gap-3 px-4 pb-4 pt-1 border-t border-subtle mt-1">
               <span className="text-xs text-muted pt-3">Trilha</span>
               <div className="pt-3">
-                <LanguagePills
-                  selectedLanguage={selectedLanguage}
-                  onSelectLanguage={onSelectLanguage}
+                <TrackPills
+                  selectedTrack={selectedTrack}
+                  onSelectTrack={onSelectTrack}
                   indicatorId="mobile-lang-active-indicator"
                 />
               </div>

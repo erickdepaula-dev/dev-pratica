@@ -1,5 +1,5 @@
 /**
- * Verificador de conteúdo da trilha TypeScript.
+ * Verificador de conteúdo da trilha TypeScript e da trilha de Lógica (variantes JS e TS).
  *
  * Usa o MESMO núcleo de compilação e o MESMO pipeline do app (src/services/typescript),
  * então o que passa aqui é exatamente o que o aluno verá passar no navegador.
@@ -19,7 +19,9 @@ import { createRequire } from 'node:module';
 import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { tsExercises } from '../src/data/ts/index';
-import { normalizeOutputText } from '../src/services/evaluator';
+import { evaluateJavaScriptFreeCode, normalizeOutputText } from '../src/services/evaluator';
+import { logicExercises } from '../src/data/logica/index';
+import { resolveLogicExercise } from '../src/utils/track';
 import { compileTypeScript, type LibFiles, type LibSourceCache, type TypeScriptModule } from '../src/services/typescript/compilerCore';
 import { runInSandbox, runPipeline, type CompileFn } from '../src/services/typescript/pipeline';
 import type { Exercise } from '../src/types/exercise';
@@ -119,6 +121,29 @@ async function check(ex: Exercise): Promise<string[]> {
   return issues;
 }
 
+/**
+ * Trilha de Lógica (Fase 4): cada exercício precisa funcionar nas duas linguagens.
+ * - variante TS: solução passa no pipeline (compila em strict, testes e testes de tipo);
+ * - variante JS: solução passa no avaliador de JS do app;
+ * - nas duas, o template NÃO passa (o exercício não pode vir resolvido).
+ */
+async function checkLogic(ex: Exercise): Promise<string[]> {
+  const issues: string[] = [];
+  if (ex.hints.length < 2) issues.push('menos de 2 dicas');
+  if (!ex.testCases.some(t => t.testFunction)) issues.push('sem testFunction executável');
+
+  const ts = resolveLogicExercise(ex, 'typescript');
+  const tsSol = await runPipeline(ts, ts.solutionCode, compile);
+  if (!tsSol.passed) issues.push(`TS: solução reprovada (${tsSol.scorePercent}%): ${tsSol.testCaseResults.filter(t => !t.passed).map(t => t.error ?? t.description).join(' | ')}`);
+  if ((await runPipeline(ts, ts.templateCode, compile)).passed) issues.push('TS: o template já passa (exercício vem resolvido)');
+
+  const js = resolveLogicExercise(ex, 'javascript');
+  const jsSol = await evaluateJavaScriptFreeCode(js, js.solutionCode);
+  if (!jsSol.passed) issues.push(`JS: solução reprovada (${jsSol.scorePercent}%): ${jsSol.testCaseResults.filter(t => !t.passed).map(t => t.error ?? t.description).join(' | ')}`);
+  if ((await evaluateJavaScriptFreeCode(js, js.templateCode)).passed) issues.push('JS: o template já passa (exercício vem resolvido)');
+  return issues;
+}
+
 async function main(): Promise<void> {
   const filter = process.argv[2];
   const seen = new Set<string>();
@@ -132,6 +157,19 @@ async function main(): Promise<void> {
     if (seen.has(ex.id)) issues.push('ID duplicado');
     seen.add(ex.id);
     const key = `${ex.difficulty}/${ex.type}`;
+    summary[key] = (summary[key] ?? 0) + 1;
+    if (issues.length) {
+      problems += issues.length;
+      console.log(`✗ ${ex.id}\n  - ${issues.join('\n  - ')}`);
+    }
+  }
+
+  for (const ex of logicExercises) {
+    if (filter && !ex.id.includes(filter)) continue;
+    const issues = await checkLogic(ex);
+    if (seen.has(ex.id)) issues.push('ID duplicado');
+    seen.add(ex.id);
+    const key = `logica/${ex.difficulty}/${ex.type}`;
     summary[key] = (summary[key] ?? 0) + 1;
     if (issues.length) {
       problems += issues.length;

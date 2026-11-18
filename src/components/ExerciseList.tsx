@@ -1,15 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight, ChevronDown, CircleCheckBig, Circle, Search, Tag, X } from 'lucide-react';
-import { Exercise, Language, Difficulty, ExerciseType, UserProgress } from '../types/exercise';
-import { getExercisesByLanguage, getAvailableTopics } from '../data';
-import { getDifficultyTheme, getExerciseTypeTheme, getLanguageTheme } from '../utils/exerciseTheme';
-import { LanguagePills } from './LanguagePills';
+import { Exercise, Difficulty, ExerciseType, Track, UserProgress } from '../types/exercise';
+import { getExercisesByTrack } from '../data';
+import { getSelectedTrack } from '../utils/track';
+import { getDifficultyTheme, getExerciseTypeTheme, getTrackTheme } from '../utils/exerciseTheme';
+import { TrackPills } from './TrackPills';
 import { potentialExerciseXp } from '../services/xp';
 
 interface ExerciseListProps {
   progress: UserProgress;
-  onSelectLanguage: (lang: Language) => void;
+  onSelectTrack: (track: Track) => void;
   onSelectExercise: (exerciseId: string) => void;
 }
 
@@ -225,17 +226,17 @@ const EmptyState: React.FC<EmptyStateProps> = ({ activeFilters, onClear }) => (
   </motion.div>
 );
 
-export const ExerciseList: React.FC<ExerciseListProps> = ({ progress, onSelectLanguage, onSelectExercise }) => {
-  const currentLang = progress.selectedLanguage;
-  const langTheme = getLanguageTheme(currentLang);
+export const ExerciseList: React.FC<ExerciseListProps> = ({ progress, onSelectTrack, onSelectExercise }) => {
+  const currentTrack = getSelectedTrack(progress);
+  const langTheme = getTrackTheme(currentTrack);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty | 'todos'>('todos');
   const [selectedTopic, setSelectedTopic] = useState<string>('todos');
   const [selectedType, setSelectedType] = useState<ExerciseType | 'todos'>('todos');
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>('todos');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const exercises = useMemo(() => getExercisesByLanguage(currentLang), [currentLang]);
-  const availableTopics = useMemo(() => getAvailableTopics(currentLang), [currentLang]);
+  const exercises = useMemo(() => getExercisesByTrack(currentTrack), [currentTrack]);
+  const availableTopics = useMemo(() => [...new Set(exercises.map(ex => ex.topic))], [exercises]);
 
   // Só as modalidades que existem na trilha atual (ex.: "Erro de Tipo" é exclusiva de TS)
   const typeOptions = useMemo(() => {
@@ -246,7 +247,7 @@ export const ExerciseList: React.FC<ExerciseListProps> = ({ progress, onSelectLa
   useEffect(() => {
     setSelectedTopic('todos');
     setSelectedType('todos');
-  }, [currentLang]);
+  }, [currentTrack]);
 
   const filteredExercises = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -304,9 +305,9 @@ export const ExerciseList: React.FC<ExerciseListProps> = ({ progress, onSelectLa
         </div>
 
         <div className="self-start md:self-auto">
-          <LanguagePills
-            selectedLanguage={currentLang}
-            onSelectLanguage={onSelectLanguage}
+          <TrackPills
+            selectedTrack={currentTrack}
+            onSelectTrack={onSelectTrack}
             indicatorId="catalog-lang-indicator"
             showFullName
           />
