@@ -35,7 +35,7 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 
 ### Ainda não existe
 
-- 🟡 Trilha de Lógica: modelagem e interface prontas; 20 de 160 exercícios (lote 1 da 4.3) — conversão segue nas Fases 4.3–4.4
+- 🟡 Trilha de Lógica: modelagem e interface prontas; 40 de 160 exercícios (lotes 1–2 da 4.3) — conversão segue nas Fases 4.3–4.4
 
 ---
 
@@ -97,7 +97,7 @@ fonte de verdade das fases concluídas; a fase em andamento pode estar à frente
 | 1 — UI Redesign | ✅ Concluída | `fase-1-ui.md` |
 | 2 — Trilha TypeScript | 🟡 Tarefas feitas; 2 verificações manuais pendentes | `fase-2-typescript.md` |
 | 3 — Gamificação | 🟡 Tarefas feitas; 1 verificação manual pendente | `fase-3-gamificacao.md` |
-| 4 — Exercícios dos PDFs | 🟡 **Ativa** — 4.1, 4.2 e 4.6 feitas; 4.3 em andamento (lote 1 de 5 feito: nº 1–20) | `fase-4-exercicios.md` |
+| 4 — Exercícios dos PDFs | 🟡 **Ativa** — 4.1, 4.2 e 4.6 feitas; 4.3 em andamento (lotes 1–2 de 5 feitos: nº 1–40) | `fase-4-exercicios.md` |
 
 ### Pendente de verificação manual (precisa do usuário)
 
@@ -113,19 +113,21 @@ Quando passarem: marcar as Fases 2 e 3 como ✅ (e os critérios correspondentes
 
 ### Próximo passo
 
-**4.3 em andamento — lote 1 de 5 feito (exercícios 1 a 20).** Arquivos por módulo em
-`src/data/logica/`: `m01PrimeirosAlgoritmos.ts` (nº 1–15, completo) e
-`m02EstruturasCondicionais.ts` (nº 16–20 por enquanto; o módulo vai até o 35). Cada exercício é
-escrito com o helper `logica()` (`logicFactory.ts`): assinatura JS e TS + um corpo de solução só;
-o template ("// Escreva aqui o seu algoritmo") sai automático. Os nº 11–13 (sem enunciado na
-origem) foram criados do zero: Idade em dias, Segundos em h/min/s, Consumo médio.
+**4.3 em andamento — lotes 1 e 2 de 5 feitos (exercícios 1 a 40).** Arquivos por módulo em
+`src/data/logica/`: `m01PrimeirosAlgoritmos.ts` (nº 1–15, completo), `m02EstruturasCondicionais.ts`
+(nº 16–35, completo) e `m03EstruturasDeRepeticao.ts` (nº 36–40 por enquanto; o módulo vai até o 60).
+Cada exercício é escrito com o helper `logica()` (`logicFactory.ts`): assinatura JS e TS + um corpo
+de solução (`tsBody` quando o TS precisa de anotação, ex.: `const numeros: number[] = []`); o
+template ("// Escreva aqui o seu algoritmo") sai automático. Os nº 11–13 (sem enunciado na origem)
+foram criados do zero: Idade em dias, Segundos em h/min/s, Consumo médio.
 
-**Próximo passo: lote 2 (nº 21–40)** — resto do módulo 02 (21–35, condicionais) em
-`m02EstruturasCondicionais.ts` e começo do módulo 03 (36–40, repetição) num novo
-`m03EstruturasDeRepeticao.ts`, registrado em `src/data/logica/index.ts`. Depois lotes 3–5
-(41–60, 61–80, 81–100). Convenções do lote 1: funções puras (sem leitura de teclado), resultados
-múltiplos em objeto ou tupla, categorias como union de literais no TS, decimais comparados com
-tolerância nos testes, testes que reprovam o erro típico (ex.: precedência, `-3 % 2`).
+**Próximo passo: lote 3 (nº 41–60)** — resto do módulo 03 (repetição) em
+`m03EstruturasDeRepeticao.ts`. Depois lotes 4 (61–80, vetores e matrizes → novo
+`m04VetoresEMatrizes.ts`) e 5 (81–100, funções → `m05FuncoesEDesafios.ts`), cada arquivo
+registrado em `src/data/logica/index.ts`. Convenções: funções puras (sem leitura de teclado;
+"mostrar na tela" vira devolver um array), resultados múltiplos em objeto ou tupla, categorias
+como union de literais no TS, decimais comparados com tolerância, testes que reprovam o erro
+típico (precedência, `-3 % 2`, fronteiras com `>=`, off-by-one em laços).
 Rodar `npm run check:ts -- logica` a cada lote.
 Depois: 4.4 (60 bônus) e 4.5 (teste de mesa). Ao fim da Fase 4, levar para a `main`.
 
@@ -188,3 +190,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | 4 | 4.6 parcial (base): trilha selecionada e linguagem da Lógica no progresso (com migração e sync), tema da trilha de Lógica. Cor ameixa (#A44C8C) escolhida por busca de matiz: maior distância de todas as trilhas e status (ΔE ≥ 16); validada com a skill de dataviz. |
 | 2026-11-18 | 4 | Tarefa 4.6 concluída: trilha de Lógica no seletor, catálogo, Dashboard e Progresso; "Resolver em JS/TS" no workspace (código salvo por linguagem); `check:ts` valida as variantes; piloto `logica-001`. Header sem overflow com 4 trilhas. Corrigido bug antigo do editor de código com 80 px úteis. |
 | 2026-11-18 | 4 | 4.3, lote 1 (nº 1–20): módulo 01 completo (15) + nº 16–20 do módulo 02; helper `logica()` gera template/solução JS e TS a partir de uma assinatura e um corpo. `check:ts`: 20 exercícios de Lógica, 0 problemas; soluções erradas típicas testadas e reprovadas. Avaliador JS: cada teste roda no próprio escopo (um `const` do teste não colide mais com o código do aluno). |
+| 2026-11-18 | 4 | 4.3, lote 2 (nº 21–40): módulo 02 completo (condicionais, 16–35) + nº 36–40 do módulo 03 (repetição, novo `m03EstruturasDeRepeticao.ts`). `check:ts`: 40 exercícios de Lógica, 0 problemas; 11 soluções erradas típicas testadas e reprovadas. |

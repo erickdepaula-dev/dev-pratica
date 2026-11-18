@@ -86,7 +86,7 @@ títulos e tópicos. Os enunciados são escritos do zero na tarefa 4.3, no tom d
 ### 4.3 — Conversão: 100 exercícios de lógica
 - [ ] Converter em lotes de 20 para o formato `Exercise`
   - [x] Lote 1 — nº 1–20 (módulo 01 completo + 16–20 do módulo 02)
-  - [ ] Lote 2 — nº 21–40
+  - [x] Lote 2 — nº 21–40 (módulo 02 completo + 36–40 do módulo 03)
   - [ ] Lote 3 — nº 41–60
   - [ ] Lote 4 — nº 61–80
   - [ ] Lote 5 — nº 81–100
@@ -101,7 +101,8 @@ objeto (`{ area, perimetro }`) ou tupla (`[number, number]`); categorias viram u
 TS (`'par' | 'ímpar'`); decimais são comparados com tolerância; cada exercício tem ao menos um teste
 que reprova o erro típico. Os nº 11–13 (sem enunciado na origem) foram criados: Idade em dias,
 Segundos em horas/minutos/segundos, Consumo médio de combustível. Dificuldade do lote 1: 17 básicos,
-3 intermediários (12, 19, 20).
+3 intermediários (12, 19, 20); lote 2: 10 básicos, 10 intermediários (regras com faixas,
+`switch`, várias condições combinadas). Na repetição, "mostrar na tela" vira devolver um array.
 
 ### 4.4 — Conversão: condicionais e repetição
 - [ ] 30 exercícios de condicionais
