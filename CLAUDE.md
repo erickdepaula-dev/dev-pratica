@@ -23,6 +23,9 @@
 3. Atualizar o **Changelog** em `docs/CONTEXT.md` com data e resumo.
 4. Rodar `npm run lint` para garantir que a tipagem está válida.
 
+**Ao concluir uma FASE inteira:** levar a branch de trabalho para a `main` (fast-forward, sem PR —
+regra definida pelo usuário), para a `main` ser sempre a fonte de verdade das fases concluídas.
+
 ---
 
 ## 📐 Convenções do projeto

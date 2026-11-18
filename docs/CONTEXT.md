@@ -30,7 +30,7 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 | **Ofensiva** | Streak em dias, timezone `America/Fortaleza` (`src/utils/dateUtils.ts`) |
 | **Persistência** | localStorage + Firebase Firestore, login Google (`src/services/storage.ts`, `firestoreSync.ts`) |
 | **Design system** | Tokens em `src/styles/tokens.css` + `@theme` (`src/index.css`), temas em `src/utils/exerciseTheme.ts`, animações com `motion` e reduced motion global |
-| **Gamificação** | XP congelado por conclusão, 5 níveis de carreira, 11 conquistas, gráfico de XP por dia (`services/xp.ts`, `services/badges.ts`) — *só na branch, ver "Onde paramos"* |
+| **Gamificação** | XP congelado por conclusão, 5 níveis de carreira, 11 conquistas, gráfico de XP por dia (`services/xp.ts`, `services/badges.ts`) |
 | **Avaliação** | Lacunas, regex e test cases (`src/services/evaluator.ts`); **TypeScript compilado de verdade no navegador** (TS 5.9.3, pipeline compilar → executar → testar → regras em `src/services/typescript/`) |
 
 ### Ainda não existe
@@ -62,7 +62,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 | :--- | :--- | :--- |
 | 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ✅ Concluída |
 | 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefas concluídas; 2 critérios aguardam verificação manual |
-| 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | 🟡 Tarefas concluídas; sync com Firestore aguarda verificação manual |
+| 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | 🟡 Tarefas concluídas (na `main`); sync com Firestore aguarda verificação manual |
 | 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefas 4.1 e 4.2 concluídas |
 
 **Índice de apoio:** [`fase-4-indice-exercicios.md`](./fase-4-indice-exercicios.md) — catálogo dos 160 exercícios.
@@ -83,10 +83,12 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 
 | O quê | Onde |
 | :--- | :--- |
-| Fases 1 e 2 | `main` (PR #1 mesclado em 2026-11-17, commit `835bc08`) |
-| Fase 3 inteira + Fase 4.1 | **só na branch `claude/gifted-wozniak-kif49s`** — ainda não está na `main` e não há PR aberto (o usuário pediu para não abrir por enquanto) |
+| Fases 1, 2, 3 e a 4.1 | `main` (Fases 1–2 via PR #1; Fase 3 + 4.1 levadas por fast-forward em 2026-11-18) |
+| Trabalho em andamento da fase ativa | branch `claude/gifted-wozniak-kif49s` |
 
-Para trabalhar no estado mais recente: `git checkout claude/gifted-wozniak-kif49s`.
+**Regra (definida pelo usuário em 2026-11-18):** o trabalho é feito na branch de trabalho e
+**levado para a `main` ao fim de cada fase** (fast-forward, sem PR). Assim a `main` é sempre a
+fonte de verdade das fases concluídas; a fase em andamento pode estar à frente, na branch.
 
 ### Estado de cada fase
 
@@ -111,10 +113,9 @@ Quando passarem: marcar as Fases 2 e 3 como ✅ (e os critérios correspondentes
 
 ### Próximo passo
 
-**Aguardando o usuário decidir a ordem na Fase 4:**
-- **4.6 (interface da trilha de Lógica) antes da 4.3** — recomendado: cada lote de exercícios
-  convertido já pode ser testado na tela; ou
-- **4.3 direto** (converter os 100 exercícios de lógica em lotes de 20).
+**Tarefa 4.6 — interface da trilha de Lógica** (o usuário decidiu fazê-la antes da conversão 4.3,
+para cada lote convertido já poder ser testado na tela). Depois: 4.3 (100 exercícios em lotes de
+20), 4.4 (60 bônus), 4.5 (teste de mesa).
 
 Contexto da Fase 4: trilha **"Lógica" própria** (decisão do usuário), resolvida em **JS ou TS**
 (PHP não roda no navegador). Modelagem pronta: `Track` separado de `Language`, `logicVariants`
@@ -123,7 +124,7 @@ por exercício e `resolveLogicExercise()` — ver "Modelagem decidida (4.1)" em 
 ### Como retomar uma sessão
 
 ```bash
-git checkout claude/gifted-wozniak-kif49s
+git checkout claude/gifted-wozniak-kif49s   # ou main, se a fase ativa já foi levada para lá
 npm install --legacy-peer-deps   # o projeto tem conflito de peer deps (vite 8)
 npm run lint && npm run check:ts && npm run check:xp && npm run build
 ```
@@ -167,3 +168,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-17 | 3 | Tarefa 3.4 concluída e Fase 3 com todas as tarefas feitas: XP nos Desafios IA e nos cards, gráfico de XP por dia. Pendente: verificação manual da sincronização com o Firestore. |
 | 2026-11-17 | 4 | Tarefa 4.1 concluída: trilha "Lógica" própria (decisão do usuário); `Track` separado de `Language`, variantes JS/TS por exercício com `resolveLogicExercise`, convenção de IDs, badges por trilha. Tarefa 4.6 (interface) acrescentada. |
 | 2026-11-18 | — | "Onde paramos" reescrito como retrato do estado atual (local do código por branch, estado por fase, verificações manuais pendentes, próximo passo e como retomar). Removidos trechos desatualizados (fase ativa errada, lembrete do stub de TS). |
+| 2026-11-18 | 3 | Fase 3 (+ 4.1) levada para a `main` por fast-forward. Nova regra do usuário: levar para a `main` ao fim de cada fase. Ordem da Fase 4 decidida: 4.6 (interface) antes da 4.3. |
