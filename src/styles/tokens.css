@@ -35,6 +35,12 @@
   --lang-typescript: #3178c6;
   --lang-typescript-text: #7fb3ef;
 
+  /* Trilha de Lógica (Fase 4): ameixa escolhido por busca sistemática — o matiz com maior
+     distância (OKLab ΔE ≥ 16) de todas as trilhas e cores de status; validado contra a
+     superfície escura (barra 3,4:1, texto 9,8:1). */
+  --track-logica: #a44c8c;
+  --track-logica-text: #ecaed8;
+
   /* Realce de sintaxe dos editores */
   --syntax-keyword: #c084fc;
   --syntax-variable: #7dd3fc;

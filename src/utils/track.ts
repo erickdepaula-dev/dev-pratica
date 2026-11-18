@@ -1,4 +1,4 @@
-import type { Exercise, Language, LogicLanguage, Track } from '../types/exercise';
+import type { Exercise, Language, LogicLanguage, Track, UserProgress } from '../types/exercise';
 import { LANGUAGES } from './language';
 
 /** Todas as trilhas do catálogo, na ordem de exibição (as linguagens + Lógica). */
@@ -9,6 +9,20 @@ export const LOGIC_LANGUAGES = ['javascript', 'typescript'] as const satisfies r
 
 export function isTrack(value: unknown): value is Track {
   return typeof value === 'string' && (TRACKS as readonly string[]).includes(value);
+}
+
+export function isLogicLanguage(value: unknown): value is LogicLanguage {
+  return typeof value === 'string' && (LOGIC_LANGUAGES as readonly string[]).includes(value);
+}
+
+/** Trilha selecionada; progresso anterior à Fase 4 não tem o campo e usa a linguagem. */
+export function getSelectedTrack(progress: UserProgress): Track {
+  return progress.selectedTrack ?? progress.selectedLanguage;
+}
+
+/** Linguagem preferida na trilha de Lógica (padrão: JavaScript). */
+export function getLogicLanguage(progress: UserProgress): LogicLanguage {
+  return progress.logicLanguage ?? 'javascript';
 }
 
 export function isLogicExercise(exercise: Exercise): boolean {

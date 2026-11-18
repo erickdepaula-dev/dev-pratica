@@ -1,4 +1,4 @@
-import { Difficulty, ExerciseType, Language } from '../types/exercise';
+import { Difficulty, ExerciseType, Language, Track } from '../types/exercise';
 
 /**
  * Tema visual por modalidade e por dificuldade de exercício.
@@ -163,4 +163,21 @@ const LANGUAGE_THEME: Record<Language, LanguageTheme> = {
 
 export function getLanguageTheme(language: Language): LanguageTheme {
   return LANGUAGE_THEME[language];
+}
+
+/** Tema da trilha de Lógica (Fase 4) — resolvida em JS ou TS. */
+const LOGIC_TRACK_THEME: LanguageTheme = {
+  name: 'Lógica',
+  shortName: 'Lógica',
+  emoji: '🧩',
+  tag: 'Fundamentos',
+  description: 'Algoritmos resolvidos em JavaScript ou TypeScript',
+  tagClass: 'text-logica-text bg-logica/15 border-logica/40',
+  barClass: 'bg-logica',
+  activeClass: 'border-logica/70 ring-1 ring-logica/30',
+};
+
+/** Tema de qualquer trilha do catálogo (linguagem ou Lógica). */
+export function getTrackTheme(track: Track): LanguageTheme {
+  return track === 'logica' ? LOGIC_TRACK_THEME : getLanguageTheme(track);
 }

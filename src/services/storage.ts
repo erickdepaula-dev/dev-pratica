@@ -1,7 +1,8 @@
-import { Language, UserProgress, ExerciseAttempt } from '../types/exercise';
+import { Language, LogicLanguage, Track, UserProgress, ExerciseAttempt } from '../types/exercise';
 import { AiChallenge, AiChallengeAttempt, AiChallengeEvaluation } from '../types/aiChallenge';
 import { getFortalezaDateString, getDaysDifference } from '../utils/dateUtils';
 import { isLanguage } from '../utils/language';
+import { isLogicLanguage, isTrack } from '../utils/track';
 import { allExercises, getExerciseById } from '../data';
 import { computeAiChallengeXp, computeExerciseXp, retroactiveAiChallengeXp, retroactiveExerciseXp } from './xp';
 import { unlockBadges } from './badges';
@@ -74,6 +75,13 @@ export function loadUserProgress(): UserProgress {
     // válidos. Qualquer valor desconhecido (corrompido ou de versão futura) volta para 'php'.
     if (!isLanguage(parsed.selectedLanguage)) {
       parsed.selectedLanguage = 'php';
+    }
+    // Migração defensiva (Fase 4): campos opcionais; valor inválido é descartado (volta ao padrão).
+    if (parsed.selectedTrack !== undefined && !isTrack(parsed.selectedTrack)) {
+      delete parsed.selectedTrack;
+    }
+    if (parsed.logicLanguage !== undefined && !isLogicLanguage(parsed.logicLanguage)) {
+      delete parsed.logicLanguage;
     }
     if (!parsed.streak) {
       parsed.streak = { currentStreak: 0, lastActiveDate: '', activeDates: [] };
@@ -178,6 +186,8 @@ export function recordExerciseAttempt(
     revealedSolution?: boolean;
     outputPrediction?: string;
     typeErrorAnswer?: { line: number; reason: number };
+    /** Trilha de Lógica: linguagem em que o código foi escrito. */
+    logicLanguage?: LogicLanguage;
     /**
      * false para gravações que NÃO são envio de resposta (liberar dica, revelar solução,
      * marcar critério de aceite). Elas não podem consumir a "1ª tentativa" do bônus de XP.
@@ -205,6 +215,7 @@ export function recordExerciseAttempt(
     checklistDone: existingAttempt?.checklistDone,
     typeErrorAnswer: data.typeErrorAnswer ?? existingAttempt?.typeErrorAnswer,
     xpEarned: existingAttempt?.xpEarned,
+    logicLanguage: data.logicLanguage ?? existingAttempt?.logicLanguage,
   };
 
   // XP: calculado só na PRIMEIRA conclusão e congelado; refazer não acumula.
@@ -381,9 +392,23 @@ export function recordAiChallengeAttempt(
   return current;
 }
 
-export function setSelectedLanguage(language: Language): UserProgress {
+/** Seleciona uma trilha. Trilha de linguagem também atualiza `selectedLanguage`. */
+export function setSelectedTrack(track: Track): UserProgress {
   const current = loadUserProgress();
-  current.selectedLanguage = language;
+  current.selectedTrack = track;
+  if (isLanguage(track)) current.selectedLanguage = track;
+  saveUserProgress(current);
+  return current;
+}
+
+export function setSelectedLanguage(language: Language): UserProgress {
+  return setSelectedTrack(language);
+}
+
+/** Linguagem preferida para a trilha de Lógica. */
+export function setLogicLanguage(language: LogicLanguage): UserProgress {
+  const current = loadUserProgress();
+  current.logicLanguage = language;
   saveUserProgress(current);
   return current;
 }

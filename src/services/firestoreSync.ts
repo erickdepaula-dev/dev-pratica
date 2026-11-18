@@ -5,6 +5,7 @@ import { loadUserProgress, migrateProgress, saveUserProgress } from './storage';
 import type { AiChallengeAttempt } from '../types/aiChallenge';
 import type { UnlockedBadge } from '../types/gamification';
 import { isLanguage } from '../utils/language';
+import { isLogicLanguage, isTrack } from '../utils/track';
 
 export enum OperationType {
   CREATE = 'create',
@@ -71,6 +72,8 @@ export async function syncProgressToFirestore(progress: UserProgress): Promise<v
       email: user.email || '',
       displayName: user.displayName || '',
       selectedLanguage: progress.selectedLanguage,
+      selectedTrack: progress.selectedTrack ?? null,
+      logicLanguage: progress.logicLanguage ?? null,
       currentStreak: progress.streak.currentStreak,
       lastActiveDate: progress.streak.lastActiveDate,
       activeDates: progress.streak.activeDates,
@@ -192,6 +195,8 @@ export async function loadProgressFromFirestore(): Promise<UserProgress | null> 
 
     const merged: UserProgress = {
       selectedLanguage: isLanguage(data.selectedLanguage) ? data.selectedLanguage : local.selectedLanguage,
+      selectedTrack: isTrack(data.selectedTrack) ? data.selectedTrack : local.selectedTrack,
+      logicLanguage: isLogicLanguage(data.logicLanguage) ? data.logicLanguage : local.logicLanguage,
       completedIds: mergedCompleted,
       attempts: mergedAttempts,
       aiChallenges: mergedAiChallenges,

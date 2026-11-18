@@ -194,13 +194,23 @@ export interface ExerciseAttempt {
    * XP retroativo.
    */
   xpEarned?: number;
+  /** Trilha de Lógica: linguagem em que `userCode` foi escrito (JS ou TS). */
+  logicLanguage?: LogicLanguage;
 }
 
 import { AiChallengeAttempt } from './aiChallenge';
 import { UnlockedBadge } from './gamification';
 
 export interface UserProgress {
+  /** Última trilha de LINGUAGEM escolhida (usada também pelos Desafios IA). */
   selectedLanguage: Language;
+  /**
+   * Trilha exibida no catálogo/Dashboard (Fase 4): uma linguagem ou 'logica'.
+   * Ausente em progresso antigo → vale `selectedLanguage` (ver getSelectedTrack).
+   */
+  selectedTrack?: Track;
+  /** Linguagem preferida para resolver a trilha de Lógica (padrão: JavaScript). */
+  logicLanguage?: LogicLanguage;
   completedIds: string[];
   attempts: Record<string, ExerciseAttempt>;
   aiChallenges?: Record<string, AiChallengeAttempt>;
