@@ -39,8 +39,8 @@ A saída vai para `.vercel/output/`, que é ignorada pelo Git.
 - **Firebase:** projeto próprio **`dev-pratica`** (nº 1082635470502), criado pelo usuário em 2026-11-18.
   Conferido pela API: domínios `localhost`, `dev-pratica.firebaseapp.com`, `dev-pratica.web.app` e
   `dev-pratica.vercel.app` autorizados; login com Google ativo. `GEMINI_API_KEY` cadastrada na Vercel.
-- **Falta (usuário):** criar o **Firestore** (passo 4 da seção "projeto Firebase próprio") e publicar
-  as regras (passo 5). Sem ele, o login funciona, mas o progresso fica só no navegador.
+- **Firestore:** banco `(default)` criado e `firestore.rules` publicado pelo usuário (2026-11-18).
+  Conferido pela API: leitura anônima recusada com "Missing or insufficient permissions" (o esperado).
 
 ## Configuração inicial (referência — os passos 1–3 e 5 já foram feitos)
 

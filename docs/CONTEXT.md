@@ -128,9 +128,8 @@ tabela digitada à mão para dessincronizar. Detalhes em "Como ficou (4.5)" no `
 em todo exercício de Lógica) e a tabela Portugol × Python × JavaScript (`src/data/referencia.ts`).
 
 **O que falta, tudo do lado do usuário:**
-1. **Criar o Firestore no projeto `dev-pratica`** — o login já funciona; falta a nuvem (ver "Firebase" abaixo).
-2. **As 3 verificações manuais** da seção acima (dependem do login).
-3. Depois delas, marcar as Fases 2 e 3 como ✅.
+1. **As 3 verificações manuais** da seção acima (o Firebase está configurado; é entrar no site e testar).
+2. Depois delas, marcar as Fases 2 e 3 como ✅.
 
 Ideias para depois (não fazem parte do plano): mais exercícios de teste de mesa (vetores, matrizes,
 funções), e trazer o teste de mesa para as trilhas JS/TS.
@@ -140,10 +139,9 @@ funções), e trazer o teste de mesa para as trilhas JS/TS.
 
 **Firebase:** o app usa o projeto próprio do usuário **`dev-pratica`** (trocado em 2026-11-18; o do AI
 Studio, `gen-lang-client-0954454406`, não podia ser administrado). Conferido pela API: domínios do site
-e `localhost` autorizados, login com Google ativo. **Pendente do usuário:** criar o Firestore
-(`(default)`, São Paulo, modo produção) e publicar o `firestore.rules` — sem isso o login funciona mas
-o progresso não sobe para a nuvem (o app avisa e mantém o progresso no navegador). Depois: as 3
-verificações manuais acima.
+e `localhost` autorizados, login com Google ativo, Firestore `(default)` criado com o `firestore.rules`
+publicado (leitura anônima recusada, como deve ser). **Configuração completa** — falta só o usuário
+entrar no site e fazer as 3 verificações manuais acima.
 
 **Como testar localmente:** [`TESTANDO-LOCAL.md`](./TESTANDO-LOCAL.md) (instalação, `.env`, verificações
 automáticas, roteiro de teste manual por fase, problemas comuns).
@@ -220,3 +218,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | — | "Entrar" reinvestigado: o código de login está certo (pop-up com redirecionamento de reserva); o bloqueio é o projeto Firebase do AI Studio, cujos domínios autorizados não incluem o site nem `localhost`. Documentado o caminho de um projeto Firebase próprio do usuário (`DEPLOY.md`), que só exige trocar a configuração. |
 | 2026-11-18 | 4 | **Fase 4 concluída.** 4.5: modalidade `teste_de_mesa` (tipo, `DeskCheckViewer`, `evaluateDeskCheck`, gabarito gerado executando o código via `anotar(...)`, persistência achatada para o Firestore, tutor instruído a não revelar células) + 12 exercícios `logica-t01…t12`; seção Trilha de Lógica no StudyGuide com o método do teste de mesa. 4.6: guia de operadores (StudyGuide + consulta rápida no workspace) e tabela Portugol × Python × JS. `check:ts`: 251 exercícios, 0 problemas; testado no navegador (erro marcado por célula, acerto +10 XP, resposta restaurada, 375/768/1440 px sem overflow). Levado para a `main`. |
 | 2026-11-18 | — | Firebase trocado para o projeto próprio `dev-pratica` (config em `src/config/firebase.config.ts`, banco `(default)`). Conferido pela API: domínios do site/`localhost` autorizados e login Google ativo; o Firestore ainda não foi criado. Login que dá certo com a nuvem fora do ar agora avisa "login feito, nuvem não respondeu" em vez de erro de autenticação. Docs de deploy atualizadas. |
+| 2026-11-18 | — | Firestore `(default)` criado no projeto `dev-pratica` e `firestore.rules` publicado pelo usuário (conteúdo conferido, idêntico ao do repositório). Conferido pela API: leitura anônima recusada. Configuração do Firebase completa. |
