@@ -23,8 +23,9 @@
 3. Atualizar o **Changelog** em `docs/CONTEXT.md` com data e resumo.
 4. Rodar `npm run lint` para garantir que a tipagem está válida.
 
-**Ao concluir uma FASE inteira:** levar a branch de trabalho para a `main` (fast-forward, sem PR —
-regra definida pelo usuário), para a `main` ser sempre a fonte de verdade das fases concluídas.
+**Levar para a `main`** (fast-forward, sem PR — regra do usuário): ao fim de cada fase **e** de cada
+entrega que passou nas verificações (ex.: cada lote de exercícios), porque a `main` publica sozinha
+na Vercel (https://dev-pratica.vercel.app) e o usuário acompanha pelo site.
 
 ---
 

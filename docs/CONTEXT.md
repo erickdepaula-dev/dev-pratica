@@ -83,12 +83,13 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 
 | O quê | Onde |
 | :--- | :--- |
-| Fases 1, 2, 3, a Fase 4 até o lote 2 da 4.3 e o setup de deploy | `main` (Fases 1–2 via PR #1; o resto por fast-forward — o último em 2026-11-18, a pedido do usuário no meio da Fase 4) |
+| Fases 1, 2, 3, a Fase 4 até o lote 3 da 4.3 e o setup de deploy | `main` (Fases 1–2 via PR #1; o resto por fast-forward — o último em 2026-11-18, a pedido do usuário no meio da Fase 4) |
 | Trabalho em andamento da fase ativa | branch `claude/gifted-wozniak-kif49s` (igual à `main` até o próximo commit) |
 
-**Regra (definida pelo usuário em 2026-11-18):** o trabalho é feito na branch de trabalho e
-**levado para a `main` ao fim de cada fase** (fast-forward, sem PR). Assim a `main` é sempre a
-fonte de verdade das fases concluídas; a fase em andamento pode estar à frente, na branch.
+**Regra (definida pelo usuário em 2026-11-18, ampliada no mesmo dia):** o trabalho é feito na branch
+de trabalho e **levado para a `main` (fast-forward, sem PR) ao fim de cada fase e de cada entrega
+verificada** (ex.: cada lote de exercícios). A `main` publica sozinha na Vercel, então ela é o que
+está no ar.
 
 ### Estado de cada fase
 
