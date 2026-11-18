@@ -83,8 +83,8 @@ Legenda: ⬜ não iniciada · 🟡 em andamento · ✅ concluída
 
 | O quê | Onde |
 | :--- | :--- |
-| Fases 1, 2, 3 e a 4.1 | `main` (Fases 1–2 via PR #1; Fase 3 + 4.1 levadas por fast-forward em 2026-11-18) |
-| Trabalho em andamento da fase ativa | branch `claude/gifted-wozniak-kif49s` |
+| Fases 1, 2, 3 e a Fase 4 até o lote 2 da 4.3 | `main` (Fases 1–2 via PR #1; o resto por fast-forward — o último em 2026-11-18, a pedido do usuário no meio da Fase 4) |
+| Trabalho em andamento da fase ativa | branch `claude/gifted-wozniak-kif49s` (igual à `main` até o próximo commit) |
 
 **Regra (definida pelo usuário em 2026-11-18):** o trabalho é feito na branch de trabalho e
 **levado para a `main` ao fim de cada fase** (fast-forward, sem PR). Assim a `main` é sempre a
@@ -134,6 +134,9 @@ Depois: 4.4 (60 bônus) e 4.5 (teste de mesa). Ao fim da Fase 4, levar para a `m
 Contexto da Fase 4: trilha **"Lógica" própria** (decisão do usuário), resolvida em **JS ou TS**
 (PHP não roda no navegador). Modelagem pronta: `Track` separado de `Language`, `logicVariants`
 por exercício e `resolveLogicExercise()` — ver "Modelagem decidida (4.1)" em `fase-4-exercicios.md`.
+
+**Como testar localmente:** [`TESTANDO-LOCAL.md`](./TESTANDO-LOCAL.md) (instalação, `.env`, verificações
+automáticas, roteiro de teste manual por fase, problemas comuns).
 
 ### Como retomar uma sessão
 
@@ -191,3 +194,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | 4 | Tarefa 4.6 concluída: trilha de Lógica no seletor, catálogo, Dashboard e Progresso; "Resolver em JS/TS" no workspace (código salvo por linguagem); `check:ts` valida as variantes; piloto `logica-001`. Header sem overflow com 4 trilhas. Corrigido bug antigo do editor de código com 80 px úteis. |
 | 2026-11-18 | 4 | 4.3, lote 1 (nº 1–20): módulo 01 completo (15) + nº 16–20 do módulo 02; helper `logica()` gera template/solução JS e TS a partir de uma assinatura e um corpo. `check:ts`: 20 exercícios de Lógica, 0 problemas; soluções erradas típicas testadas e reprovadas. Avaliador JS: cada teste roda no próprio escopo (um `const` do teste não colide mais com o código do aluno). |
 | 2026-11-18 | 4 | 4.3, lote 2 (nº 21–40): módulo 02 completo (condicionais, 16–35) + nº 36–40 do módulo 03 (repetição, novo `m03EstruturasDeRepeticao.ts`). `check:ts`: 40 exercícios de Lógica, 0 problemas; 11 soluções erradas típicas testadas e reprovadas. |
+| 2026-11-18 | — | Criado `docs/TESTANDO-LOCAL.md` (como rodar e testar localmente). Branch levada para a `main` por fast-forward a pedido do usuário (Fase 4 ainda em andamento: 40 de 160 exercícios de Lógica). |

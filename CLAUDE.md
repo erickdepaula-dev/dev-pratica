@@ -76,6 +76,9 @@ npm run build   # build de produção
 npm start       # produção
 ```
 
+Roteiro para o usuário rodar e testar localmente: `docs/TESTANDO-LOCAL.md` (manter atualizado
+quando mudar comando, variável de ambiente ou o que há para testar).
+
 ---
 
 ## 🎯 Decisões de produto já tomadas
