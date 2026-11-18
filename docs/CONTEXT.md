@@ -135,10 +135,10 @@ Contexto da Fase 4: trilha **"Lógica" própria** (decisão do usuário), resolv
 (PHP não roda no navegador). Modelagem pronta: `Track` separado de `Language`, `logicVariants`
 por exercício e `resolveLogicExercise()` — ver "Modelagem decidida (4.1)" em `fase-4-exercicios.md`.
 
-**Deploy:** Vercel, automático a cada push na `main` — ver [`DEPLOY.md`](./DEPLOY.md). **Pendente do
-usuário:** importar o repositório no painel da Vercel (o conector não tem permissão para criar o
-projeto: 403), configurar `GEMINI_API_KEY` lá e liberar o domínio da Vercel no Firebase Auth.
-Depois disso, conferir o checklist "deploy saudável" do `DEPLOY.md`.
+**Deploy:** Vercel, automático a cada push na `main` — produção em **https://dev-pratica.vercel.app**
+(projeto `dev-pratica`, ver [`DEPLOY.md`](./DEPLOY.md)). **Pendente do usuário:** cadastrar
+`GEMINI_API_KEY` nas variáveis do projeto na Vercel (sem ela o tutor usa respostas prontas) e liberar
+`dev-pratica.vercel.app` no Firebase Auth (Authorized domains), senão o login Google falha em produção.
 
 **Como testar localmente:** [`TESTANDO-LOCAL.md`](./TESTANDO-LOCAL.md) (instalação, `.env`, verificações
 automáticas, roteiro de teste manual por fase, problemas comuns).
@@ -201,3 +201,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | 4 | 4.3, lote 2 (nº 21–40): módulo 02 completo (condicionais, 16–35) + nº 36–40 do módulo 03 (repetição, novo `m03EstruturasDeRepeticao.ts`). `check:ts`: 40 exercícios de Lógica, 0 problemas; 11 soluções erradas típicas testadas e reprovadas. |
 | 2026-11-18 | — | Criado `docs/TESTANDO-LOCAL.md` (como rodar e testar localmente). Branch levada para a `main` por fast-forward a pedido do usuário (Fase 4 ainda em andamento: 40 de 160 exercícios de Lógica). |
 | 2026-11-18 | — | Deploy na Vercel preparado: `server.ts` separado em `server/apiApp.ts` (rotas) + servidor local; `npm run build:vercel` gera `.vercel/output` (estático + API Express empacotada como função Node 22); `vercel.json`; guia `docs/DEPLOY.md`. Criação do projeto pelo conector recusada (403) — importação fica para o usuário no painel. Levado para a `main`. |
+| 2026-11-18 | — | Projeto `dev-pratica` criado na Vercel pela API (token do usuário; o conector MCP é só leitura), ligado ao GitHub com produção na `main`. Primeiro deploy de produção: build OK, função da API `READY`, domínio `dev-pratica.vercel.app`. |

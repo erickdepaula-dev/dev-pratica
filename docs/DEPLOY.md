@@ -30,7 +30,16 @@ A saída vai para `.vercel/output/`, que é ignorada pelo Git.
 
 ---
 
-## Configuração inicial (uma vez, pelo painel)
+## Estado atual
+
+- **Projeto:** `dev-pratica` no time *deverickpaulawork's projects* (`prj_D2YTXmWX73W2uRD1sRpSWiB6VQ9S`),
+  ligado ao GitHub `erickdepaula-dev/dev-pratica`, branch de produção `main`. Criado em 2026-11-18
+  pela API da Vercel (o conector MCP da Vercel nesta sessão é só leitura).
+- **Produção:** https://dev-pratica.vercel.app
+- **Falta (usuário):** a variável `GEMINI_API_KEY` no projeto (passo 4 abaixo) e liberar o domínio no
+  Firebase (passo 6).
+
+## Configuração inicial (referência — os passos 1–3 e 5 já foram feitos)
 
 1. Acesse **https://vercel.com/new**, com o time *deverickpaulawork's projects* selecionado.
 2. Em *Import Git Repository*, escolha **`erickdepaula-dev/dev-pratica`** e clique em **Import**.
