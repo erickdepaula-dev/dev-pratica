@@ -68,6 +68,29 @@ Depois disso, todo push na `main` publica sozinho.
 
 ---
 
+## Login com Google: pop-up e redirecionamento
+
+O login tenta primeiro o **pop-up** (`signInWithPopup`). Quando o navegador o bloqueia, o app cai
+sozinho no **redirecionamento** (`signInWithRedirect`): a página sai para a tela do Google e volta
+autenticada. O resultado é recolhido por `consumeRedirectLogin()` quando o app monta, e é só ali que
+os erros desse fluxo aparecem.
+
+**Ressalva que ainda está em aberto.** O `authDomain` do projeto é
+`gen-lang-client-0954454406.firebaseapp.com`, um domínio diferente daquele onde o app roda. Isso faz
+o redirecionamento depender de armazenamento de terceiros, que o Safari bloqueia por padrão e o
+Firefox bloqueia no modo estrito. Nesses navegadores, com o pop-up também bloqueado, o login pode
+voltar do Google sem sessão — e o usuário cai na tela de login sem erro aparente.
+
+No Chrome com as opções padrão os dois caminhos funcionam. Para fechar o caso de vez, a solução
+documentada pelo Firebase é servir o handler de autenticação no **mesmo domínio do app**: criar um
+rewrite de `/__/auth/**` para o domínio do Firebase no `vercel.json` e apontar o `authDomain` da
+configuração para o domínio de produção. Vale fazer se o login falhar no Safari.
+
+Enquanto isso, o atalho para o usuário é permitir pop-ups para o site: no Chrome, o ícone de pop-up
+bloqueado na barra de endereço → *Sempre permitir pop-ups de…*.
+
+---
+
 ## Conferir se o deploy está saudável
 
 - [ ] A URL abre o Painel com as 4 trilhas.
@@ -75,6 +98,7 @@ Depois disso, todo push na `main` publica sozinho.
 - [ ] Um exercício TS compila (o compilador é baixado na primeira verificação).
 - [ ] Um pedido de dica ao tutor responde. Sem `GEMINI_API_KEY` vem uma resposta genérica, o que é esperado.
 - [ ] O login com Google funciona no domínio de produção (passo 6).
+- [ ] Com pop-ups bloqueados no navegador, o login cai no redirecionamento e volta autenticado.
 
 **Se algo falhar:** no painel da Vercel → projeto → *Deployments* → clique no deploy → *Build Logs*.
 Para erros da API, veja *Logs* ou *Runtime Logs* em tempo real.

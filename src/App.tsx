@@ -31,12 +31,34 @@ import {
   getExerciseById,
   getExercisesByTrack,
 } from './data';
-import { auth, loginWithGoogle, logoutFirebase } from './services/firebase';
+import { auth, loginWithGoogle, logoutFirebase, consumeRedirectLogin } from './services/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import {
   syncProgressToFirestore,
   loadProgressFromFirestore,
 } from './services/firestoreSync';
+
+/**
+ * Traduz um erro de autenticação do Firebase em uma frase que diga ao usuário o que fazer.
+ * Usado nos dois caminhos de login (pop-up e retorno do redirecionamento).
+ */
+function descreverErroDeLogin(error: unknown): string {
+  const { code } = (error ?? {}) as { code?: string };
+  switch (code) {
+    case 'auth/unauthorized-domain':
+      // O domínio atual não está em Firebase → Authentication → Settings → Authorized domains.
+      return `Login bloqueado: o domínio ${window.location.hostname} não está autorizado no Firebase (ver docs/DEPLOY.md).`;
+    case 'auth/popup-blocked':
+      return 'O navegador bloqueou o pop-up e o redirecionamento não pôde começar. Permita pop-ups para este site e tente de novo.';
+    case 'auth/web-storage-unsupported':
+    case 'auth/operation-not-supported-in-this-environment':
+      return 'O navegador está bloqueando o armazenamento que o login precisa. Permita cookies para este site e tente de novo.';
+    case 'auth/network-request-failed':
+      return 'Falha de rede ao autenticar. Verifique a conexão e tente de novo.';
+    default:
+      return `Não foi possível autenticar no momento${code ? ` (${code})` : ''}. Tente novamente.`;
+  }
+}
 
 export default function App() {
   const [progress, setProgress] = useState<UserProgress>(() => loadUserProgress());
@@ -56,6 +78,22 @@ export default function App() {
     setToast({ id: toastIdRef.current, message, tone });
   }, []);
   const dismissToast = useCallback(() => setToast(null), []);
+
+  // Recolhe um login por redirecionamento pendente (o caminho usado quando o pop-up
+  // é bloqueado). Só aqui os erros desse fluxo aparecem; sem esta chamada o usuário
+  // voltaria do Google à tela de login sem nenhuma explicação. Quando dá certo, quem
+  // carrega o progresso é o onAuthStateChanged logo abaixo.
+  useEffect(() => {
+    let ativo = true;
+    consumeRedirectLogin().catch((error: unknown) => {
+      if (ativo) {
+        triggerToast(descreverErroDeLogin(error), 'error');
+      }
+    });
+    return () => {
+      ativo = false;
+    };
+  }, [triggerToast]);
 
   // Sync state on mount and listen to Firebase Auth
   useEffect(() => {
@@ -134,30 +172,32 @@ export default function App() {
   const handleLogin = async () => {
     try {
       setIsSyncing(true);
-      const user = await loginWithGoogle();
-      if (user) {
-        setIsCloudLoading(true);
-        try {
-          const cloudProgress = await loadProgressFromFirestore();
-          if (cloudProgress) {
-            setProgress(cloudProgress);
-          }
-        } finally {
-          setIsCloudLoading(false);
+      const outcome = await loginWithGoogle();
+
+      if (outcome.status === 'redirecionando') {
+        // A página vai navegar para o Google agora; o progresso é carregado na volta,
+        // pelo onAuthStateChanged.
+        triggerToast('Pop-up bloqueado — redirecionando para o Google...', 'info');
+        return;
+      }
+
+      // 'cancelado': o usuário fechou a janela de propósito, não há nada a dizer.
+      if (outcome.status !== 'ok') {
+        return;
+      }
+
+      setIsCloudLoading(true);
+      try {
+        const cloudProgress = await loadProgressFromFirestore();
+        if (cloudProgress) {
+          setProgress(cloudProgress);
         }
-        triggerToast(`Bem-vindo, ${user.displayName || 'Dev'}! Dados sincronizados.`);
+      } finally {
+        setIsCloudLoading(false);
       }
-      // If user is null, user simply cancelled or closed the auth window voluntarily
+      triggerToast(`Bem-vindo, ${outcome.user.displayName || 'Dev'}! Dados sincronizados.`);
     } catch (error: unknown) {
-      const { code, message } = (error ?? {}) as { code?: string; message?: string };
-      if (code === 'auth/popup-blocked' || message === 'POPUP_BLOCKED') {
-        triggerToast('Janela pop-up bloqueada. Permita pop-ups no navegador para autenticar.', 'error');
-      } else if (code === 'auth/unauthorized-domain') {
-        // O domínio atual não está em Firebase → Authentication → Settings → Authorized domains.
-        triggerToast(`Login bloqueado: o domínio ${window.location.hostname} não está autorizado no Firebase (ver docs/DEPLOY.md).`, 'error');
-      } else {
-        triggerToast(`Não foi possível autenticar no momento${code ? ` (${code})` : ''}. Tente novamente.`, 'error');
-      }
+      triggerToast(descreverErroDeLogin(error), 'error');
     } finally {
       setIsSyncing(false);
     }
