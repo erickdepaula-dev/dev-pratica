@@ -14,6 +14,7 @@
  * - corrigir_erros: o código bugado NÃO passa, e o erro do compilador cai em buggyLineNumbers;
  * - prever_saida: a saída real bate com o gabarito;
  * - prever_erro_de_tipo: o trecho tem UM erro, na linha e com o código do gabarito.
+ * - teste_de_mesa (Lógica): o código roda e gera a tabela (ver checkDeskCheck).
  */
 import { createRequire } from 'node:module';
 import { readdirSync, readFileSync } from 'node:fs';
@@ -22,6 +23,7 @@ import { tsExercises } from '../src/data/ts/index';
 import { evaluateJavaScriptFreeCode, normalizeOutputText } from '../src/services/evaluator';
 import { logicExercises } from '../src/data/logica/index';
 import { resolveLogicExercise } from '../src/utils/track';
+import { givenRowCount, runDeskCheck } from '../src/services/deskCheck';
 import { compileTypeScript, type LibFiles, type LibSourceCache, type TypeScriptModule } from '../src/services/typescript/compilerCore';
 import { runInSandbox, runPipeline, type CompileFn } from '../src/services/typescript/pipeline';
 import type { Exercise } from '../src/types/exercise';
@@ -127,7 +129,30 @@ async function check(ex: Exercise): Promise<string[]> {
  * - variante JS: solução passa no avaliador de JS do app;
  * - nas duas, o template NÃO passa (o exercício não pode vir resolvido).
  */
+/**
+ * Teste de mesa (Fase 4.5): o código roda sem erro, toda chamada de anotar tem um valor por
+ * coluna e sobra pelo menos uma linha para o aluno preencher.
+ */
+function checkDeskCheck(ex: Exercise): string[] {
+  const issues: string[] = [];
+  if (ex.hints.length < 2) issues.push('menos de 2 dicas');
+  const challenge = ex.deskCheck;
+  if (!challenge) return [...issues, 'sem deskCheck'];
+  if (!challenge.code.includes('anotar(')) issues.push('o código não chama anotar(...)');
+  if (new Set(challenge.columns).size !== challenge.columns.length) issues.push('colunas repetidas');
+  try {
+    const rows = runDeskCheck(challenge);
+    const given = givenRowCount(challenge, rows.length);
+    if (rows.length - given < 1) issues.push('nenhuma linha para o aluno preencher');
+    if (rows.length > 12) issues.push(`tabela longa demais (${rows.length} linhas)`);
+  } catch (e) {
+    issues.push(`o código do teste de mesa falha: ${(e as Error).message}`);
+  }
+  return issues;
+}
+
 async function checkLogic(ex: Exercise): Promise<string[]> {
+  if (ex.type === 'teste_de_mesa') return checkDeskCheck(ex);
   const issues: string[] = [];
   if (ex.hints.length < 2) issues.push('menos de 2 dicas');
   if (!ex.testCases.some(t => t.testFunction)) issues.push('sem testFunction executável');

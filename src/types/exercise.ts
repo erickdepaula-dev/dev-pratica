@@ -25,7 +25,8 @@ export type ExerciseType =
   | 'corrigir_erros'
   | 'prever_saida'
   | 'desafio_pratico'
-  | 'prever_erro_de_tipo'; // só TypeScript: apontar a linha do erro e o motivo
+  | 'prever_erro_de_tipo' // só TypeScript: apontar a linha do erro e o motivo
+  | 'teste_de_mesa'; // Lógica: preencher a tabela de valores das variáveis passo a passo
 
 export interface Blank {
   id: string; // e.g. "blank_0"
@@ -75,6 +76,24 @@ export interface TypeErrorChallenge {
   reasonOptions: string[];
   /** Índice da alternativa correta em reasonOptions. */
   correctReason: number;
+}
+
+/**
+ * Modalidade 'teste_de_mesa' (Fase 4.5): o aluno executa o código "no papel" e preenche uma
+ * tabela com o valor das variáveis a cada passo.
+ *
+ * O gabarito NÃO é escrito à mão: é gerado executando `code` (JavaScript). Cada vez que a
+ * execução passa por `anotar(...)`, os argumentos viram uma linha da tabela, na ordem das
+ * colunas. As chamadas `anotar(...)` ficam visíveis para o aluno — é assim que ele sabe em que
+ * momento registrar cada linha. Ver src/services/deskCheck.ts.
+ */
+export interface DeskCheckChallenge {
+  /** Código JS mostrado ao aluno e executado para gerar o gabarito. */
+  code: string;
+  /** Cabeçalho da tabela: um nome por argumento de `anotar(...)`. */
+  columns: string[];
+  /** Quantas linhas iniciais vêm preenchidas como exemplo (padrão: 1). */
+  givenRows?: number;
 }
 
 export interface ProjectBrief {
@@ -132,6 +151,7 @@ export interface Exercise {
   typeAssertions?: string;
 
   typeErrorChallenge?: TypeErrorChallenge; // For 'prever_erro_de_tipo'
+  deskCheck?: DeskCheckChallenge; // For 'teste_de_mesa'
 
   /** Fase 4: presente só nos exercícios da trilha de Lógica. */
   track?: 'logica';
@@ -164,11 +184,12 @@ export type TsExercise<D extends Difficulty = Difficulty> = Exercise & {
 /**
  * Exercício da trilha de Lógica. IDs: `logica-<origem><nnn>-<slug>`:
  * - 100 exercícios principais: `logica-001-soma-de-dois-numeros` (número do índice);
- * - bônus de condicionais: `logica-c01-...`; bônus de repetição: `logica-r01-...`.
+ * - bônus de condicionais: `logica-c01-...`; bônus de repetição: `logica-r01-...`;
+ * - teste de mesa (Fase 4.5): `logica-t01-...`.
  * O número espelha docs/fase-4-indice-exercicios.md, para rastrear a origem de cada um.
  */
 export type LogicExercise = Exercise & {
-  id: `logica-${'' | 'c' | 'r'}${number}-${string}`;
+  id: `logica-${'' | 'c' | 'r' | 't'}${number}-${string}`;
   track: 'logica';
   language: 'javascript';
   logicVariants: Record<LogicLanguage, LogicVariant>;
@@ -188,6 +209,12 @@ export interface ExerciseAttempt {
   outputPrediction?: string;
   /** Resposta de 'prever_erro_de_tipo' (linha escolhida e índice do motivo). */
   typeErrorAnswer?: { line: number; reason: number };
+  /**
+   * Resposta de 'teste_de_mesa': as células da tabela em ordem de leitura (linha a linha).
+   * Fica achatada (string[], não string[][]) porque o Firestore não aceita array de arrays;
+   * o número de colunas vem de `deskCheck.columns`.
+   */
+  deskCheckAnswer?: string[];
   /**
    * XP ganho na PRIMEIRA conclusão — calculado uma vez e congelado (Fase 3).
    * Ausente em tentativas anteriores à Fase 3: a migração em storage.ts preenche com o

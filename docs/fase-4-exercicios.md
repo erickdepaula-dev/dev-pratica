@@ -1,6 +1,6 @@
 # 📚 Fase 4 — Exercícios dos PDFs
 
-**Status:** 🟡 Em andamento (4.1, 4.2 e 4.6 concluídas)
+**Status:** ✅ Concluída (2026-11-18) — 4.1 a 4.6 feitas; 133 exercícios na trilha de Lógica
 **Depende de:** Fases 1, 2 e 3 (usa tokens, trilha TS e sistema de XP já estabilizados)
 **Objetivo:** converter o material de estudo em PDF em exercícios da plataforma.
 
@@ -176,26 +176,62 @@ dentro da faixa "18,5 a 24,9". O material classifica pelo valor já arredondado 
 `classificarImc` da trilha usa o valor exato, que é o correto; fica o registro caso alguém compare
 os dois e estranhe.
 
-### 4.5 — Teste de mesa como modalidade
-- [ ] Avaliar criar a modalidade `teste_de_mesa`: usuário preenche a tabela de
-      valores das variáveis passo a passo
-- [ ] Se aprovada: tipo, componente, avaliador e integração com XP
-- [ ] Incorporar o conteúdo do `Guia Visual de Teste de Mesa` ao `StudyGuide`
+### 4.5 — Teste de mesa como modalidade ✅ CONCLUÍDA
+- [x] Avaliar criar a modalidade `teste_de_mesa`: usuário preenche a tabela de
+      valores das variáveis passo a passo — **aprovada**
+- [x] Se aprovada: tipo, componente, avaliador e integração com XP
+- [x] Incorporar o conteúdo do `Guia Visual de Teste de Mesa` ao `StudyGuide` (escrito do zero)
 
-### 4.6 — Material de referência
-- [ ] Adicionar o `Guia Rápido de Operadores` como consulta dentro do workspace
-- [ ] Adicionar a tabela de equivalência Portugol/Python/JS ao `StudyGuide`
+**Como ficou (4.5):**
+- **Por que valeu criar:** é a única modalidade que treina *executar* código na cabeça, linha a
+  linha — a habilidade de base da lógica, que as outras modalidades só exercitam indiretamente.
+- **Gabarito gerado, não digitado.** `DeskCheckChallenge` (`src/types/exercise.ts`) guarda só o
+  código JS e as colunas. `src/services/deskCheck.ts` executa o código: cada `anotar(...)` vira uma
+  linha da tabela. As chamadas `anotar(...)` ficam **visíveis** (destacadas) — é assim que o aluno
+  sabe em que momento registrar. O gabarito nunca fica dessincronizado do código.
+- **Correção tolerante ao formato:** aspas opcionais, vírgula decimal (`6,5`), `true`/`TRUE`/
+  `verdadeiro`, listas com ou sem espaços, números com tolerância. Células erradas ficam em
+  vermelho; o feedback aponta a primeira linha com diferença. Linhas de exemplo (`givenRows`,
+  padrão 1) não contam na nota.
+- **Integração:** `evaluateDeskCheck` no avaliador, `DeskCheckViewer.tsx`, `case` no switch
+  exaustivo do workspace, tema/filtro na lista, aba Solução mostra a tabela completa, tutor IA
+  instruído a não revelar células. O seletor JS/TS fica oculto (o trecho é o mesmo nas duas).
+- **Persistência:** `ExerciseAttempt.deskCheckAnswer?: string[]` — achatado porque o Firestore
+  não aceita array de arrays. Campo opcional: progresso antigo continua válido sem migração.
+- **XP:** igual às outras modalidades (dificuldade + bônus de 1ª tentativa e sem dica). Conferido
+  no navegador: +10 XP num básico.
+- **Conteúdo:** 12 exercícios em `src/data/logica/m08TesteDeMesa.ts` (`logica-t01…t12`): 5
+  básicos, 5 intermediários, 2 avançados — acumulador, while com passo, troca com auxiliar,
+  fatorial, maior valor, contagem com condição, Fibonacci, divisão por subtrações, inverter
+  dígitos, faixas de nota, uma passada do Bubble Sort e MDC de Euclides (este sem linha de exemplo).
+  Criados com o helper `testeDeMesa()` (`logicFactory.ts`).
+- **`check:ts`:** valida que o código roda, que cada `anotar` tem um valor por coluna e que sobra
+  ao menos uma linha para preencher (máx. 12 linhas).
+- **StudyGuide:** seção "Trilha de Lógica" com exemplo de teste de mesa e os 6 passos do método.
+
+### 4.6 — Material de referência ✅ CONCLUÍDA
+- [x] Adicionar o `Guia Rápido de Operadores` como consulta dentro do workspace
+- [x] Adicionar a tabela de equivalência Portugol/Python/JS ao `StudyGuide`
+
+**Como ficou:** conteúdo escrito do zero em `src/data/referencia.ts` (tipos em
+`src/types/reference.ts`). Operadores aritméticos, relacionais, lógicos e de atribuição, com o
+equivalente em Portugol, exemplos, pegadinhas (`-7 % 2`, `==` × `===`, `1 <= n <= 10`) e a ordem de
+precedência — componente `OperatorReference.tsx`, usado no StudyGuide e num painel recolhível
+"Consulta rápida" na aba Instruções de todo exercício de Lógica. A tabela Portugol × Python ×
+JavaScript (16 construções) fica no StudyGuide.
 
 ---
 
 ## Critérios de pronto
 
-- [ ] ~160 exercícios de lógica disponíveis e resolvíveis
-- [ ] Cada exercício tem ao menos um `testCase` válido
-- [ ] Gabarito conferido — nenhuma solução de referência quebrada
-- [ ] XP calculado corretamente para a trilha nova
-- [ ] `npm run lint` e `npm run build` passam
-- [ ] `docs/CONTEXT.md` atualizado
+- [x] ~160 exercícios de lógica disponíveis e resolvíveis — **133**: os 100 principais, 21 bônus e
+      12 de teste de mesa. Os 39 bônus restantes ficaram de fora por duplicarem exercícios
+      existentes (decisão registrada na tarefa 4.4).
+- [x] Cada exercício tem ao menos um `testCase` válido (`check:ts`; no teste de mesa, a nota vem da tabela)
+- [x] Gabarito conferido — nenhuma solução de referência quebrada (`check:ts`: 251 exercícios, 0 problemas)
+- [x] XP calculado corretamente para a trilha nova (`check:xp` + conferido no navegador)
+- [x] `npm run lint` e `npm run build` passam
+- [x] `docs/CONTEXT.md` atualizado
 
 ---
 

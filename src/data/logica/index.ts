@@ -6,13 +6,15 @@ import { logicModule04 } from './m04VetoresEMatrizes';
 import { logicModule05 } from './m05FuncoesEDesafios';
 import { logicModule06 } from './m06BonusCondicionais';
 import { logicModule07 } from './m07BonusRepeticao';
+import { logicModule08 } from './m08TesteDeMesa';
 
 /**
  * Trilha de Lógica (Fase 4) — 160 exercícios independentes de linguagem, resolvidos em
  * JavaScript ou TypeScript (ver `resolveLogicExercise` em src/utils/track.ts).
  * Mapa de origem: docs/fase-4-indice-exercicios.md. Conteúdo entra nas tarefas 4.3 e 4.4,
  * em arquivos por módulo (ex.: m01PrimeirosAlgoritmos.ts) importados aqui.
- * IDs: `logica-<nnn>-<slug>` (100 principais), `logica-c<nn>-<slug>` e `logica-r<nn>-<slug>` (bônus).
+ * IDs: `logica-<nnn>-<slug>` (100 principais), `logica-c<nn>-<slug>` e `logica-r<nn>-<slug>` (bônus),
+ * `logica-t<nn>-<slug>` (teste de mesa, Fase 4.5).
  */
 export const logicExercises: LogicExercise[] = [
   ...logicModule01,
@@ -22,6 +24,7 @@ export const logicExercises: LogicExercise[] = [
   ...logicModule05,
   ...logicModule06,
   ...logicModule07,
+  ...logicModule08,
 ];
 
 /** Mesma lista, tipada como Exercise para o agregador geral. */

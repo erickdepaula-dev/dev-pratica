@@ -45,3 +45,35 @@ export function logica(spec: LogicSpec): LogicExercise {
     logicVariants: { javascript, typescript },
   };
 }
+
+/**
+ * Especificação de um exercício 'teste_de_mesa' (Fase 4.5). Não há código a escrever: o
+ * aluno preenche a tabela. `deskCheck.code` é JavaScript válido também como TypeScript, então
+ * as duas variantes mostram o mesmo trecho (o seletor de linguagem fica oculto nessa modalidade).
+ * Os testCases são só descritivos: a nota vem da tabela (evaluateDeskCheck).
+ */
+export type DeskCheckSpec = Omit<
+  LogicExercise,
+  'track' | 'language' | 'type' | 'templateCode' | 'solutionCode' | 'logicVariants' | 'testCases' | 'deskCheck'
+> & {
+  deskCheck: NonNullable<LogicExercise['deskCheck']>;
+};
+
+export function testeDeMesa(spec: DeskCheckSpec): LogicExercise {
+  const variant = { templateCode: spec.deskCheck.code, solutionCode: spec.deskCheck.code };
+  return {
+    ...spec,
+    track: 'logica',
+    language: 'javascript',
+    type: 'teste_de_mesa',
+    templateCode: variant.templateCode,
+    solutionCode: variant.solutionCode,
+    testCases: [
+      {
+        description: 'Cada linha da tabela confere com a execução real do código',
+        expectedOutput: 'Tabela completa (ver a aba Solução depois de acertar)',
+      },
+    ],
+    logicVariants: { javascript: variant, typescript: variant },
+  };
+}

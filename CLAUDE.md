@@ -49,9 +49,10 @@ src/
 │   ├── js/              # basic, intermediate, advanced, dev + modalities*
 │   ├── php/             # mesma estrutura
 │   ├── ts/              # mesma estrutura + typeErrors* (modalidade prever_erro_de_tipo)
-│   ├── logica/          # trilha de Lógica (Fase 4), resolvida em JS ou TS
+│   ├── logica/          # trilha de Lógica (Fase 4), resolvida em JS ou TS (+ teste de mesa em m08)
+│   ├── referencia.ts    # operadores e equivalência Portugol/Python/JS (StudyGuide e workspace)
 │   └── index.ts         # agregador + helpers de consulta (getExercisesByLanguage/ByTrack)
-├── services/            # IO e regras: firebase, firestoreSync, storage, evaluator, aiHint, xp, badges
+├── services/            # IO e regras: firebase, firestoreSync, storage, evaluator, deskCheck, aiHint, xp, badges
 │   └── typescript/      # compilação real de TS no navegador (núcleo puro + pipeline)
 ├── styles/              # tokens.css (design tokens)
 ├── types/               # Interfaces compartilhadas

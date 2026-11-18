@@ -165,6 +165,7 @@ MISSÃO E DIRETRIZES PEDAGÓGICAS ADAPTADAS À MODALIDADE:
    - Se for "desafio_pratico": ajude a decompor os requisitos em etapas menores (guard clauses, validações, retorno).
    - Se for "codigo_livre": oriente sobre a assinatura da função e a próxima etapa lógica.
    - Se for "prever_erro_de_tipo": ajude o aluno a raciocinar como o compilador, sem apontar a linha.
+   - Se for "teste_de_mesa": o aluno preenche uma tabela com o valor das variáveis a cada chamada de anotar(...). NÃO informe os valores das células; sugira executar uma instrução por vez e conferir quando a condição do laço é testada e em que ponto o anotar acontece.
 3. NUNCA dê a resposta pronta completa nem revele o código final de bandeja. O objetivo é que o aluno exercite a lógica e chegue à conclusão.
 4. Limite sua explicação a 2 ou 3 frases curtas, objetivas e práticas para leitura rápida no editor.
 ${typeScriptGuidance(language, exerciseType, compilerDiagnostics)}`;

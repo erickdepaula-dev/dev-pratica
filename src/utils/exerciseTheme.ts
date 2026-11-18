@@ -50,6 +50,12 @@ const EXERCISE_TYPE_THEME: Record<ExerciseType, BadgeTheme> = {
     badgeClass: 'bg-typescript/10 text-typescript-text border-typescript/30',
     textClass: 'text-typescript-text',
   },
+  teste_de_mesa: {
+    label: 'Teste de Mesa',
+    shortLabel: 'Teste de Mesa',
+    badgeClass: 'bg-logica/10 text-logica-text border-logica/30',
+    textClass: 'text-logica-text',
+  },
   codigo_livre: {
     label: 'Código Livre',
     shortLabel: 'Código Livre',

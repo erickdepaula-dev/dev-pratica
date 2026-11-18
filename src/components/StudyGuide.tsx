@@ -1,8 +1,10 @@
 import React from 'react';
-import { Language } from '../types/exercise';
+import { Track } from '../types/exercise';
+import { DESK_CHECK_GUIDE, LANGUAGE_EQUIVALENCE } from '../data/referencia';
+import { OperatorReference } from './OperatorReference';
 
 interface StudyGuideProps {
-  onStartTrack: (lang: Language) => void;
+  onStartTrack: (track: Track) => void;
 }
 
 export const StudyGuide: React.FC<StudyGuideProps> = ({ onStartTrack }) => {
@@ -172,6 +174,119 @@ export const StudyGuide: React.FC<StudyGuideProps> = ({ onStartTrack }) => {
           </button>
         </div>
       </div>
+
+      {/* Trilha de Lógica (Fase 4): roteiro, teste de mesa, operadores e equivalência */}
+      <section aria-labelledby="guia-logica" className="rounded-xl border border-logica/40 bg-surface/50 p-6 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl" aria-hidden="true">🧩</span>
+              <div>
+                <h2 id="guia-logica" className="font-bold text-primary text-base">Trilha de Lógica</h2>
+                <span className="text-xs text-logica-text">Fundamentos que valem para qualquer linguagem</span>
+              </div>
+            </div>
+            <p className="text-xs text-muted leading-relaxed max-w-2xl">
+              Do primeiro algoritmo (entrada → processamento → saída) a condicionais, laços, vetores, matrizes e
+              funções. Cada exercício pode ser resolvido em JavaScript ou TypeScript, e o teste de mesa treina o
+              mais importante: executar o código na cabeça.
+            </p>
+          </div>
+          <button
+            onClick={() => onStartTrack('logica')}
+            className="shrink-0 py-2 px-4 rounded-lg bg-logica hover:brightness-110 text-white text-xs font-semibold shadow-sm transition-[filter]"
+          >
+            Explorar Trilha de Lógica →
+          </button>
+        </div>
+
+        {/* Teste de mesa */}
+        <div className="space-y-3">
+          <h3 className="text-sm font-bold text-primary flex items-center gap-2">
+            <span aria-hidden="true">📝</span> Teste de mesa, passo a passo
+          </h3>
+          <p className="text-xs text-muted leading-relaxed">
+            Teste de mesa é executar o algoritmo "no papel", anotando o valor das variáveis a cada passo. Exemplo:
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <pre className="p-3 rounded-lg bg-canvas border border-subtle font-mono text-xs text-primary leading-relaxed overflow-x-auto">{`let soma = 0;
+for (let i = 1; i <= 3; i++) {
+  soma = soma + i;
+  anotar(i, soma);
+}`}</pre>
+            <div className="overflow-x-auto rounded-lg border border-subtle bg-canvas">
+              <table className="w-full text-xs font-mono">
+                <caption className="sr-only">Tabela do exemplo de teste de mesa</caption>
+                <thead>
+                  <tr className="text-muted text-left">
+                    <th scope="col" className="px-3 py-1.5 font-semibold">volta</th>
+                    <th scope="col" className="px-3 py-1.5 font-semibold text-primary">i</th>
+                    <th scope="col" className="px-3 py-1.5 font-semibold text-primary">soma</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[[1, 1, 1], [2, 2, 3], [3, 3, 6]].map(([volta, i, soma]) => (
+                    <tr key={volta} className="border-t border-subtle/70">
+                      <td className="px-3 py-1.5 text-muted">{volta}</td>
+                      <td className="px-3 py-1.5 text-primary">{i}</td>
+                      <td className="px-3 py-1.5 text-success">{soma}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <ol className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+            {DESK_CHECK_GUIDE.map(step => (
+              <li key={step.title} className="p-3 rounded-lg bg-canvas border border-subtle">
+                <strong className="text-primary block mb-1">{step.title}</strong>
+                <span className="text-muted leading-relaxed">{step.text}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        {/* Operadores */}
+        <div className="space-y-3">
+          <h3 className="text-sm font-bold text-primary flex items-center gap-2">
+            <span aria-hidden="true">📘</span> Guia rápido de operadores
+          </h3>
+          <OperatorReference />
+        </div>
+
+        {/* Equivalência */}
+        <div className="space-y-3">
+          <h3 className="text-sm font-bold text-primary flex items-center gap-2">
+            <span aria-hidden="true">🔁</span> Portugol × Python × JavaScript
+          </h3>
+          <p className="text-xs text-muted leading-relaxed">
+            A lógica é a mesma; muda a escrita. Útil para quem aprendeu algoritmos em Portugol (VisuAlg) ou Python.
+          </p>
+          <div className="overflow-x-auto rounded-lg border border-subtle bg-canvas">
+            <table className="w-full text-[11px] sm:text-xs">
+              <caption className="sr-only">Equivalência de construções entre Portugol, Python e JavaScript</caption>
+              <thead>
+                <tr className="text-muted text-left">
+                  <th scope="col" className="px-2 py-1.5 font-semibold">Conceito</th>
+                  <th scope="col" className="px-2 py-1.5 font-semibold">Portugol</th>
+                  <th scope="col" className="px-2 py-1.5 font-semibold">Python</th>
+                  <th scope="col" className="px-2 py-1.5 font-semibold">JavaScript</th>
+                </tr>
+              </thead>
+              <tbody>
+                {LANGUAGE_EQUIVALENCE.map(row => (
+                  <tr key={row.concept} className="border-t border-subtle/70 align-top">
+                    <th scope="row" className="px-2 py-1.5 text-left font-semibold text-primary whitespace-nowrap">{row.concept}</th>
+                    <td className="px-2 py-1.5 font-mono text-muted whitespace-pre-wrap">{row.portugol}</td>
+                    <td className="px-2 py-1.5 font-mono text-muted whitespace-pre-wrap">{row.python}</td>
+                    <td className="px-2 py-1.5 font-mono text-accent whitespace-pre-wrap">{row.javascript}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
       {/* Developer Checklist */}
       <div className="rounded-xl border border-subtle bg-surface/30 p-6 space-y-3">

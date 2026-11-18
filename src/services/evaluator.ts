@@ -1,4 +1,5 @@
 import { Exercise, Blank } from '../types/exercise';
+import { deskCheckCellMatches, givenRowCount, runDeskCheck } from './deskCheck';
 import { assertNever } from '../utils/language';
 import type { TsDiagnostic } from '../types/typescriptEvaluation';
 import {
@@ -33,6 +34,8 @@ export interface EvaluationResult {
   generalFeedback: string;
   /** Só TypeScript: diagnósticos do compilador (também enviados ao tutor IA). */
   diagnostics?: TsDiagnostic[];
+  /** Só 'teste_de_mesa': acerto de cada célula preenchida pelo aluno ([linha][coluna]). */
+  deskCheckCells?: boolean[][];
 }
 
 /**
@@ -252,6 +255,53 @@ export function evaluateOutputPrediction(
     generalFeedback: isMatch
       ? 'Exato! Você previu com precisão o comportamento de execução do código.'
       : 'Sua previsão foi diferente da saída gerada. Veja a análise comentada para entender o fluxo de avaliação.',
+  };
+}
+
+/**
+ * Avalia 'teste_de_mesa': cada linha da tabela do aluno contra a execução real do código
+ * (ver services/deskCheck.ts). As linhas dadas como exemplo não contam na nota.
+ */
+export function evaluateDeskCheck(exercise: Exercise, answer: string[][]): EvaluationResult {
+  const challenge = exercise.deskCheck;
+  const empty: EvaluationResult = { passed: false, scorePercent: 0, blankResults: [], logs: [], testCaseResults: [], generalFeedback: '' };
+  if (!challenge) return { ...empty, generalFeedback: 'Exercício sem tabela de teste de mesa.' };
+
+  let expected: string[][];
+  try {
+    expected = runDeskCheck(challenge);
+  } catch (error) {
+    return { ...empty, generalFeedback: `Não foi possível gerar o gabarito deste exercício: ${(error as Error).message}` };
+  }
+
+  const given = givenRowCount(challenge, expected.length);
+  const cells = expected.map((row, r) =>
+    row.map((value, c) => (r < given ? true : deskCheckCellMatches(answer[r]?.[c] ?? '', value)))
+  );
+  const testCaseResults: EvaluationResult['testCaseResults'] = expected.slice(given).map((row, i) => {
+    const r = i + given;
+    const ok = cells[r].every(Boolean);
+    const wrongColumns = challenge.columns.filter((_, c) => !cells[r][c]);
+    return {
+      description: `Linha ${r + 1}`,
+      passed: ok,
+      output: ok ? row.join(' | ') : `Confira: ${wrongColumns.join(', ')}`,
+    };
+  });
+  const toCheck = expected.slice(given).flat().length;
+  const correct = cells.slice(given).flat().filter(Boolean).length;
+  const passed = toCheck > 0 && correct === toCheck;
+  const firstWrong = testCaseResults.findIndex(t => !t.passed);
+  return {
+    passed,
+    scorePercent: toCheck ? Math.round((correct / toCheck) * 100) : 0,
+    blankResults: [],
+    logs: [],
+    testCaseResults,
+    deskCheckCells: cells,
+    generalFeedback: passed
+      ? 'Tabela correta! Você executou o algoritmo passo a passo como o computador.'
+      : `${correct} de ${toCheck} células corretas. A primeira linha com diferença é a ${firstWrong + given + 1}: refaça a execução a partir dela, uma instrução por vez.`,
   };
 }
 

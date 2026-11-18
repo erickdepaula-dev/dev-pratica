@@ -37,7 +37,7 @@ const STATUS_OPTIONS: ChipOption<StatusFilter>[] = [
 
 const TYPE_OPTIONS: ChipOption<ExerciseType | 'todos'>[] = [
   { id: 'todos', label: 'Todos os formatos' },
-  ...(['lacunas', 'corrigir_erros', 'prever_saida', 'prever_erro_de_tipo', 'codigo_livre', 'desafio_pratico'] as const).map(type => ({
+  ...(['lacunas', 'corrigir_erros', 'prever_saida', 'prever_erro_de_tipo', 'teste_de_mesa', 'codigo_livre', 'desafio_pratico'] as const).map(type => ({
     id: type,
     label: getExerciseTypeTheme(type).shortLabel,
   })),

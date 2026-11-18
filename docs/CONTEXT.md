@@ -21,9 +21,9 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 
 | Área | Detalhe |
 | :--- | :--- |
-| **Trilhas** | PHP (88), JavaScript (87) e TypeScript (118, incluindo 30 de `prever_erro_de_tipo`) |
+| **Trilhas** | PHP (88), JavaScript (87), TypeScript (118, incluindo 30 de `prever_erro_de_tipo`) e Lógica (133, resolvida em JS ou TS, incluindo 12 de `teste_de_mesa`) |
 | **Níveis** | `basico`, `intermediario`, `avancado`, `dev` |
-| **Modalidades** | `lacunas`, `codigo_livre`, `corrigir_erros`, `prever_saida`, `desafio_pratico` + `prever_erro_de_tipo` (só TS) |
+| **Modalidades** | `lacunas`, `codigo_livre`, `corrigir_erros`, `prever_saida`, `desafio_pratico` + `prever_erro_de_tipo` (só TS) + `teste_de_mesa` (Lógica; gabarito gerado executando o código, `src/services/deskCheck.ts`) |
 | **Abas** | `dashboard`, `exercicios`, `desafios_ia`, `progresso`, `guia` |
 | **Tutor IA** | Gemini — dica contextual, explicação do enunciado, análise linha a linha (`src/services/aiHint.ts`, `src/components/AiTutorModal.tsx`) |
 | **Desafios IA** | Hub + workspace gerados dinamicamente (`src/components/AiChallenges/`) |
@@ -35,7 +35,8 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 
 ### Ainda não existe
 
-- 🟡 Trilha de Lógica: modelagem e interface prontas; 80 de 160 exercícios (lotes 1–4 da 4.3) — conversão segue nas Fases 4.3–4.4
+- Nada pendente do plano original — as 4 fases têm as tarefas feitas. Restam só as verificações
+  manuais do usuário (abaixo) e o login com Google em produção (ver "Deploy").
 
 ---
 
@@ -63,7 +64,7 @@ com a progressão de tópicos. Os PDFs em si não são necessários para executa
 | 1 — UI Redesign | [`fase-1-ui.md`](./fase-1-ui.md) | ✅ Concluída |
 | 2 — Trilha TypeScript | [`fase-2-typescript.md`](./fase-2-typescript.md) | 🟡 Tarefas concluídas; 2 critérios aguardam verificação manual |
 | 3 — Gamificação | [`fase-3-gamificacao.md`](./fase-3-gamificacao.md) | 🟡 Tarefas concluídas (na `main`); sync com Firestore aguarda verificação manual |
-| 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | 🟡 Tarefas 4.1, 4.2 e 4.6 concluídas |
+| 4 — Exercícios dos PDFs | [`fase-4-exercicios.md`](./fase-4-exercicios.md) | ✅ Concluída |
 
 **Índice de apoio:** [`fase-4-indice-exercicios.md`](./fase-4-indice-exercicios.md) — catálogo dos 160 exercícios.
 
@@ -98,7 +99,7 @@ está no ar.
 | 1 — UI Redesign | ✅ Concluída | `fase-1-ui.md` |
 | 2 — Trilha TypeScript | 🟡 Tarefas feitas; 2 verificações manuais pendentes | `fase-2-typescript.md` |
 | 3 — Gamificação | 🟡 Tarefas feitas; 1 verificação manual pendente | `fase-3-gamificacao.md` |
-| 4 — Exercícios dos PDFs | 🟡 **Ativa** — 4.1 a 4.4 e 4.6 feitas (121 exercícios); falta só a 4.5 (teste de mesa) | `fase-4-exercicios.md` |
+| 4 — Exercícios dos PDFs | ✅ Concluída — 133 exercícios de Lógica, teste de mesa e material de referência | `fase-4-exercicios.md` |
 
 ### Pendente de verificação manual (precisa do usuário)
 
@@ -114,33 +115,25 @@ Quando passarem: marcar as Fases 2 e 3 como ✅ (e os critérios correspondentes
 
 ### Próximo passo
 
-**Tarefas 4.3 e 4.4 concluídas — a trilha de Lógica tem 121 exercícios**, sem IDs duplicados:
-72 básicos, 49 intermediários, 4 avançados. Arquivos em `src/data/logica/`:
-`m01PrimeirosAlgoritmos.ts` (nº 1–15), `m02EstruturasCondicionais.ts` (nº 16–35),
-`m03EstruturasDeRepeticao.ts` (nº 36–60), `m04VetoresEMatrizes.ts` (nº 61–80),
-`m05FuncoesEDesafios.ts` (nº 81–100), `m06BonusCondicionais.ts` (17 bônus `logica-c<nn>`) e
-`m07BonusRepeticao.ts` (4 bônus `logica-r<nn>`).
+**Fase 4 concluída (2026-11-18) — as quatro fases do plano têm as tarefas feitas.**
+A trilha de Lógica tem **133 exercícios** em `src/data/logica/`: os 100 principais (`m01`–`m05`),
+21 bônus (`m06`, `m07`; os outros 39 duplicavam exercícios — ver tarefa 4.4 em
+`fase-4-exercicios.md`, e compare regra e nome da função, não só o título, antes de revisitar) e
+**12 de teste de mesa** (`m08TesteDeMesa.ts`, `logica-t01…t12`).
 
-Dos 60 bônus do material, 21 entraram e 39 ficaram de fora por repetirem exercício existente — o
-critério, a lista dos excluídos e o que os 21 acrescentam estão em `docs/fase-4-exercicios.md`,
-tarefa 4.4. **Se alguém for revisitar isso, leia a seção antes:** quatro dos excluídos pareciam
-novos pelo título e eram duplicatas (o "Mostrar Pares" é o `paresAte` do nº 39), então comparar
-títulos não basta — compare a regra e o nome da função.
+**Teste de mesa (4.5):** modalidade `teste_de_mesa`. O aluno preenche a tabela de variáveis; o
+gabarito é gerado executando o código do exercício (cada `anotar(...)` = uma linha), então não há
+tabela digitada à mão para dessincronizar. Detalhes em "Como ficou (4.5)" no `fase-4-exercicios.md`.
+**Material de referência (4.6):** operadores + precedência (no StudyGuide e como "Consulta rápida"
+em todo exercício de Lógica) e a tabela Portugol × Python × JavaScript (`src/data/referencia.ts`).
 
-**Próximo passo: tarefa 4.5 — teste de mesa.** Avaliar se vale criar a modalidade `teste_de_mesa`
-(o usuário preenche a tabela de valores das variáveis passo a passo) e, se sim, o tipo, o
-componente, o avaliador e a integração com XP. O conteúdo do `Guia Visual de Teste de Mesa` entra
-no `StudyGuide`. É a última tarefa da Fase 4.
+**O que falta, tudo do lado do usuário:**
+1. **Login com Google em produção** — o bloqueio é o projeto Firebase (ver "Deploy" abaixo).
+2. **As 3 verificações manuais** da seção acima (dependem do login).
+3. Depois delas, marcar as Fases 2 e 3 como ✅.
 
-Convenções: funções puras (sem leitura de teclado; "mostrar na tela" vira devolver um array),
-resultados múltiplos em objeto ou tupla, categorias como union de literais no TS, decimais
-comparados com tolerância, testes que reprovam o erro típico (precedência, `-3 % 2`, fronteiras
-com `>=`, off-by-one em laços, desalinhamento de vetores paralelos).
-Rodar `npm run check:ts -- logica` a cada lote.
-
-Contexto da Fase 4: trilha **"Lógica" própria** (decisão do usuário), resolvida em **JS ou TS**
-(PHP não roda no navegador). Modelagem pronta: `Track` separado de `Language`, `logicVariants`
-por exercício e `resolveLogicExercise()` — ver "Modelagem decidida (4.1)" em `fase-4-exercicios.md`.
+Ideias para depois (não fazem parte do plano): mais exercícios de teste de mesa (vetores, matrizes,
+funções), e trazer o teste de mesa para as trilhas JS/TS.
 
 **Deploy:** Vercel, automático a cada push na `main` — produção em **https://dev-pratica.vercel.app**
 (projeto `dev-pratica`, ver [`DEPLOY.md`](./DEPLOY.md)). **Pendente do usuário:** liberar
@@ -224,3 +217,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | — | Adicionado `.gitattributes` com `* text=auto eol=lf`. No clone Windows do usuário os arquivos estavam com CRLF e os 118 arquivos do projeto apareciam como modificados no `git status` sem nenhuma edição real (`git diff --ignore-all-space` vinha vazio). Agora o git normaliza na entrada e o status fica limpo em qualquer sistema, sem depender de `core.autocrlf` local. Confirmado também que o deploy de produção está no commit mais recente: o `<title>` do site é `DevPrática`, valor introduzido em `f505469`. |
 | 2026-11-18 | — | Feedback de erro no código livre deixou de ser genérico. O usuário escreveu a soma sem o `return` e recebeu três "Falhou no teste de validação", que diz o que aconteceu e não por quê. Novo `src/services/codeDiagnostics.ts` sonda o escopo do aluno e identifica duas causas estruturais: função/classe não definida e função que não devolve valor. Usado pelo avaliador de JS e pelo pipeline de TS. Projetado para errar para o lado do silêncio: a checagem de retorno só vale se a solução de referência devolver algo, e arrow com retorno implícito conta como retorno. Verificado: 0 falsos positivos nos 135 exercícios de código livre, 8 cenários de diagnóstico corretos, 121 exercícios de Lógica ainda passam com a solução oficial. |
 | 2026-11-18 | — | "Entrar" reinvestigado: o código de login está certo (pop-up com redirecionamento de reserva); o bloqueio é o projeto Firebase do AI Studio, cujos domínios autorizados não incluem o site nem `localhost`. Documentado o caminho de um projeto Firebase próprio do usuário (`DEPLOY.md`), que só exige trocar a configuração. |
+| 2026-11-18 | 4 | **Fase 4 concluída.** 4.5: modalidade `teste_de_mesa` (tipo, `DeskCheckViewer`, `evaluateDeskCheck`, gabarito gerado executando o código via `anotar(...)`, persistência achatada para o Firestore, tutor instruído a não revelar células) + 12 exercícios `logica-t01…t12`; seção Trilha de Lógica no StudyGuide com o método do teste de mesa. 4.6: guia de operadores (StudyGuide + consulta rápida no workspace) e tabela Portugol × Python × JS. `check:ts`: 251 exercícios, 0 problemas; testado no navegador (erro marcado por célula, acerto +10 XP, resposta restaurada, 375/768/1440 px sem overflow). Levado para a `main`. |

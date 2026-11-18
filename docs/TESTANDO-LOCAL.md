@@ -166,6 +166,15 @@ Marque conforme for testando. Para começar do zero, veja a [seção 7](#7-zerar
 - [ ] Escreva algo em JS, troque para TS e volte: o código em JS reaparece.
 - [ ] Em TS, os exercícios com categorias (ex.: nº 17, Par ou Ímpar) recusam textos fora das opções.
 
+### Teste de mesa e material de referência (Fase 4.5 e 4.6)
+- [ ] Na trilha Lógica, filtre por **Teste de Mesa** e abra um exercício: o código mostra as linhas
+      `anotar(...)` destacadas, e a tabela tem a linha 1 preenchida como exemplo.
+- [ ] Preencha com um valor errado e verifique: a célula fica vermelha e o feedback aponta a linha.
+- [ ] Corrija e verifique: "Tabela correta!", +XP, e a aba **Solução** mostra a tabela completa.
+- [ ] Em qualquer exercício de Lógica, a aba Instruções tem **📘 Consulta rápida: operadores**.
+- [ ] No **Guia de Estudos**, a seção **Trilha de Lógica** tem o teste de mesa, os operadores e a
+      tabela Portugol × Python × JavaScript.
+
 ### Sincronização na nuvem (login Google)
 - [ ] Clique em **Entrar** e faça login com Google.
 - [ ] **Pendente de verificação:** conclua um exercício TS, recarregue a página e confira que o

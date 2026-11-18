@@ -186,6 +186,8 @@ export function recordExerciseAttempt(
     revealedSolution?: boolean;
     outputPrediction?: string;
     typeErrorAnswer?: { line: number; reason: number };
+    /** Resposta de 'teste_de_mesa' (células achatadas, linha a linha). */
+    deskCheckAnswer?: string[];
     /** Trilha de Lógica: linguagem em que o código foi escrito. */
     logicLanguage?: LogicLanguage;
     /**
@@ -214,6 +216,7 @@ export function recordExerciseAttempt(
     outputPrediction: data.outputPrediction ?? existingAttempt?.outputPrediction,
     checklistDone: existingAttempt?.checklistDone,
     typeErrorAnswer: data.typeErrorAnswer ?? existingAttempt?.typeErrorAnswer,
+    deskCheckAnswer: data.deskCheckAnswer ?? existingAttempt?.deskCheckAnswer,
     xpEarned: existingAttempt?.xpEarned,
     logicLanguage: data.logicLanguage ?? existingAttempt?.logicLanguage,
   };

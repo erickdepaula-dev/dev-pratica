@@ -8,11 +8,15 @@ import { FillInBlanksEditor } from './FillInBlanksEditor';
 import { FreeCodeEditor } from './FreeCodeEditor';
 import { PredictOutputViewer } from './PredictOutputViewer';
 import { PredictTypeErrorViewer } from './PredictTypeErrorViewer';
+import { DeskCheckViewer } from './DeskCheckViewer';
+import { OperatorReference } from './OperatorReference';
+import { flattenDeskCheck, givenRowCount, runDeskCheck, unflattenDeskCheck } from '../services/deskCheck';
 import {
   evaluateBlanks,
   evaluateCodeForLanguage,
   evaluateOutputPrediction,
   evaluateTypeErrorPrediction,
+  evaluateDeskCheck,
   evaluateBugFix,
   evaluatePracticalChallenge,
   EvaluationResult,
@@ -88,6 +92,21 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
   const [typeErrorLine, setTypeErrorLine] = useState<number | null>(() => currentAttempt?.typeErrorAnswer?.line ?? null);
   const [typeErrorReason, setTypeErrorReason] = useState<number | null>(() => currentAttempt?.typeErrorAnswer?.reason ?? null);
 
+  // 'teste_de_mesa': gabarito gerado executando o código do exercício (ver services/deskCheck.ts)
+  const deskCheckExpected = React.useMemo<string[][]>(() => {
+    if (exercise.type !== 'teste_de_mesa' || !exercise.deskCheck) return [];
+    try {
+      return runDeskCheck(exercise.deskCheck);
+    } catch {
+      return [];
+    }
+  }, [exercise]);
+  const deskCheckGiven = exercise.deskCheck ? givenRowCount(exercise.deskCheck, deskCheckExpected.length) : 0;
+  const deskCheckColumns = exercise.deskCheck?.columns.length ?? 0;
+  const [deskAnswer, setDeskAnswer] = useState<string[][]>(() =>
+    unflattenDeskCheck(currentAttempt?.deskCheckAnswer, deskCheckExpected.length, deskCheckColumns)
+  );
+
   // Free code / bug fix state
   const [userCode, setUserCode] = useState<string>(() => {
     const saved = restorableCode(exercise, currentAttempt);
@@ -134,6 +153,9 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     if (exercise.type === 'prever_saida' || exercise.type === 'prever_erro_de_tipo') {
       return exercise.codeToPredict || exercise.templateCode;
     }
+    if (exercise.type === 'teste_de_mesa') {
+      return exercise.deskCheck?.code ?? exercise.templateCode;
+    }
     if (exercise.type !== 'lacunas') {
       return userCode;
     }
@@ -158,6 +180,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     setUserPrediction(attempt?.outputPrediction || '');
     setTypeErrorLine(attempt?.typeErrorAnswer?.line ?? null);
     setTypeErrorReason(attempt?.typeErrorAnswer?.reason ?? null);
+    setDeskAnswer(unflattenDeskCheck(attempt?.deskCheckAnswer, deskCheckExpected.length, deskCheckColumns));
     setUserCode(
       restorableCode(exercise, attempt) ||
       (exercise.type === 'corrigir_erros' && exercise.initialBuggyCode ? exercise.initialBuggyCode : exercise.templateCode)
@@ -194,6 +217,18 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
       ? exercise.language
       : undefined;
 
+  // Modalidades em que o aluno escreve código (nas outras, userCode não é resposta)
+  const savesCode =
+    exercise.type !== 'lacunas' &&
+    exercise.type !== 'prever_saida' &&
+    exercise.type !== 'prever_erro_de_tipo' &&
+    exercise.type !== 'teste_de_mesa';
+
+  const deskCheckAnswerToSave =
+    exercise.type === 'teste_de_mesa' && deskAnswer.some(row => row.some(cell => cell.trim() !== ''))
+      ? flattenDeskCheck(deskAnswer)
+      : undefined;
+
   const typeErrorAnswerToSave =
     exercise.type === 'prever_erro_de_tipo' && typeErrorLine !== null && typeErrorReason !== null
       ? { line: typeErrorLine, reason: typeErrorReason }
@@ -220,9 +255,10 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     const saved = recordExerciseAttempt(exercise.id, isAlreadyCompleted, {
       countAttempt: false,
       userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
-      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
+      userCode: savesCode ? userCode : undefined,
       outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
       typeErrorAnswer: typeErrorAnswerToSave,
+      deskCheckAnswer: deskCheckAnswerToSave,
       logicLanguage: logicLanguageToSave,
       hintsUsed: hintsUnlockedCount,
       revealedSolution: showSolution,
@@ -273,6 +309,9 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
       case 'prever_saida':
         result = evaluateOutputPrediction(exercise, userPrediction);
         break;
+      case 'teste_de_mesa':
+        result = evaluateDeskCheck(exercise, deskAnswer);
+        break;
       case 'prever_erro_de_tipo':
         result = await evaluateTypeErrorPrediction(exercise, { line: typeErrorLine, reason: typeErrorReason });
         break;
@@ -298,9 +337,10 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     // Persist attempt and update streak if passed
     const updated = recordExerciseAttempt(exercise.id, result.passed, {
       userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
-      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
+      userCode: savesCode ? userCode : undefined,
       outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
       typeErrorAnswer: typeErrorAnswerToSave,
+      deskCheckAnswer: deskCheckAnswerToSave,
       logicLanguage: logicLanguageToSave,
       hintsUsed: hintsUnlockedCount,
       revealedSolution: showSolution,
@@ -328,6 +368,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     setUserPrediction('');
     setTypeErrorLine(null);
     setTypeErrorReason(null);
+    setDeskAnswer(unflattenDeskCheck(undefined, deskCheckExpected.length, deskCheckColumns));
     setUserCode(
       exercise.type === 'corrigir_erros' && exercise.initialBuggyCode
         ? exercise.initialBuggyCode
@@ -346,9 +387,10 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
       const updated = recordExerciseAttempt(exercise.id, false, {
         countAttempt: false,
         userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
-        userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
+        userCode: savesCode ? userCode : undefined,
         outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
         typeErrorAnswer: typeErrorAnswerToSave,
+        deskCheckAnswer: deskCheckAnswerToSave,
         logicLanguage: logicLanguageToSave,
         hintsUsed: nextCount,
       });
@@ -364,9 +406,10 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
     const updated = recordExerciseAttempt(exercise.id, isAlreadyCompleted, {
       countAttempt: false,
       userBlanks: exercise.type === 'lacunas' ? userBlanks : undefined,
-      userCode: exercise.type !== 'lacunas' && exercise.type !== 'prever_saida' && exercise.type !== 'prever_erro_de_tipo' ? userCode : undefined,
+      userCode: savesCode ? userCode : undefined,
       outputPrediction: exercise.type === 'prever_saida' ? userPrediction : undefined,
       typeErrorAnswer: typeErrorAnswerToSave,
+      deskCheckAnswer: deskCheckAnswerToSave,
       logicLanguage: logicLanguageToSave,
       hintsUsed: hintsUnlockedCount,
       revealedSolution: true,
@@ -388,6 +431,8 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
         return 'Código Livre';
       case 'prever_erro_de_tipo':
         return 'Previsão de Erro de Tipo';
+      case 'teste_de_mesa':
+        return 'Teste de Mesa';
       default:
         return 'Exercício';
     }
@@ -482,7 +527,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
             <h1 className="text-xl sm:text-2xl font-black text-primary tracking-tight">
               {exercise.title}
             </h1>
-            {exercise.track === 'logica' && onChangeLogicLanguage && (
+            {exercise.track === 'logica' && exercise.type !== 'teste_de_mesa' && onChangeLogicLanguage && (
               <div className="flex flex-wrap items-center gap-2 pt-1">
                 <span className="text-[11px] text-muted">Resolver em:</span>
                 <div role="radiogroup" aria-label="Linguagem da solução" className="flex items-center p-0.5 bg-canvas border border-subtle rounded-full">
@@ -630,6 +675,17 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
                       💡 <strong>Onde isso é usado no dia a dia:</strong> {exercise.realWorldContext}
                     </div>
                   )}
+
+                  {exercise.track === 'logica' && (
+                    <details className="group rounded-lg border border-subtle bg-canvas/60">
+                      <summary className="cursor-pointer select-none px-3 py-2 text-xs font-semibold text-primary hover:text-accent">
+                        📘 Consulta rápida: operadores e precedência
+                      </summary>
+                      <div className="px-3 pb-3 pt-1">
+                        <OperatorReference compact />
+                      </div>
+                    </details>
+                  )}
                 </div>
               )}
 
@@ -690,6 +746,33 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
                     </div>
                   ) : (
                     <div className="space-y-3">
+                      {exercise.type === 'teste_de_mesa' && exercise.deskCheck ? (
+                        <div className="space-y-1">
+                          <div className="text-muted font-semibold">Tabela completa:</div>
+                          <div className="overflow-x-auto rounded-lg border border-subtle bg-canvas">
+                            <table className="w-full text-xs font-mono">
+                              <thead>
+                                <tr className="text-muted">
+                                  <th scope="col" className="px-2 py-1.5 text-left font-semibold">#</th>
+                                  {exercise.deskCheck.columns.map(column => (
+                                    <th key={column} scope="col" className="px-2 py-1.5 text-left font-semibold text-primary">{column}</th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {deskCheckExpected.map((row, r) => (
+                                  <tr key={r} className="border-t border-subtle/70">
+                                    <th scope="row" className="px-2 py-1 text-left font-normal text-muted">{r + 1}</th>
+                                    {row.map((value, c) => (
+                                      <td key={c} className="px-2 py-1 text-success">{value}</td>
+                                    ))}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      ) : (
                       <div>
                         <div className="flex items-center justify-between text-muted mb-1 font-semibold">
                           <span>Código da Solução:</span>
@@ -699,6 +782,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
                           {exercise.solutionCode}
                         </pre>
                       </div>
+                      )}
 
                       <div className="p-3 bg-canvas rounded-lg border border-subtle space-y-1">
                         <strong className="text-primary block">Por que funciona e boas práticas:</strong>
@@ -756,6 +840,19 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
               validationResults={evaluationResult?.blankResults}
               hasAttempted={hasAttempted}
               onChangeBlank={handleChangeBlank}
+              onSubmit={handleVerify}
+            />
+          ) : exercise.type === 'teste_de_mesa' && exercise.deskCheck ? (
+            <DeskCheckViewer
+              challenge={exercise.deskCheck}
+              expectedRows={deskCheckExpected}
+              givenRows={deskCheckGiven}
+              answer={deskAnswer}
+              onChangeCell={(row, column, value) => {
+                setDeskAnswer(prev => prev.map((cells, r) => (r === row ? cells.map((cell, c) => (c === column ? value : cell)) : cells)));
+                setEvaluationResult(null);
+              }}
+              cellResults={evaluationResult?.deskCheckCells ?? null}
               onSubmit={handleVerify}
             />
           ) : exercise.type === 'prever_erro_de_tipo' && exercise.typeErrorChallenge ? (
