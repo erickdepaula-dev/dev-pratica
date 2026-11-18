@@ -92,15 +92,18 @@ de origem é uma publicação comercial e o repo é público, então o índice g
 títulos e tópicos. Os enunciados são escritos do zero na tarefa 4.3, no tom da plataforma.
 
 ### 4.3 — Conversão: 100 exercícios de lógica
-- [ ] Converter em lotes de 20 para o formato `Exercise`
+- [x] Converter em lotes de 20 para o formato `Exercise`
   - [x] Lote 1 — nº 1–20 (módulo 01 completo + 16–20 do módulo 02)
   - [x] Lote 2 — nº 21–40 (módulo 02 completo + 36–40 do módulo 03)
   - [x] Lote 3 — nº 41–60 (módulo 03 completo)
   - [x] Lote 4 — nº 61–80 (módulo 04 completo)
-  - [ ] Lote 5 — nº 81–100
-- [ ] Para cada um: `summary`, `description`, `goal`, `realWorldContext`, `testCases`, `explanation`
-- [ ] Escrever `solutionCode` em JS e TS
-- [ ] Classificar a dificuldade (nem todos os 100 são básicos)
+  - [x] Lote 5 — nº 81–100 (módulo 05 completo)
+- [x] Para cada um: `summary`, `description`, `goal`, `realWorldContext`, `testCases`, `explanation`
+- [x] Escrever `solutionCode` em JS e TS
+- [x] Classificar a dificuldade (nem todos os 100 são básicos)
+
+**Tarefa 4.3 concluída.** 100 exercícios na trilha, sem IDs duplicados: 55 básicos,
+41 intermediários, 4 avançados.
 
 **Convenções (lote 1):** cada exercício é escrito com `logica()` (`src/data/logica/logicFactory.ts`):
 assinatura JS + assinatura TS + um corpo de solução (igual nas duas, salvo `tsBody`); o template sai
@@ -114,6 +117,16 @@ Segundos em horas/minutos/segundos, Consumo médio de combustível. Dificuldade 
 lote 3: 9 básicos, 11 intermediários ("ler até" vira percorrer uma lista com sentinela);
 lote 4: 8 básicos, 10 intermediários, 2 avançados (Bubble Sort e totais de linhas/colunas); os métodos
 prontos da linguagem (sort, filter, reverse…) ficam de fora do enunciado e aparecem só nas explicações.
+Lote 5: 12 básicos, 6 intermediários, 2 avançados (99 e 100). O módulo 05 é o único em que a
+especificação veio do `BANCO_EXERCICIOS.md` e não só do título — os conjuntos reduzidos de teste do
+material (as 5 vendas, a turma de 5 alunos, o estoque de 4 produtos) viraram os `testCases`, com os
+números conferidos. Dois ajustes de forma: o procedimento `mostrarTabuada` (nº 90) virou
+`linhasDaTabuada`, que devolve as dez linhas num array — o enunciado explica por que uma função que
+devolve é testável e um procedimento que imprime não é; e os nº 96 a 100, que no material pedem
+várias funções separadas, viram uma função que devolve um objeto com todos os resultados e cujo
+corpo se quebra em auxiliares (o avaliador chama uma função só). Nos nº 97, 99 e 100 os vetores
+paralelos têm teste de desalinhamento: dados em que trocar o índice ou comparar a coluna errada
+(preço em vez de quantidade × preço) dá uma resposta plausível e errada.
 
 ### 4.4 — Conversão: condicionais e repetição
 - [ ] 30 exercícios de condicionais

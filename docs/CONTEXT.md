@@ -98,7 +98,7 @@ está no ar.
 | 1 — UI Redesign | ✅ Concluída | `fase-1-ui.md` |
 | 2 — Trilha TypeScript | 🟡 Tarefas feitas; 2 verificações manuais pendentes | `fase-2-typescript.md` |
 | 3 — Gamificação | 🟡 Tarefas feitas; 1 verificação manual pendente | `fase-3-gamificacao.md` |
-| 4 — Exercícios dos PDFs | 🟡 **Ativa** — 4.1, 4.2 e 4.6 feitas; 4.3 em andamento (lotes 1–4 de 5 feitos: nº 1–80) | `fase-4-exercicios.md` |
+| 4 — Exercícios dos PDFs | 🟡 **Ativa** — 4.1, 4.2, 4.3 e 4.6 feitas (100 exercícios); faltam 4.4 e 4.5 | `fase-4-exercicios.md` |
 
 ### Pendente de verificação manual (precisa do usuário)
 
@@ -114,24 +114,27 @@ Quando passarem: marcar as Fases 2 e 3 como ✅ (e os critérios correspondentes
 
 ### Próximo passo
 
-**4.3 em andamento — lotes 1 a 4 de 5 feitos (exercícios 1 a 80).** Arquivos por módulo em
-`src/data/logica/`: `m01PrimeirosAlgoritmos.ts` (nº 1–15), `m02EstruturasCondicionais.ts` (nº 16–35)
-`m03EstruturasDeRepeticao.ts` (nº 36–60) e `m04VetoresEMatrizes.ts` (nº 61–80) — os quatro módulos
-completos.
-Cada exercício é escrito com o helper `logica()` (`logicFactory.ts`): assinatura JS e TS + um corpo
-de solução (`tsBody` quando o TS precisa de anotação, ex.: `const numeros: number[] = []`); o
-template ("// Escreva aqui o seu algoritmo") sai automático. Os nº 11–13 (sem enunciado na origem)
-foram criados do zero: Idade em dias, Segundos em h/min/s, Consumo médio.
+**Tarefa 4.3 concluída — os 100 exercícios principais estão na trilha.** Arquivos por módulo em
+`src/data/logica/`: `m01PrimeirosAlgoritmos.ts` (nº 1–15), `m02EstruturasCondicionais.ts` (nº 16–35),
+`m03EstruturasDeRepeticao.ts` (nº 36–60), `m04VetoresEMatrizes.ts` (nº 61–80) e
+`m05FuncoesEDesafios.ts` (nº 81–100). Sem IDs duplicados; 55 básicos, 41 intermediários, 4 avançados.
 
-**Próximo passo: lote 5 (nº 81–100, funções e desafios combinados)** num novo
-`m05FuncoesEDesafios.ts`, registrado em `src/data/logica/index.ts`. Com ele a 4.3 fecha; depois 4.4
-(60 bônus), 4.5 (teste de mesa) e o material de referência.
-Convenções: funções puras (sem leitura de teclado;
-"mostrar na tela" vira devolver um array), resultados múltiplos em objeto ou tupla, categorias
-como union de literais no TS, decimais comparados com tolerância, testes que reprovam o erro
-típico (precedência, `-3 % 2`, fronteiras com `>=`, off-by-one em laços).
+**Próximo passo: tarefa 4.4 — os 60 bônus** (30 de condicionais + 30 de repetição), em
+`m06BonusCondicionais.ts` e `m07BonusRepeticao.ts`, registrados em `src/data/logica/index.ts`.
+IDs `logica-c01-...` e `logica-r01-...` (a convenção já está na 4.1). Depois a 4.5 (teste de mesa)
+e o material de referência. Ao fim da Fase 4, levar para a `main`.
+
+Para os bônus, a especificação está em `docs/material-apoio/BANCO_EXERCICIOS.md` (enunciado,
+requisito, exemplo e tabela de testes dos 60). **Atenção:** ali os 100 têm o gabarito em Portugol
+para conferir as fórmulas, mas os 60 bônus **não têm gabarito** — e o arquivo veio de OCR, então
+toda regra e todo valor de teste precisa ser conferido por leitura antes de virar `testCase`.
+A prosa continua escrita do zero, como nos nº 1 a 100.
+
+Convenções: funções puras (sem leitura de teclado; "mostrar na tela" vira devolver um array),
+resultados múltiplos em objeto ou tupla, categorias como union de literais no TS, decimais
+comparados com tolerância, testes que reprovam o erro típico (precedência, `-3 % 2`, fronteiras
+com `>=`, off-by-one em laços, desalinhamento de vetores paralelos).
 Rodar `npm run check:ts -- logica` a cada lote.
-Depois: 4.4 (60 bônus) e 4.5 (teste de mesa). Ao fim da Fase 4, levar para a `main`.
 
 Contexto da Fase 4: trilha **"Lógica" própria** (decisão do usuário), resolvida em **JS ou TS**
 (PHP não roda no navegador). Modelagem pronta: `Track` separado de `Language`, `logicVariants`
@@ -209,3 +212,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | 4 | 4.3, lote 4 (nº 61–80): módulo 04 (vetores e matrizes) completo — busca, contagem, filtro, intercalar, comparar, vetores paralelos, Bubble Sort, matrizes com laços aninhados; sem métodos prontos (reverse/sort/filter/indexOf). Primeiros 2 exercícios `avancado` (75, 79). `check:ts`: 80 de Lógica, 0 problemas; 14 soluções erradas testadas, todas reprovadas. Levado para a `main`. |
 | 2026-11-18 | — | Erro no "Entrar" investigado: os domínios autorizados do Firebase Auth só têm os do AI Studio (faltam `dev-pratica.vercel.app` e `localhost`); a chave de API não tem restrição de origem. O app agora mostra a causa (`auth/unauthorized-domain`) em vez de uma mensagem genérica. Docs corrigidas (o `TESTANDO-LOCAL.md` dizia que o login funcionava em `localhost`). |
 | 2026-11-18 | 4 | Enunciados completos, requisitos e tabelas de teste dos 160 exercícios extraídos dos PDFs para `docs/material-apoio/` (script em `scripts/build-exercicios.py`). Serve de especificação para os lotes restantes; a prosa segue escrita do zero. |
+| 2026-11-18 | 4 | 4.3, lote 5 (nº 81–100): módulo 05 (funções e desafios combinados) completo — funções que devolvem em vez de exibir, fatorial e Fibonacci iterativos, busca de posições e os quatro relatórios compostos (vendas, turma, semana, estoque) com vetores paralelos. **Tarefa 4.3 concluída:** 100 exercícios, 0 IDs duplicados. Verificação: 96 testes na variante JS e 96 na TS transpilada, 0 falhas; type-check strict das 20 variantes TS; 26 soluções erradas testadas, todas reprovadas. O `check:ts` oficial não rodou (sem rede para `npm install` no ambiente) — rodar na máquina do usuário. |
