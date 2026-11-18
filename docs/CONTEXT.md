@@ -128,7 +128,7 @@ tabela digitada à mão para dessincronizar. Detalhes em "Como ficou (4.5)" no `
 em todo exercício de Lógica) e a tabela Portugol × Python × JavaScript (`src/data/referencia.ts`).
 
 **O que falta, tudo do lado do usuário:**
-1. **Login com Google em produção** — o bloqueio é o projeto Firebase (ver "Deploy" abaixo).
+1. **Criar o Firestore no projeto `dev-pratica`** — o login já funciona; falta a nuvem (ver "Firebase" abaixo).
 2. **As 3 verificações manuais** da seção acima (dependem do login).
 3. Depois delas, marcar as Fases 2 e 3 como ✅.
 
@@ -136,13 +136,14 @@ Ideias para depois (não fazem parte do plano): mais exercícios de teste de mes
 funções), e trazer o teste de mesa para as trilhas JS/TS.
 
 **Deploy:** Vercel, automático a cada push na `main` — produção em **https://dev-pratica.vercel.app**
-(projeto `dev-pratica`, ver [`DEPLOY.md`](./DEPLOY.md)). **Pendente do usuário:** liberar
-`dev-pratica.vercel.app` **e `localhost`** no Firebase Auth. Nenhum dos dois está na lista do projeto do
-AI Studio (`gen-lang-client-0954454406`), conferido de novo em 2026-11-18 depois de o usuário dizer que
-tinha adicionado. É essa a causa do erro ao clicar em "Entrar". **Encaminhamento:** o usuário cria um
-projeto Firebase próprio (passo a passo em "Login com a sua conta Google" no `DEPLOY.md`) e cola a
-`firebaseConfig`; o agente troca os padrões em `src/config/firebase.config.ts`, com
-`firestoreDatabaseId: '(default)'`. A `GEMINI_API_KEY` já está cadastrada na Vercel.
+(projeto `dev-pratica`, ver [`DEPLOY.md`](./DEPLOY.md)). `GEMINI_API_KEY` cadastrada na Vercel.
+
+**Firebase:** o app usa o projeto próprio do usuário **`dev-pratica`** (trocado em 2026-11-18; o do AI
+Studio, `gen-lang-client-0954454406`, não podia ser administrado). Conferido pela API: domínios do site
+e `localhost` autorizados, login com Google ativo. **Pendente do usuário:** criar o Firestore
+(`(default)`, São Paulo, modo produção) e publicar o `firestore.rules` — sem isso o login funciona mas
+o progresso não sobe para a nuvem (o app avisa e mantém o progresso no navegador). Depois: as 3
+verificações manuais acima.
 
 **Como testar localmente:** [`TESTANDO-LOCAL.md`](./TESTANDO-LOCAL.md) (instalação, `.env`, verificações
 automáticas, roteiro de teste manual por fase, problemas comuns).
@@ -218,3 +219,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | — | Feedback de erro no código livre deixou de ser genérico. O usuário escreveu a soma sem o `return` e recebeu três "Falhou no teste de validação", que diz o que aconteceu e não por quê. Novo `src/services/codeDiagnostics.ts` sonda o escopo do aluno e identifica duas causas estruturais: função/classe não definida e função que não devolve valor. Usado pelo avaliador de JS e pelo pipeline de TS. Projetado para errar para o lado do silêncio: a checagem de retorno só vale se a solução de referência devolver algo, e arrow com retorno implícito conta como retorno. Verificado: 0 falsos positivos nos 135 exercícios de código livre, 8 cenários de diagnóstico corretos, 121 exercícios de Lógica ainda passam com a solução oficial. |
 | 2026-11-18 | — | "Entrar" reinvestigado: o código de login está certo (pop-up com redirecionamento de reserva); o bloqueio é o projeto Firebase do AI Studio, cujos domínios autorizados não incluem o site nem `localhost`. Documentado o caminho de um projeto Firebase próprio do usuário (`DEPLOY.md`), que só exige trocar a configuração. |
 | 2026-11-18 | 4 | **Fase 4 concluída.** 4.5: modalidade `teste_de_mesa` (tipo, `DeskCheckViewer`, `evaluateDeskCheck`, gabarito gerado executando o código via `anotar(...)`, persistência achatada para o Firestore, tutor instruído a não revelar células) + 12 exercícios `logica-t01…t12`; seção Trilha de Lógica no StudyGuide com o método do teste de mesa. 4.6: guia de operadores (StudyGuide + consulta rápida no workspace) e tabela Portugol × Python × JS. `check:ts`: 251 exercícios, 0 problemas; testado no navegador (erro marcado por célula, acerto +10 XP, resposta restaurada, 375/768/1440 px sem overflow). Levado para a `main`. |
+| 2026-11-18 | — | Firebase trocado para o projeto próprio `dev-pratica` (config em `src/config/firebase.config.ts`, banco `(default)`). Conferido pela API: domínios do site/`localhost` autorizados e login Google ativo; o Firestore ainda não foi criado. Login que dá certo com a nuvem fora do ar agora avisa "login feito, nuvem não respondeu" em vez de erro de autenticação. Docs de deploy atualizadas. |

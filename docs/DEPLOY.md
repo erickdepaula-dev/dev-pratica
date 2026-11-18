@@ -36,8 +36,11 @@ A saída vai para `.vercel/output/`, que é ignorada pelo Git.
   ligado ao GitHub `erickdepaula-dev/dev-pratica`, branch de produção `main`. Criado em 2026-11-18
   pela API da Vercel (o conector MCP da Vercel nesta sessão é só leitura).
 - **Produção:** https://dev-pratica.vercel.app
-- **Falta (usuário):** a variável `GEMINI_API_KEY` no projeto (passo 4 abaixo) e liberar os domínios no
-  Firebase (passo 6) — **é por isso que o "Entrar" dá erro no site**.
+- **Firebase:** projeto próprio **`dev-pratica`** (nº 1082635470502), criado pelo usuário em 2026-11-18.
+  Conferido pela API: domínios `localhost`, `dev-pratica.firebaseapp.com`, `dev-pratica.web.app` e
+  `dev-pratica.vercel.app` autorizados; login com Google ativo. `GEMINI_API_KEY` cadastrada na Vercel.
+- **Falta (usuário):** criar o **Firestore** (passo 4 da seção "projeto Firebase próprio") e publicar
+  as regras (passo 5). Sem ele, o login funciona, mas o progresso fica só no navegador.
 
 ## Configuração inicial (referência — os passos 1–3 e 5 já foram feitos)
 
@@ -50,29 +53,22 @@ A saída vai para `.vercel/output/`, que é ignorada pelo Git.
    - `GEMINI_API_KEY` = sua chave do Gemini (marque *Production* e *Preview*).
 5. Clique em **Deploy**. Ao terminar, a Vercel mostra a URL, por exemplo `https://dev-pratica.vercel.app`.
 6. **Libere os domínios no Firebase**, senão o login com Google falha com `auth/unauthorized-domain`
-   (o app mostra "Login bloqueado: o domínio … não está autorizado"):
-   [console.firebase.google.com](https://console.firebase.google.com) → projeto `gen-lang-client-0954454406`
-   (abre com a mesma conta Google) → **Authentication** → **Settings** →
-   **Authorized domains** → **Add domain**, um de cada vez, sem `https://`:
-   - `dev-pratica.vercel.app` (produção)
-   - `localhost` (para testar na sua máquina — **também não está liberado hoje**)
-
-   Verificado em 2026-11-18: a lista tinha só os domínios herdados do AI Studio (`*.run.app`,
-   `*.ai.studio`, `*.firebaseapp.com`, `*.web.app`). A chave de API não tem restrição de origem,
-   então liberar os domínios basta. A mudança vale na hora, sem novo deploy.
+   (o app mostra "Login bloqueado: o domínio … não está autorizado"): console do Firebase → projeto
+   `dev-pratica` → **Authentication** → **Configurações** → **Domínios autorizados** → **Adicionar
+   domínio** → `dev-pratica.vercel.app` (o `localhost` vem por padrão). ✅ Feito em 2026-11-18.
 
 Depois disso, todo push na `main` publica sozinho.
 
 > Os deploys de *preview* têm um domínio diferente a cada vez. Neles, o login Google só funciona se
 > o domínio for liberado no Firebase. Para usar o app logado, use o domínio de produção.
 
-## Login com a sua conta Google: projeto Firebase próprio (recomendado)
+## Login com a sua conta Google: projeto Firebase próprio ✅ em uso
 
-O projeto Firebase atual (`gen-lang-client-0954454406`) foi criado pelo Google AI Studio. Se você
-não o encontra no console, ou se adicionou os domínios e eles não aparecem, o caminho mais simples é
-criar um projeto **seu**. O app aceita a troca sem mudar código: basta trocar a configuração. Não há
-progresso a perder na nuvem, porque o login nunca funcionou fora do AI Studio. O progresso que já está
-no navegador sobe para o projeto novo no primeiro login, porque a sincronização junta o local com a nuvem.
+Até 2026-11-18 o app usava um projeto Firebase criado pelo Google AI Studio
+(`gen-lang-client-0954454406`), que o usuário não conseguia administrar no console — os domínios do
+site nunca entraram na lista dele. O app agora usa o projeto próprio **`dev-pratica`**. Não houve
+progresso perdido na nuvem (o login nunca funcionou fora do AI Studio); o progresso do navegador sobe
+para o projeto novo no primeiro login. Passos usados, para referência (ou para recriar o projeto):
 
 **Passos no console** ([console.firebase.google.com](https://console.firebase.google.com), logado com a
 sua conta Google):
@@ -93,9 +89,14 @@ sua conta Google):
 Esses valores **não são segredo**: vão no código do site e qualquer visitante os vê. O que protege os
 dados são as regras do passo 5 e os domínios do passo 3. Pode colar o bloco no chat.
 
-**Troca no código** (feita pelo agente ao receber o bloco): atualizar os valores padrão em
-`src/config/firebase.config.ts` com `firestoreDatabaseId: '(default)'`, rodar `lint` e `build` e enviar
-para a `main`. A Vercel publica sozinha. Depois disso, confira o login no site e em `localhost`.
+**Troca no código** (✅ feita): valores padrão em `src/config/firebase.config.ts` apontam para
+`dev-pratica`, com `firestoreDatabaseId: '(default)'`.
+
+**Como conferir pela API** (sem console, com a apiKey pública):
+- domínios: `GET https://www.googleapis.com/identitytoolkit/v3/relyingparty/getProjectConfig?key=<apiKey>`;
+- Firestore: `GET https://firestore.googleapis.com/v1/projects/dev-pratica/databases/(default)/documents/users/x?key=<apiKey>`
+  — `PERMISSION_DENIED` com "Cloud Firestore API has not been used" = banco não criado; `PERMISSION_DENIED`
+  com "Missing or insufficient permissions" = banco criado e regras bloqueando acesso anônimo (o certo).
 
 ---
 
@@ -108,7 +109,7 @@ autenticada. O resultado é recolhido por `consumeRedirectLogin()` quando o app 
 os erros desse fluxo aparecem.
 
 **Ressalva que ainda está em aberto.** O `authDomain` do projeto é
-`gen-lang-client-0954454406.firebaseapp.com`, um domínio diferente daquele onde o app roda. Isso faz
+`dev-pratica.firebaseapp.com`, um domínio diferente daquele onde o app roda. Isso faz
 o redirecionamento depender de armazenamento de terceiros, que o Safari bloqueia por padrão e o
 Firefox bloqueia no modo estrito. Nesses navegadores, com o pop-up também bloqueado, o login pode
 voltar do Google sem sessão — e o usuário cai na tela de login sem erro aparente.

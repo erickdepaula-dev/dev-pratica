@@ -1,5 +1,6 @@
 /**
- * Configuração do Firebase do projeto.
+ * Configuração do Firebase do projeto `dev-pratica` (projeto próprio do usuário, criado em 2026-11-18;
+ * antes era o projeto do AI Studio `gen-lang-client-0954454406`, sem acesso ao console).
  *
  * Estes valores não são segredo: a configuração web do Firebase vai no bundle e chega ao
  * navegador de qualquer visitante. O que protege os dados são as regras do Firestore
@@ -17,7 +18,7 @@ export interface FirebaseProjectConfig {
   storageBucket: string;
   messagingSenderId: string;
   measurementId: string;
-  /** O Firestore deste projeto não usa o banco "(default)"; o id vai no getFirestore(). */
+  /** Id do banco do Firestore, passado ao getFirestore(). O projeto próprio usa "(default)". */
   firestoreDatabaseId: string;
 }
 
@@ -34,12 +35,12 @@ function valor(daEnv: unknown, padrao: string): string {
 }
 
 export const firebaseConfig: FirebaseProjectConfig = {
-  apiKey: valor(env.VITE_FIREBASE_API_KEY, "AIzaSyDqB0t8V3o55XtCImL543Gy8CeRJJc176Q"),
-  authDomain: valor(env.VITE_FIREBASE_AUTH_DOMAIN, "gen-lang-client-0954454406.firebaseapp.com"),
-  projectId: valor(env.VITE_FIREBASE_PROJECT_ID, "gen-lang-client-0954454406"),
-  appId: valor(env.VITE_FIREBASE_APP_ID, "1:455733755566:web:0bfddf685b25c23578773f"),
-  storageBucket: valor(env.VITE_FIREBASE_STORAGE_BUCKET, "gen-lang-client-0954454406.firebasestorage.app"),
-  messagingSenderId: valor(env.VITE_FIREBASE_MESSAGING_SENDER_ID, "455733755566"),
-  measurementId: valor(env.VITE_FIREBASE_MEASUREMENT_ID, ""),
-  firestoreDatabaseId: valor(env.VITE_FIREBASE_FIRESTORE_DATABASE_ID, "ai-studio-devprticaphpjs-eabcb68f-1feb-48e1-9cf3-cb910e1446c7"),
+  apiKey: valor(env.VITE_FIREBASE_API_KEY, "AIzaSyD5WfcZyn6EDdbqqLiRF20MvJgVDoNl3gs"),
+  authDomain: valor(env.VITE_FIREBASE_AUTH_DOMAIN, "dev-pratica.firebaseapp.com"),
+  projectId: valor(env.VITE_FIREBASE_PROJECT_ID, "dev-pratica"),
+  appId: valor(env.VITE_FIREBASE_APP_ID, "1:1082635470502:web:48c4beb92c763ba9271667"),
+  storageBucket: valor(env.VITE_FIREBASE_STORAGE_BUCKET, "dev-pratica.firebasestorage.app"),
+  messagingSenderId: valor(env.VITE_FIREBASE_MESSAGING_SENDER_ID, "1082635470502"),
+  measurementId: valor(env.VITE_FIREBASE_MEASUREMENT_ID, "G-CRZ63SDN26"),
+  firestoreDatabaseId: valor(env.VITE_FIREBASE_FIRESTORE_DATABASE_ID, "(default)"),
 };

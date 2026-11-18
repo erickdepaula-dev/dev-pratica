@@ -192,10 +192,17 @@ export default function App() {
         if (cloudProgress) {
           setProgress(cloudProgress);
         }
+        triggerToast(`Bem-vindo, ${outcome.user.displayName || 'Dev'}! Dados sincronizados.`);
+      } catch {
+        // O login deu certo; o que falhou foi a nuvem (Firestore). O progresso segue salvo
+        // neste navegador — não é um erro de autenticação.
+        triggerToast(
+          `Bem-vindo, ${outcome.user.displayName || 'Dev'}! Login feito, mas a nuvem não respondeu: seu progresso continua salvo neste navegador.`,
+          'error'
+        );
       } finally {
         setIsCloudLoading(false);
       }
-      triggerToast(`Bem-vindo, ${outcome.user.displayName || 'Dev'}! Dados sincronizados.`);
     } catch (error: unknown) {
       triggerToast(descreverErroDeLogin(error), 'error');
     } finally {

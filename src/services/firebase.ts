@@ -14,8 +14,7 @@ import { firebaseConfig } from '../config/firebase.config';
 
 const app = initializeApp(firebaseConfig);
 
-// Este projeto não usa o banco "(default)" do Firestore: o id vem da configuração e
-// precisa ser passado ao getFirestore, senão as leituras vão para um banco vazio.
+// O id do banco vem da configuração (o projeto atual usa "(default)"; o do AI Studio não usava).
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
