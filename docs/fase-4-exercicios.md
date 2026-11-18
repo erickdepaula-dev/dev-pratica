@@ -128,39 +128,53 @@ corpo se quebra em auxiliares (o avaliador chama uma função só). Nos nº 97, 
 paralelos têm teste de desalinhamento: dados em que trocar o índice ou comparar a coluna errada
 (preço em vez de quantidade × preço) dá uma resposta plausível e errada.
 
-### 4.4 — Conversão: condicionais e repetição
-- [ ] 30 exercícios de condicionais
-- [ ] 30 exercícios de estruturas de repetição
-- [ ] Agrupar por tópico para os filtros da lista
+### 4.4 — Conversão: condicionais e repetição ✅ CONCLUÍDA
+- [x] 30 exercícios de condicionais → **17 convertidos** (`m06BonusCondicionais.ts`, IDs `logica-c<nn>`)
+- [x] 30 exercícios de repetição → **4 convertidos** (`m07BonusRepeticao.ts`, IDs `logica-r<nn>`)
+- [x] Agrupar por tópico para os filtros: `Bônus — Condicionais` e `Bônus — Repetição`
 
-### 4.6 — Interface da trilha de Lógica *(acrescentada na 4.1 — o plano não tinha tarefa de UI)*
-- [x] Seletor de trilha com "Lógica" (Header, catálogo, Dashboard); `UserProgress.selectedTrack`
-      com migração defensiva (progresso antigo: `selectedTrack = selectedLanguage`)
-- [x] No workspace de um exercício de Lógica: escolher JS ou TS (lembrar a última escolha)
-- [x] `check:ts` (ou um `check:logica`) validando as duas variantes de cada exercício de Lógica
-- [x] Card da trilha no Dashboard, XP e conquistas funcionando para a Lógica
+**Decisão: só os que acrescentam algo.** Os bônus são "exercícios extras" dos módulos 02 e 03, e
+boa parte repete exercício que a trilha já tem. Converter os 60 daria ao usuário a mesma função
+para resolver duas vezes. Então 21 entraram e 39 ficaram de fora:
 
-**Como ficou (4.6):**
-- `TrackPills.tsx` (antigo `LanguagePills`) percorre `TRACKS` com `getTrackTheme`; no Header, entre
-  768 e 1023 px, mostra só o emoji. Header sem overflow de 375 a 1920 px — para caber a 4ª trilha,
-  o Header deixou de mostrar o número de XP e a palavra "dias" (o XP fica no tooltip da barra e no
-  card de carreira).
-- Catálogo, Dashboard e Progresso usam a trilha selecionada (`getSelectedTrack`,
-  `getExercisesByTrack`). Trilha vazia mostra "Em construção" (e não "Parabéns, trilha concluída").
-- Workspace: seletor "Resolver em: JavaScript | TypeScript"; trocar remonta o workspace com a variante
-  da linguagem (`App` resolve via `resolveLogicExercise` + `getLogicLanguage`). O código salvo só é
-  restaurado na linguagem em que foi escrito (`ExerciseAttempt.logicLanguage`); o progresso (concluído,
-  XP) é do exercício e vale para as duas.
-- Cor da trilha: ameixa `#A44C8C` (token `--track-logica`), escolhida por busca de matiz — a maior
-  distância (OKLab ΔE ≥ 16) de todas as trilhas e cores de status; texto `#ECAED8` (contraste 9,8:1).
-- `check:ts` valida a Lógica: solução TS no pipeline, solução JS no avaliador de JS do app e
-  templates que **não** passam (o exercício não vem resolvido).
-- **Piloto:** `logica-001-soma-de-dois-numeros` (`src/data/logica/m01PrimeirosAlgoritmos.ts`) —
-  primeiro exercício do lote 1 da 4.3. Testado no navegador: resolver em JS (+15 XP), trocar para TS
-  (editor com o template TS, exercício segue concluído), voltar para JS (código salvo volta).
-- **Bug antigo corrigido:** o editor de código livre tinha só 80 px úteis (o contêiner de 390 px tinha
-  `flex-1` numa coluna sem altura definida, então o `h-full` dos filhos não resolvia) — rolava com
-  3–4 linhas e desalinhava a numeração, em todas as trilhas, desde o commit inicial do projeto.
+*Condicionais — 13 fora.* Regra idêntica a um exercício existente: par ou ímpar (`parOuImpar`),
+positivo/negativo/zero (`classificarSinal`), maior de dois (`maiorDeDois`), menor de três
+(`menor3`), situação do aluno (`situacaoPorFaixa`), IMC (`classificarImc`), tipo de triângulo
+(`tipoTriangulo`), ano bissexto (`ehBissexto`). Variação mínima: pode votar (= `categoriaDeVoto`),
+maior de três, menor de dois, empréstimo sem parcelas (= `aprovarEmprestimo`), divisível por 2 e 3
+(mesma forma do c12, que ficou).
+
+*Repetição — 26 fora.* Regra idêntica: contagem regressiva, somatório de 1 até N, ler até zero,
+maior e menor valor, notas acima da média. Variações do mesmo acumulador que o módulo 03 treina:
+somar pares, somar ímpares, produto de 1 até N, contar múltiplos de 3, tabuada, média de N valores,
+contagem de 2 em 2 e as demais. Quatro pareciam novas pelo título e não eram — vale registrar,
+porque a comparação por título não as pegou: "Mostrar Pares" é o `paresAte` do nº 39, "Contar Pares"
+é um recorte do `contarParesEImpares`, e "Contar Negativos" e "Contar Notas Aprovadas" são espelhos
+do `contarPositivos`, cuja lição de fronteira inclusiva já está no c26/r26.
+
+**O que os 21 acrescentam.** Nos 17 de condicionais: classificação em faixas em domínios que a
+trilha não tinha (faixa etária, preço, energia, imposto, pressão, hora do dia, estoque, bônus de
+vendas, conceito A–D, categoria esportiva), um código de letra em vez de número (`turnoDeEstudo`,
+com normalização de maiúscula e caso inválido), uma tabela limitada nas duas pontas
+(`faixaDoIntervalo`), um valor isolado antes das faixas (`nivelDeEstoque`, em que zero não é
+"baixo"), um piso que a tabela não prevê (`categoriaDoNadador` abaixo de 5 anos), dois resultados
+de uma faixa só (`descontoDaCompra`) e duas decisões que combinam duas entradas — `temFreteGratis`
+com OU e `entradaPermitida`, em que a autorização só vale na faixa de 16 e 17 anos.
+Nos 4 de repetição: sentinela recebida por parâmetro (`somarAteSentinela`), gerar a sequência
+inteira de Fibonacci em vez de um termo (`primeirosFibonacci`), limite de comparação parametrizado
+(`contarAcimaDe`) e parada por soma acumulada em vez de contagem de voltas (`somarAte100`).
+
+**Duas inferências, porque o OCR não leu a tabela.** No desconto da compra (c08) a tabela de faixas
+saiu ilegível; os valores de teste do material (80 → 0%, 100 → 0%, 150 → 5%, 250 → 5%, 350 → 10%)
+fixam 0% até 100 e 5% até 300, então a fronteira dos 10% foi posta em "acima de 300". Na categoria
+do nadador (c22) a tabela começa em 5 anos e não diz o que fazer abaixo disso; uma função tem de
+devolver algo, então foi criado o retorno `'sem categoria'`, com teste próprio.
+
+**Uma divergência consciente com o material.** No IMC (c09, que ficou de fora por duplicar o
+`classificarImc`) o gabarito classifica 68 kg / 1,65 m como "Sobrepeso", mas o IMC exato é 24,98 —
+dentro da faixa "18,5 a 24,9". O material classifica pelo valor já arredondado para 25,0. O
+`classificarImc` da trilha usa o valor exato, que é o correto; fica o registro caso alguém compare
+os dois e estranhe.
 
 ### 4.5 — Teste de mesa como modalidade
 - [ ] Avaliar criar a modalidade `teste_de_mesa`: usuário preenche a tabela de

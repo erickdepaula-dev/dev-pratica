@@ -4,6 +4,8 @@ import { logicModule02 } from './m02EstruturasCondicionais';
 import { logicModule03 } from './m03EstruturasDeRepeticao';
 import { logicModule04 } from './m04VetoresEMatrizes';
 import { logicModule05 } from './m05FuncoesEDesafios';
+import { logicModule06 } from './m06BonusCondicionais';
+import { logicModule07 } from './m07BonusRepeticao';
 
 /**
  * Trilha de Lógica (Fase 4) — 160 exercícios independentes de linguagem, resolvidos em
@@ -18,6 +20,8 @@ export const logicExercises: LogicExercise[] = [
   ...logicModule03,
   ...logicModule04,
   ...logicModule05,
+  ...logicModule06,
+  ...logicModule07,
 ];
 
 /** Mesma lista, tipada como Exercise para o agregador geral. */

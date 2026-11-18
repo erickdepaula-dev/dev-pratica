@@ -190,8 +190,11 @@ export const StudyGuide: React.FC<StudyGuideProps> = ({ onStartTrack }) => {
             Descubra nuances de segurança (XSS, SQL Injection) e abordagens alternativas.
           </div>
           <div className="p-3 rounded-lg bg-canvas border border-subtle">
-            <strong className="text-primary block mb-1">✓ Exporte seu progresso regularmente</strong>
-            Grave seu arquivo JSON de progresso para não perder seu histórico ao limpar cookies.
+            <strong className="text-primary block mb-1">✓ Entre com o Google para não depender do navegador</strong>
+            Logado, cada exercício concluído sobe para a nuvem e volta no próximo login — limpar os
+            dados do navegador não apaga seu histórico. Sem login, tudo vive só neste navegador:
+            use <strong className="text-primary">Progresso → Exportar Backup (JSON)</strong> de vez
+            em quando, e também antes de resetar o progresso.
           </div>
         </div>
       </div>

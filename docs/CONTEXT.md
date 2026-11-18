@@ -98,7 +98,7 @@ está no ar.
 | 1 — UI Redesign | ✅ Concluída | `fase-1-ui.md` |
 | 2 — Trilha TypeScript | 🟡 Tarefas feitas; 2 verificações manuais pendentes | `fase-2-typescript.md` |
 | 3 — Gamificação | 🟡 Tarefas feitas; 1 verificação manual pendente | `fase-3-gamificacao.md` |
-| 4 — Exercícios dos PDFs | 🟡 **Ativa** — 4.1, 4.2, 4.3 e 4.6 feitas (100 exercícios); faltam 4.4 e 4.5 | `fase-4-exercicios.md` |
+| 4 — Exercícios dos PDFs | 🟡 **Ativa** — 4.1 a 4.4 e 4.6 feitas (121 exercícios); falta só a 4.5 (teste de mesa) | `fase-4-exercicios.md` |
 
 ### Pendente de verificação manual (precisa do usuário)
 
@@ -114,21 +114,23 @@ Quando passarem: marcar as Fases 2 e 3 como ✅ (e os critérios correspondentes
 
 ### Próximo passo
 
-**Tarefa 4.3 concluída — os 100 exercícios principais estão na trilha.** Arquivos por módulo em
-`src/data/logica/`: `m01PrimeirosAlgoritmos.ts` (nº 1–15), `m02EstruturasCondicionais.ts` (nº 16–35),
-`m03EstruturasDeRepeticao.ts` (nº 36–60), `m04VetoresEMatrizes.ts` (nº 61–80) e
-`m05FuncoesEDesafios.ts` (nº 81–100). Sem IDs duplicados; 55 básicos, 41 intermediários, 4 avançados.
+**Tarefas 4.3 e 4.4 concluídas — a trilha de Lógica tem 121 exercícios**, sem IDs duplicados:
+72 básicos, 49 intermediários, 4 avançados. Arquivos em `src/data/logica/`:
+`m01PrimeirosAlgoritmos.ts` (nº 1–15), `m02EstruturasCondicionais.ts` (nº 16–35),
+`m03EstruturasDeRepeticao.ts` (nº 36–60), `m04VetoresEMatrizes.ts` (nº 61–80),
+`m05FuncoesEDesafios.ts` (nº 81–100), `m06BonusCondicionais.ts` (17 bônus `logica-c<nn>`) e
+`m07BonusRepeticao.ts` (4 bônus `logica-r<nn>`).
 
-**Próximo passo: tarefa 4.4 — os 60 bônus** (30 de condicionais + 30 de repetição), em
-`m06BonusCondicionais.ts` e `m07BonusRepeticao.ts`, registrados em `src/data/logica/index.ts`.
-IDs `logica-c01-...` e `logica-r01-...` (a convenção já está na 4.1). Depois a 4.5 (teste de mesa)
-e o material de referência. Ao fim da Fase 4, levar para a `main`.
+Dos 60 bônus do material, 21 entraram e 39 ficaram de fora por repetirem exercício existente — o
+critério, a lista dos excluídos e o que os 21 acrescentam estão em `docs/fase-4-exercicios.md`,
+tarefa 4.4. **Se alguém for revisitar isso, leia a seção antes:** quatro dos excluídos pareciam
+novos pelo título e eram duplicatas (o "Mostrar Pares" é o `paresAte` do nº 39), então comparar
+títulos não basta — compare a regra e o nome da função.
 
-Para os bônus, a especificação está em `docs/material-apoio/BANCO_EXERCICIOS.md` (enunciado,
-requisito, exemplo e tabela de testes dos 60). **Atenção:** ali os 100 têm o gabarito em Portugol
-para conferir as fórmulas, mas os 60 bônus **não têm gabarito** — e o arquivo veio de OCR, então
-toda regra e todo valor de teste precisa ser conferido por leitura antes de virar `testCase`.
-A prosa continua escrita do zero, como nos nº 1 a 100.
+**Próximo passo: tarefa 4.5 — teste de mesa.** Avaliar se vale criar a modalidade `teste_de_mesa`
+(o usuário preenche a tabela de valores das variáveis passo a passo) e, se sim, o tipo, o
+componente, o avaliador e a integração com XP. O conteúdo do `Guia Visual de Teste de Mesa` entra
+no `StudyGuide`. É a última tarefa da Fase 4.
 
 Convenções: funções puras (sem leitura de teclado; "mostrar na tela" vira devolver um array),
 resultados múltiplos em objeto ou tupla, categorias como union de literais no TS, decimais
@@ -214,3 +216,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | 4 | Enunciados completos, requisitos e tabelas de teste dos 160 exercícios extraídos dos PDFs para `docs/material-apoio/` (script em `scripts/build-exercicios.py`). Serve de especificação para os lotes restantes; a prosa segue escrita do zero. |
 | 2026-11-18 | 4 | 4.3, lote 5 (nº 81–100): módulo 05 (funções e desafios combinados) completo — funções que devolvem em vez de exibir, fatorial e Fibonacci iterativos, busca de posições e os quatro relatórios compostos (vendas, turma, semana, estoque) com vetores paralelos. **Tarefa 4.3 concluída:** 100 exercícios, 0 IDs duplicados. Verificação: 96 testes na variante JS e 96 na TS transpilada, 0 falhas; type-check strict das 20 variantes TS; 26 soluções erradas testadas, todas reprovadas. O `check:ts` oficial não rodou (sem rede para `npm install` no ambiente) — rodar na máquina do usuário. |
 | 2026-11-18 | — | Correção: o login com Google caía quando o navegador bloqueava o pop-up — o app só avisava "permita pop-ups". Agora `loginWithGoogle` cai em `signInWithRedirect`, e `consumeRedirectLogin()` recolhe o resultado na volta (é onde os erros desse fluxo aparecem). Mensagens de erro de login centralizadas em `descreverErroDeLogin`. Ressalva do `authDomain` em outro domínio documentada em `DEPLOY.md`. |
+| 2026-11-18 | 4 | **Tarefa 4.4 concluída.** 21 dos 60 bônus convertidos: `m06BonusCondicionais.ts` (17) e `m07BonusRepeticao.ts` (4). Os outros 39 repetiam exercício existente — critério e lista em `fase-4-exercicios.md`. Trilha de Lógica em 121 exercícios. Verificação: 128 testes em JS e 128 na variante TS transpilada, 0 falhas; type-check strict dos 21; 28 soluções erradas testadas, todas reprovadas (duas rodadas: a primeira achou um buraco real no c18, sem teste para 8,95, e um falso positivo meu no r27). |
