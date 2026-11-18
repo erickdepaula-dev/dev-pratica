@@ -109,15 +109,25 @@ autenticada. O resultado é recolhido por `consumeRedirectLogin()` quando o app 
 os erros desse fluxo aparecem.
 
 **Ressalva que ainda está em aberto.** O `authDomain` do projeto é
-`dev-pratica.firebaseapp.com`, um domínio diferente daquele onde o app roda. Isso faz
-o redirecionamento depender de armazenamento de terceiros, que o Safari bloqueia por padrão e o
-Firefox bloqueia no modo estrito. Nesses navegadores, com o pop-up também bloqueado, o login pode
-voltar do Google sem sessão — e o usuário cai na tela de login sem erro aparente.
+`dev-pratica.firebaseapp.com`, um domínio diferente daquele onde o app roda. Isso faz o login
+depender de armazenamento de terceiros, que o Safari, o Brave, o Edge (prevenção rígida) e o Chrome
+em janela anônima bloqueiam. Nesses navegadores o usuário volta do Google **sem sessão e sem erro**
+— foi o que aconteceu no primeiro teste em produção (2026-11-18). Desde então o app avisa
+("Você voltou do Google, mas o navegador descartou a sessão…"), via `consumeRedirectLogin()`.
 
-No Chrome com as opções padrão os dois caminhos funcionam. Para fechar o caso de vez, a solução
-documentada pelo Firebase é servir o handler de autenticação no **mesmo domínio do app**: criar um
-rewrite de `/__/auth/**` para o domínio do Firebase no `vercel.json` e apontar o `authDomain` da
-configuração para o domínio de produção. Vale fazer se o login falhar no Safari.
+**Correção definitiva (preparada, falta 1 passo do usuário):** servir o handler de login no próprio
+domínio do site.
+1. ✅ Proxy na Vercel: `/__/auth/*` e `/__/firebase/*` → `https://dev-pratica.firebaseapp.com`
+   (rota em `scripts/build-vercel.mjs`; variável `FIREBASE_AUTH_HOST` para outro projeto).
+2. ⏳ **Usuário:** no [Google Cloud Console](https://console.cloud.google.com/apis/credentials?project=dev-pratica)
+   → projeto `dev-pratica` → **APIs e serviços → Credenciais** → em "IDs do cliente OAuth 2.0", abrir
+   **Web client (auto created by Google Service)** → em **URIs de redirecionamento autorizados**,
+   **Adicionar URI** → `https://dev-pratica.vercel.app/__/auth/handler` → **Salvar**.
+3. ⏳ Agente: cadastrar na Vercel, **só em Production**, `VITE_FIREBASE_AUTH_DOMAIN=dev-pratica.vercel.app`
+   (o código já lê essa variável em `src/config/firebase.config.ts`) e refazer o deploy. Previews e
+   `localhost` seguem com o `authDomain` padrão.
+
+**Não inverter a ordem:** com o passo 3 antes do 2, o Google recusa o login com `redirect_uri_mismatch`.
 
 Enquanto isso, o atalho para o usuário é permitir pop-ups para o site: no Chrome, o ícone de pop-up
 bloqueado na barra de endereço → *Sempre permitir pop-ups de…*.

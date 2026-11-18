@@ -16,6 +16,8 @@ interface TrackPillsProps {
   showFullName?: boolean;
   /** Abaixo de `lg`, mostra só o emoji (o nome fica no title/aria-label) — para o Header. */
   compactBelowLg?: boolean;
+  /** Mostra só o emoji em qualquer largura (Header com usuário conectado, que precisa do espaço). */
+  alwaysCompact?: boolean;
   /** Precisa ser único por instância para não "voar" entre o desktop e o menu mobile. */
   indicatorId: string;
 }
@@ -27,6 +29,7 @@ export const TrackPills: React.FC<TrackPillsProps> = ({
   indicatorId,
   showFullName = false,
   compactBelowLg = false,
+  alwaysCompact = false,
 }) => (
   <div
     role="radiogroup"
@@ -58,7 +61,7 @@ export const TrackPills: React.FC<TrackPillsProps> = ({
           )}
           <span className="relative flex items-center gap-1">
             <span aria-hidden="true">{theme.emoji}</span>
-            <span className={compactBelowLg ? 'hidden lg:inline' : undefined}>{showFullName ? theme.name : theme.shortName}</span>
+            <span className={alwaysCompact ? 'hidden' : compactBelowLg ? 'hidden lg:inline' : undefined}>{showFullName ? theme.name : theme.shortName}</span>
           </span>
         </button>
       );

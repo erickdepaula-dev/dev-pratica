@@ -12,6 +12,8 @@ import { build } from 'esbuild';
 import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 
 const out = '.vercel/output';
+// Domínio do Firebase Hosting do projeto (o handler de login fica em /__/auth/handler).
+const FIREBASE_AUTH_HOST = process.env.FIREBASE_AUTH_HOST || 'dev-pratica.firebaseapp.com';
 rmSync(out, { recursive: true, force: true });
 
 // Front-end (o `vite build` já rodou antes deste script)
@@ -43,6 +45,11 @@ writeFileSync(
     {
       version: 3,
       routes: [
+        // Login do Firebase servido pelo próprio domínio do site (proxy para o handler do Firebase).
+        // Necessário para o login por redirecionamento em navegadores que bloqueiam armazenamento de
+        // terceiros; só tem efeito quando o authDomain da configuração aponta para o domínio do site.
+        // Ver docs/DEPLOY.md, "Login com Google: pop-up e redirecionamento".
+        { src: '^/__/(auth|firebase)/(.*)$', dest: `https://${FIREBASE_AUTH_HOST}/__/$1/$2` },
         { src: '^/api/(.*)$', dest: '/api' },
         { handle: 'filesystem' },
         { src: '/(.*)', dest: '/index.html' },

@@ -58,6 +58,7 @@ export async function loginWithGoogle(): Promise<LoginOutcome> {
       // Sai desta página para a tela do Google e volta autenticado. O resultado é
       // recolhido por consumeRedirectLogin() quando o app monta de novo, e o
       // onAuthStateChanged dispara com o usuário já pronto.
+      marcarRedirecionamentoPendente();
       await signInWithRedirect(auth, googleProvider);
       return { status: 'redirecionando' };
     }
@@ -76,8 +77,41 @@ export async function loginWithGoogle(): Promise<LoginOutcome> {
  * Devolve `null` quando não houve redirecionamento, que é o caso normal.
  */
 export async function consumeRedirectLogin(): Promise<User | null> {
+  const estavaRedirecionando = consumirRedirecionamentoPendente();
   const result = await getRedirectResult(auth);
-  return result?.user ?? null;
+  if (result?.user) return result.user;
+  if (estavaRedirecionando) {
+    // Saímos para o Google e voltamos sem usuário e sem erro: o navegador descartou a sessão
+    // no caminho (bloqueio de armazenamento de terceiros — authDomain ≠ domínio do app).
+    // Sem este aviso, o usuário simplesmente "volta deslogado" sem explicação.
+    await auth.authStateReady();
+    if (!auth.currentUser) {
+      throw Object.assign(new Error('Retorno do Google sem sessão'), { code: 'app/redirect-sem-sessao' });
+    }
+  }
+  return null;
+}
+
+// Marca, só nesta aba, que um login por redirecionamento começou (sessionStorage pode falhar
+// em modo privado — nesse caso apenas não há aviso).
+const CHAVE_REDIRECIONAMENTO = 'devpratica_login_redirect_pendente';
+
+function marcarRedirecionamentoPendente(): void {
+  try {
+    sessionStorage.setItem(CHAVE_REDIRECIONAMENTO, '1');
+  } catch {
+    /* sem sessionStorage: segue sem o aviso */
+  }
+}
+
+function consumirRedirecionamentoPendente(): boolean {
+  try {
+    const pendente = sessionStorage.getItem(CHAVE_REDIRECIONAMENTO) === '1';
+    sessionStorage.removeItem(CHAVE_REDIRECIONAMENTO);
+    return pendente;
+  } catch {
+    return false;
+  }
 }
 
 export async function logoutFirebase(): Promise<void> {

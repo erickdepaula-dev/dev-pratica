@@ -108,12 +108,14 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={() => handleChangeTab('dashboard')}
+            aria-label="DevPrática — ir para o Painel"
             className={`group flex items-center gap-2.5 shrink-0 rounded-lg cursor-pointer ${FOCUS_RING}`}
           >
             <span className="w-8 h-8 rounded-lg bg-gradient-accent shadow-glow flex items-center justify-center font-mono font-bold text-white text-sm transition-transform group-hover:scale-105">
               &gt;_
             </span>
-            <span className="text-lg font-bold tracking-tight text-primary whitespace-nowrap">DevPrática</span>
+            {/* Conectado, "Conectado" + "Sair" ocupam mais espaço: o nome da marca só aparece a partir de lg */}
+            <span className={`text-lg font-bold tracking-tight text-primary whitespace-nowrap ${currentUser ? 'hidden lg:inline' : ''}`}>DevPrática</span>
           </button>
 
           {/* Navegação desktop */}
@@ -165,24 +167,35 @@ export const Header: React.FC<HeaderProps> = ({
                 selectedTrack={selectedTrack}
                 onSelectTrack={onSelectTrack}
                 compactBelowLg
+                alwaysCompact={currentUser !== null}
                 indicatorId="lang-active-indicator"
               />
             </div>
 
             {currentUser ? (
-              <div className="relative" ref={userMenuRef}>
+              <div className="relative flex items-center gap-1.5" ref={userMenuRef}>
+                {/* "Conectado" abre o menu da conta (nome, e-mail, sincronizar); "Sair" desconecta direto. */}
                 <button
                   type="button"
                   onClick={() => setShowUserMenu(open => !open)}
                   aria-expanded={showUserMenu}
                   aria-haspopup="menu"
-                  className={`flex items-center gap-2 py-1 px-2.5 rounded-full border border-success/40 bg-success/10 text-xs hover:bg-success/20 transition-colors cursor-pointer ${FOCUS_RING}`}
-                  title="Conectado e sincronizado no Firebase"
+                  aria-label={`Conectado como ${currentUser.displayName || currentUser.email || 'usuário'}. Abrir menu da conta`}
+                  className={`flex items-center gap-1.5 py-1 px-2.5 rounded-full border border-success/40 bg-success/10 text-xs hover:bg-success/20 transition-colors cursor-pointer ${FOCUS_RING}`}
+                  title={`Conectado como ${currentUser.email ?? currentUser.displayName ?? ''} — progresso sincronizado`}
                 >
-                  <span className="w-2 h-2 rounded-full bg-success animate-pulse motion-reduce:animate-none" />
-                  <span className="font-semibold text-primary truncate max-w-[80px] sm:max-w-[130px]">
-                    {currentUser.displayName || currentUser.email?.split('@')[0] || 'Usuário'}
-                  </span>
+                  <span className="w-2 h-2 rounded-full bg-success animate-pulse motion-reduce:animate-none" aria-hidden="true" />
+                  <span className="font-semibold text-success">Conectado</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  aria-label="Sair (desconectar a conta Google)"
+                  title="Sair (desconectar a conta Google)"
+                  className={`flex items-center gap-1 py-1 px-2 rounded-full border border-subtle text-xs font-semibold text-muted hover:text-danger hover:border-danger/40 hover:bg-danger/10 transition-colors cursor-pointer ${FOCUS_RING}`}
+                >
+                  <LogOut className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span className="hidden lg:inline">Sair</span>
                 </button>
 
                 <AnimatePresence>
@@ -193,7 +206,7 @@ export const Header: React.FC<HeaderProps> = ({
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -6, scale: 0.97 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 mt-2 w-64 origin-top-right rounded-card border border-subtle bg-surface p-3 shadow-card z-50 space-y-3"
+                      className="absolute right-0 top-full mt-2 w-64 origin-top-right rounded-card border border-subtle bg-surface p-3 shadow-card z-50 space-y-3"
                     >
                       <div className="text-xs space-y-1 pb-2 border-b border-subtle">
                         <div className="font-bold text-primary truncate">{currentUser.displayName || 'Estudante'}</div>

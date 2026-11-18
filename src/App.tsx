@@ -53,6 +53,8 @@ function descreverErroDeLogin(error: unknown): string {
     case 'auth/web-storage-unsupported':
     case 'auth/operation-not-supported-in-this-environment':
       return 'O navegador está bloqueando o armazenamento que o login precisa. Permita cookies para este site e tente de novo.';
+    case 'app/redirect-sem-sessao':
+      return 'Você voltou do Google, mas o navegador descartou a sessão (bloqueio de cookies de terceiros). Permita pop-ups para este site e clique em Entrar de novo.';
     case 'auth/network-request-failed':
       return 'Falha de rede ao autenticar. Verifique a conexão e tente de novo.';
     default:
