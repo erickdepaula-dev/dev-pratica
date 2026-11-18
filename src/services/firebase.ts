@@ -10,11 +10,12 @@ import {
   User,
 } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
-import firebaseConfig from '../../firebase-applet-config.json';
+import { firebaseConfig } from '../config/firebase.config';
 
 const app = initializeApp(firebaseConfig);
 
-// Critical: Pass databaseId to getFirestore
+// Este projeto não usa o banco "(default)" do Firestore: o id vem da configuração e
+// precisa ser passado ao getFirestore, senão as leituras vão para um banco vazio.
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();

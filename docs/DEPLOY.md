@@ -52,14 +52,14 @@ A saída vai para `.vercel/output/`, que é ignorada pelo Git.
 6. **Libere os domínios no Firebase**, senão o login com Google falha com `auth/unauthorized-domain`
    (o app mostra "Login bloqueado: o domínio … não está autorizado"):
    [console.firebase.google.com](https://console.firebase.google.com) → projeto `gen-lang-client-0954454406`
-   (criado pelo AI Studio; abre com a mesma conta Google) → **Authentication** → **Settings** →
+   (abre com a mesma conta Google) → **Authentication** → **Settings** →
    **Authorized domains** → **Add domain**, um de cada vez, sem `https://`:
    - `dev-pratica.vercel.app` (produção)
    - `localhost` (para testar na sua máquina — **também não está liberado hoje**)
 
-   Verificado em 2026-11-18: a lista tinha só os domínios do AI Studio (`*.run.app`, `*.ai.studio`,
-   `*.firebaseapp.com`, `*.web.app`). A chave de API não tem restrição de origem, então liberar os
-   domínios basta. A mudança vale na hora, sem novo deploy.
+   Verificado em 2026-11-18: a lista tinha só os domínios herdados do AI Studio (`*.run.app`,
+   `*.ai.studio`, `*.firebaseapp.com`, `*.web.app`). A chave de API não tem restrição de origem,
+   então liberar os domínios basta. A mudança vale na hora, sem novo deploy.
 
 Depois disso, todo push na `main` publica sozinho.
 
@@ -88,6 +88,21 @@ configuração para o domínio de produção. Vale fazer se o login falhar no Sa
 
 Enquanto isso, o atalho para o usuário é permitir pop-ups para o site: no Chrome, o ícone de pop-up
 bloqueado na barra de endereço → *Sempre permitir pop-ups de…*.
+
+---
+
+## Instalação de dependências e o `--legacy-peer-deps`
+
+O `vercel.json` manda a Vercel instalar com `npm install --legacy-peer-deps`. Esse sinalizador
+foi posto para contornar um conflito de peer dependency: a raiz pedia `esbuild@^0.25`, e o
+`vite@8` aceita `esbuild@^0.27 || ^0.28` como peer opcional. Era o mesmo erro `ERESOLVE` que
+aparecia num `npm install` local.
+
+A causa foi corrigida em 2026-11-18 — a raiz agora pede `esbuild@^0.28.0`, dentro da faixa que o
+Vite aceita. **O sinalizador continua no `vercel.json` de propósito**, até alguém confirmar que um
+`npm install` limpo (sem `--legacy-peer-deps`, com a pasta `node_modules` e o `package-lock.json`
+apagados) passa sem erro. Confirmado isso, vale tirá-lo: com ele, um conflito real de dependência
+passa batido no build da Vercel e só aparece em produção.
 
 ---
 

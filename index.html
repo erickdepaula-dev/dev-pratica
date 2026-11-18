@@ -3,131 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DevPrática PHP & JS</title>
-    <meta name="description" content="Plataforma interativa para praticar programação e lógica com exercícios em PHP e JavaScript, com editor de lacunas, desafios práticos e acompanhamento de progresso." />
-    <meta property="og:title" content="DevPrática PHP & JS" />
-    <meta property="og:description" content="Plataforma interativa para praticar programação e lógica com exercícios em PHP e JavaScript, com editor de lacunas, desafios práticos e acompanhamento de progresso." />
+    <title>DevPrática</title>
+    <meta name="description" content="Plataforma de prática de programação com exercícios de lógica, JavaScript, TypeScript e PHP: editor de lacunas, desafios práticos, tutor de IA e acompanhamento de progresso." />
+    <meta property="og:title" content="DevPrática" />
+    <meta property="og:description" content="Plataforma de prática de programação com exercícios de lógica, JavaScript, TypeScript e PHP: editor de lacunas, desafios práticos, tutor de IA e acompanhamento de progresso." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-      // Ignore WebSocket and Vite HMR transport errors per AI Studio environment constraints
-      (function() {
-        var origConsoleError = console.error;
-        var origConsoleWarn = console.warn;
-
-        function isViteHmrText(val) {
-          if (!val) return false;
-          var str = typeof val === 'object' ? (val.message || val.reason || val.stack || JSON.stringify(val)) : String(val);
-          return (
-            str.includes('[vite] failed to connect to websocket') ||
-            str.includes('WebSocket closed without opened') ||
-            str.includes('createWebSocketModuleRunnerTransport') ||
-            str.includes('failed to connect to websocket') ||
-            str.includes('@vite/client')
-          );
-        }
-
-        console.error = function() {
-          for (var i = 0; i < arguments.length; i++) {
-            if (isViteHmrText(arguments[i])) return;
-          }
-          return origConsoleError.apply(console, arguments);
-        };
-
-        console.warn = function() {
-          for (var i = 0; i < arguments.length; i++) {
-            if (isViteHmrText(arguments[i])) return;
-          }
-          return origConsoleWarn.apply(console, arguments);
-        };
-
-        // Intercept WebSocket creation for Vite HMR so it fails gracefully without console noise
-        var OrigWebSocket = window.WebSocket;
-        if (OrigWebSocket) {
-          window.WebSocket = function(url, protocols) {
-            var isViteHmr =
-              (typeof url === 'string' && (url.includes('vite') || url.includes('/@vite') || url.includes('3000'))) ||
-              protocols === 'vite-hmr' ||
-              (Array.isArray(protocols) && protocols.includes('vite-hmr'));
-
-            if (isViteHmr) {
-              var dummyWs = {
-                url: url,
-                readyState: 3, // CLOSED
-                protocol: 'vite-hmr',
-                extensions: '',
-                bufferedAmount: 0,
-                binaryType: 'blob',
-                onopen: null,
-                onclose: null,
-                onerror: null,
-                onmessage: null,
-                addEventListener: function() {},
-                removeEventListener: function() {},
-                dispatchEvent: function() { return false; },
-                send: function() {},
-                close: function() {},
-              };
-              return dummyWs;
-            }
-            return new OrigWebSocket(url, protocols);
-          };
-          window.WebSocket.prototype = OrigWebSocket.prototype;
-          window.WebSocket.CONNECTING = 0;
-          window.WebSocket.OPEN = 1;
-          window.WebSocket.CLOSING = 2;
-          window.WebSocket.CLOSED = 3;
-        }
-
-        function isViteHmrError(err) {
-          if (!err) return false;
-          var str = String(err.message || err.reason || err.stack || err);
-          return (
-            str.includes('WebSocket') ||
-            str.includes('@vite/client') ||
-            str.includes('createWebSocketModuleRunnerTransport') ||
-            (err.filename && String(err.filename).includes('@vite/client'))
-          );
-        }
-
-        window.addEventListener('unhandledrejection', function (e) {
-          if (isViteHmrError(e.reason) || isViteHmrError(e)) {
-            e.preventDefault();
-            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-          }
-        }, true);
-
-        window.addEventListener('error', function (e) {
-          if (
-            (e.target && (e.target instanceof OrigWebSocket || e.target.constructor?.name === 'WebSocket')) ||
-            isViteHmrError(e.error) ||
-            isViteHmrError(e) ||
-            (e.filename && e.filename.includes('@vite/client'))
-          ) {
-            e.preventDefault();
-            if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-            return true;
-          }
-        }, true);
-
-        var origOnError = window.onerror;
-        window.onerror = function (msg, url, lineNo, columnNo, error) {
-          if (
-            String(msg).includes('WebSocket') ||
-            String(msg).includes('@vite/client') ||
-            String(url).includes('@vite/client') ||
-            isViteHmrError(error)
-          ) {
-            return true;
-          }
-          if (origOnError) return origOnError.apply(this, arguments);
-          return false;
-        };
-      })();
-    </script>
   </head>
   <body class="bg-slate-950 text-slate-100 antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
     <div id="root"></div>

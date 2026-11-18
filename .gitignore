@@ -9,3 +9,7 @@ coverage/
 
 # Saída do build da Vercel (npm run build:vercel)
 .vercel/
+
+# O projeto usa npm: o lock versionado é o package-lock.json.
+bun.lockb
+bun.lock

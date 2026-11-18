@@ -22,7 +22,7 @@ export function createApiApp(): express.Express {
     apiKey: process.env.GEMINI_API_KEY,
     httpOptions: {
       headers: {
-        'User-Agent': 'aistudio-build',
+        'User-Agent': 'dev-pratica',
       },
     },
   });

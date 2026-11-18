@@ -11,10 +11,5 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
-    server: {
-      // HMR is disabled in AI Studio dev iframe per environment constraints
-      hmr: false,
-      watch: null,
-    },
   };
 });

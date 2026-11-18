@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { createApiApp } from './server/apiApp';
 
-process.env.DISABLE_HMR = 'true';
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -27,7 +26,9 @@ async function startServer() {
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
-        hmr: false, // Disables WebSocket transport error in iframe container
+        // Em middlewareMode o Vite não abre servidor próprio, então o WebSocket do HMR
+        // é anexado ao nosso http.Server. Sem isto não há recarga automática.
+        hmr: { server },
       },
       appType: 'spa',
     });

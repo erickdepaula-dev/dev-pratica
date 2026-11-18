@@ -1,8 +1,0 @@
-{
-  "name": "DevPrática PHP & JS",
-  "description": "Plataforma interativa para praticar programação e lógica com exercícios em PHP e JavaScript, com editor de lacunas, desafios práticos e acompanhamento de progresso.",
-  "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}

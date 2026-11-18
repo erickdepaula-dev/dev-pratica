@@ -55,11 +55,14 @@ No PowerShell use `Copy-Item .env.example .env`. Depois edite o arquivo:
 GEMINI_API_KEY="sua-chave-aqui"
 ```
 
-O `APP_URL` pode ficar como está para uso local.
+Só a `GEMINI_API_KEY` precisa ser preenchida. As variáveis `VITE_FIREBASE_*` são opcionais e
+servem para apontar o app para outro projeto do Firebase; comentadas, ele usa o projeto padrão.
 
-A configuração do Firebase já está em `firebase-applet-config.json`. Para o **login com Google**
-funcionar localmente, porém, o domínio `localhost` precisa estar liberado no Firebase (Authentication →
-Settings → Authorized domains) — hoje não está; ver o passo 6 de [`DEPLOY.md`](./DEPLOY.md).
+A configuração do Firebase fica versionada em `src/config/firebase.config.ts` — não é segredo, a
+configuração web do Firebase vai no bundle e chega ao navegador de qualquer visitante. Para o
+**login com Google** funcionar localmente, porém, o domínio `localhost` precisa estar liberado no
+Firebase (Authentication → Settings → Authorized domains); ver o passo 6 de
+[`DEPLOY.md`](./DEPLOY.md).
 
 ---
 
@@ -71,9 +74,9 @@ npm run dev
 
 Abra **http://localhost:3000**. O terminal deve mostrar `[DevPrática] Servidor iniciado na porta 3000`.
 
-> ⚠️ **O servidor não recarrega sozinho** quando um arquivo muda (o `watch` do Vite está desligado,
-> herança do AI Studio). Depois de um `git pull` ou de editar algo, pare (`Ctrl+C`) e rode
-> `npm run dev` de novo.
+> O servidor tem **recarga automática**: salvar um arquivo atualiza o navegador sozinho. O HMR
+> ficava desligado por herança do AI Studio e voltou em 2026-11-18. Mexer no `server.ts`, no
+> `vite.config.ts` ou no `package.json` ainda pede `Ctrl+C` e `npm run dev` de novo.
 
 Para outra porta, defina a variável `PORT`:
 
