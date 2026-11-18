@@ -144,9 +144,12 @@ por exercício e `resolveLogicExercise()` — ver "Modelagem decidida (4.1)" em 
 
 **Deploy:** Vercel, automático a cada push na `main` — produção em **https://dev-pratica.vercel.app**
 (projeto `dev-pratica`, ver [`DEPLOY.md`](./DEPLOY.md)). **Pendente do usuário:** cadastrar
-`GEMINI_API_KEY` nas variáveis do projeto na Vercel (sem ela o tutor usa respostas prontas) e liberar
-`dev-pratica.vercel.app` **e `localhost`** no Firebase Auth (Authorized domains). Confirmado em
-2026-11-18: nenhum dos dois está na lista — é a causa do erro ao clicar em "Entrar" (passo 6 do `DEPLOY.md`).
+`dev-pratica.vercel.app` **e `localhost`** no Firebase Auth. Nenhum dos dois está na lista do projeto do
+AI Studio (`gen-lang-client-0954454406`), conferido de novo em 2026-11-18 depois de o usuário dizer que
+tinha adicionado. É essa a causa do erro ao clicar em "Entrar". **Encaminhamento:** o usuário cria um
+projeto Firebase próprio (passo a passo em "Login com a sua conta Google" no `DEPLOY.md`) e cola a
+`firebaseConfig`; o agente troca os padrões em `src/config/firebase.config.ts`, com
+`firestoreDatabaseId: '(default)'`. A `GEMINI_API_KEY` já está cadastrada na Vercel.
 
 **Como testar localmente:** [`TESTANDO-LOCAL.md`](./TESTANDO-LOCAL.md) (instalação, `.env`, verificações
 automáticas, roteiro de teste manual por fase, problemas comuns).
@@ -220,3 +223,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | — | **Desvinculado do Google AI Studio.** `npm install` falhava com `ERESOLVE`: a raiz pedia `esbuild@^0.25` e o `vite@8` aceita `^0.27 \|\| ^0.28` — raiz passou a `^0.28.0`. Removidos `metadata.json` (manifesto do applet) e `bun.lock` (o projeto usa npm); `firebase-applet-config.json` virou `src/config/firebase.config.ts`, com sobreposição por `VITE_FIREBASE_*`; `firebase-blueprint.json` foi para `docs/firestore-schema.json`. HMR religado (`hmr: { server }` no `server.ts`, `hmr: false`/`watch: null` fora do `vite.config.ts`). Removido do `index.html` o script que trocava o `window.WebSocket` por um objeto falso e engolia todo erro com "WebSocket" no texto — rodava em produção e podia esconder falha do Firestore. `package.json` renomeado para `dev-pratica`, título do app sem "PHP & JS". O `--legacy-peer-deps` do `vercel.json` ficou de propósito até alguém confirmar um `npm install` limpo (ver `DEPLOY.md`). |
 | 2026-11-18 | — | Adicionado `.gitattributes` com `* text=auto eol=lf`. No clone Windows do usuário os arquivos estavam com CRLF e os 118 arquivos do projeto apareciam como modificados no `git status` sem nenhuma edição real (`git diff --ignore-all-space` vinha vazio). Agora o git normaliza na entrada e o status fica limpo em qualquer sistema, sem depender de `core.autocrlf` local. Confirmado também que o deploy de produção está no commit mais recente: o `<title>` do site é `DevPrática`, valor introduzido em `f505469`. |
 | 2026-11-18 | — | Feedback de erro no código livre deixou de ser genérico. O usuário escreveu a soma sem o `return` e recebeu três "Falhou no teste de validação", que diz o que aconteceu e não por quê. Novo `src/services/codeDiagnostics.ts` sonda o escopo do aluno e identifica duas causas estruturais: função/classe não definida e função que não devolve valor. Usado pelo avaliador de JS e pelo pipeline de TS. Projetado para errar para o lado do silêncio: a checagem de retorno só vale se a solução de referência devolver algo, e arrow com retorno implícito conta como retorno. Verificado: 0 falsos positivos nos 135 exercícios de código livre, 8 cenários de diagnóstico corretos, 121 exercícios de Lógica ainda passam com a solução oficial. |
+| 2026-11-18 | — | "Entrar" reinvestigado: o código de login está certo (pop-up com redirecionamento de reserva); o bloqueio é o projeto Firebase do AI Studio, cujos domínios autorizados não incluem o site nem `localhost`. Documentado o caminho de um projeto Firebase próprio do usuário (`DEPLOY.md`), que só exige trocar a configuração. |

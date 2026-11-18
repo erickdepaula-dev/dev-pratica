@@ -66,7 +66,39 @@ Depois disso, todo push na `main` publica sozinho.
 > Os deploys de *preview* têm um domínio diferente a cada vez. Neles, o login Google só funciona se
 > o domínio for liberado no Firebase. Para usar o app logado, use o domínio de produção.
 
+## Login com a sua conta Google: projeto Firebase próprio (recomendado)
+
+O projeto Firebase atual (`gen-lang-client-0954454406`) foi criado pelo Google AI Studio. Se você
+não o encontra no console, ou se adicionou os domínios e eles não aparecem, o caminho mais simples é
+criar um projeto **seu**. O app aceita a troca sem mudar código: basta trocar a configuração. Não há
+progresso a perder na nuvem, porque o login nunca funcionou fora do AI Studio. O progresso que já está
+no navegador sobe para o projeto novo no primeiro login, porque a sincronização junta o local com a nuvem.
+
+**Passos no console** ([console.firebase.google.com](https://console.firebase.google.com), logado com a
+sua conta Google):
+
+1. **Adicionar projeto** → nome `dev-pratica` → pode desativar o Google Analytics → **Criar projeto**.
+2. **Build → Authentication → Vamos começar** → aba **Método de login** → **Google** → **Ativar** →
+   escolha o e-mail de suporte → **Salvar**.
+3. **Authentication → Settings → Domínios autorizados → Adicionar domínio** → `dev-pratica.vercel.app`.
+   O `localhost` já vem na lista em projetos novos; confira.
+4. **Build → Firestore Database → Criar banco de dados** → ID `(default)` → local
+   `southamerica-east1 (São Paulo)` → **Iniciar no modo de produção** → **Criar**.
+5. **Firestore → Regras** → apague o conteúdo, cole o arquivo [`firestore.rules`](../firestore.rules)
+   inteiro → **Publicar**.
+6. **⚙️ Configurações do projeto → Seus apps → `</>` (Web)** → apelido `dev-pratica` (sem Hosting) →
+   **Registrar app**. Copie o bloco `firebaseConfig` que aparece (apiKey, authDomain, projectId,
+   storageBucket, messagingSenderId, appId).
+
+Esses valores **não são segredo**: vão no código do site e qualquer visitante os vê. O que protege os
+dados são as regras do passo 5 e os domínios do passo 3. Pode colar o bloco no chat.
+
+**Troca no código** (feita pelo agente ao receber o bloco): atualizar os valores padrão em
+`src/config/firebase.config.ts` com `firestoreDatabaseId: '(default)'`, rodar `lint` e `build` e enviar
+para a `main`. A Vercel publica sozinha. Depois disso, confira o login no site e em `localhost`.
+
 ---
+
 
 ## Login com Google: pop-up e redirecionamento
 
