@@ -35,7 +35,7 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 
 ### Ainda não existe
 
-- 🟡 Trilha de Lógica: modelagem e interface prontas; 40 de 160 exercícios (lotes 1–2 da 4.3) — conversão segue nas Fases 4.3–4.4
+- 🟡 Trilha de Lógica: modelagem e interface prontas; 60 de 160 exercícios (lotes 1–3 da 4.3) — conversão segue nas Fases 4.3–4.4
 
 ---
 
@@ -97,7 +97,7 @@ fonte de verdade das fases concluídas; a fase em andamento pode estar à frente
 | 1 — UI Redesign | ✅ Concluída | `fase-1-ui.md` |
 | 2 — Trilha TypeScript | 🟡 Tarefas feitas; 2 verificações manuais pendentes | `fase-2-typescript.md` |
 | 3 — Gamificação | 🟡 Tarefas feitas; 1 verificação manual pendente | `fase-3-gamificacao.md` |
-| 4 — Exercícios dos PDFs | 🟡 **Ativa** — 4.1, 4.2 e 4.6 feitas; 4.3 em andamento (lotes 1–2 de 5 feitos: nº 1–40) | `fase-4-exercicios.md` |
+| 4 — Exercícios dos PDFs | 🟡 **Ativa** — 4.1, 4.2 e 4.6 feitas; 4.3 em andamento (lotes 1–3 de 5 feitos: nº 1–60) | `fase-4-exercicios.md` |
 
 ### Pendente de verificação manual (precisa do usuário)
 
@@ -113,18 +113,17 @@ Quando passarem: marcar as Fases 2 e 3 como ✅ (e os critérios correspondentes
 
 ### Próximo passo
 
-**4.3 em andamento — lotes 1 e 2 de 5 feitos (exercícios 1 a 40).** Arquivos por módulo em
-`src/data/logica/`: `m01PrimeirosAlgoritmos.ts` (nº 1–15, completo), `m02EstruturasCondicionais.ts`
-(nº 16–35, completo) e `m03EstruturasDeRepeticao.ts` (nº 36–40 por enquanto; o módulo vai até o 60).
+**4.3 em andamento — lotes 1 a 3 de 5 feitos (exercícios 1 a 60).** Arquivos por módulo em
+`src/data/logica/`: `m01PrimeirosAlgoritmos.ts` (nº 1–15), `m02EstruturasCondicionais.ts` (nº 16–35)
+e `m03EstruturasDeRepeticao.ts` (nº 36–60) — os três módulos completos.
 Cada exercício é escrito com o helper `logica()` (`logicFactory.ts`): assinatura JS e TS + um corpo
 de solução (`tsBody` quando o TS precisa de anotação, ex.: `const numeros: number[] = []`); o
 template ("// Escreva aqui o seu algoritmo") sai automático. Os nº 11–13 (sem enunciado na origem)
 foram criados do zero: Idade em dias, Segundos em h/min/s, Consumo médio.
 
-**Próximo passo: lote 3 (nº 41–60)** — resto do módulo 03 (repetição) em
-`m03EstruturasDeRepeticao.ts`. Depois lotes 4 (61–80, vetores e matrizes → novo
-`m04VetoresEMatrizes.ts`) e 5 (81–100, funções → `m05FuncoesEDesafios.ts`), cada arquivo
-registrado em `src/data/logica/index.ts`. Convenções: funções puras (sem leitura de teclado;
+**Próximo passo: lote 4 (nº 61–80, vetores e matrizes)** num novo `m04VetoresEMatrizes.ts`,
+registrado em `src/data/logica/index.ts`. Depois o lote 5 (81–100, funções → `m05FuncoesEDesafios.ts`).
+Convenções: funções puras (sem leitura de teclado;
 "mostrar na tela" vira devolver um array), resultados múltiplos em objeto ou tupla, categorias
 como union de literais no TS, decimais comparados com tolerância, testes que reprovam o erro
 típico (precedência, `-3 % 2`, fronteiras com `>=`, off-by-one em laços).
@@ -202,3 +201,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | — | Criado `docs/TESTANDO-LOCAL.md` (como rodar e testar localmente). Branch levada para a `main` por fast-forward a pedido do usuário (Fase 4 ainda em andamento: 40 de 160 exercícios de Lógica). |
 | 2026-11-18 | — | Deploy na Vercel preparado: `server.ts` separado em `server/apiApp.ts` (rotas) + servidor local; `npm run build:vercel` gera `.vercel/output` (estático + API Express empacotada como função Node 22); `vercel.json`; guia `docs/DEPLOY.md`. Criação do projeto pelo conector recusada (403) — importação fica para o usuário no painel. Levado para a `main`. |
 | 2026-11-18 | — | Projeto `dev-pratica` criado na Vercel pela API (token do usuário; o conector MCP é só leitura), ligado ao GitHub com produção na `main`. Primeiro deploy de produção: build OK, função da API `READY`, domínio `dev-pratica.vercel.app`. |
+| 2026-11-18 | 4 | 4.3, lote 3 (nº 41–60): módulo 03 (repetição) completo — acumuladores, contadores, máximo/mínimo, sentinelas (`while`/`break`), duas passadas (acima da média), `number \| null` no TS. `check:ts`: 60 exercícios de Lógica, 0 problemas; 12 soluções erradas testadas (a de `else if` no nº 51 é correta — dica e explicação corrigidas). |

@@ -87,7 +87,7 @@ títulos e tópicos. Os enunciados são escritos do zero na tarefa 4.3, no tom d
 - [ ] Converter em lotes de 20 para o formato `Exercise`
   - [x] Lote 1 — nº 1–20 (módulo 01 completo + 16–20 do módulo 02)
   - [x] Lote 2 — nº 21–40 (módulo 02 completo + 36–40 do módulo 03)
-  - [ ] Lote 3 — nº 41–60
+  - [x] Lote 3 — nº 41–60 (módulo 03 completo)
   - [ ] Lote 4 — nº 61–80
   - [ ] Lote 5 — nº 81–100
 - [ ] Para cada um: `summary`, `description`, `goal`, `realWorldContext`, `testCases`, `explanation`
@@ -102,7 +102,8 @@ TS (`'par' | 'ímpar'`); decimais são comparados com tolerância; cada exercíc
 que reprova o erro típico. Os nº 11–13 (sem enunciado na origem) foram criados: Idade em dias,
 Segundos em horas/minutos/segundos, Consumo médio de combustível. Dificuldade do lote 1: 17 básicos,
 3 intermediários (12, 19, 20); lote 2: 10 básicos, 10 intermediários (regras com faixas,
-`switch`, várias condições combinadas). Na repetição, "mostrar na tela" vira devolver um array.
+`switch`, várias condições combinadas). Na repetição, "mostrar na tela" vira devolver um array;
+lote 3: 9 básicos, 11 intermediários ("ler até" vira percorrer uma lista com sentinela).
 
 ### 4.4 — Conversão: condicionais e repetição
 - [ ] 30 exercícios de condicionais
