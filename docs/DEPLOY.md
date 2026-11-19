@@ -167,11 +167,9 @@ Para erros da API, veja *Logs* ou *Runtime Logs* em tempo real.
 
 ## Painel do administrador (controle de acessos)
 
-Cada vez que alguém entra no site, o app grava (clicar em **Entrar** sempre conta, inclusive depois
-de Sair; voltar ao site já conectado conta uma vez por aba, para não registrar cada recarregamento). O
+Cada vez que alguém entra no site (clicou em **Entrar** ou voltou já conectado, uma vez por aba), o
 app grava em `acessos/{id}` no Firestore: e-mail, nome, tipo e a hora do servidor. Só o
-administrador lê esses registros. Acessos de antes de 2026-11-19 não estão lá — o Firebase Auth só
-guarda o último login de cada conta (console → Authentication → Users); o painel abre pelo menu **● Conectado → Painel do administrador**,
+administrador lê esses registros; o painel abre pelo menu **● Conectado → Painel do administrador**,
 que só aparece para quem tem permissão de leitura (o app descobre tentando ler, no servidor).
 
 **O e-mail do administrador não fica no repositório** (que é público). No arquivo `firestore.rules`

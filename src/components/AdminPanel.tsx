@@ -171,7 +171,7 @@ export const AdminPanel: React.FC = () => {
           </table>
         </div>
         <p className="text-xs text-muted">
-          "Fez login" = clicou em Entrar (conta sempre, inclusive depois de Sair). "Voltou conectado" = abriu o site já logado (contado uma vez por aba).
+          "Fez login" = clicou em Entrar. "Voltou conectado" = abriu o site já logado (contado uma vez por aba).
         </p>
       </section>
     </div>

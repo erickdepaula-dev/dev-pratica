@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AdminPanel } from './components/AdminPanel';
-import { esquecerAcessoDaAba, limparLoginEmAndamento, marcarLoginEmAndamento, registrarAcesso, verificarAdmin } from './services/accessLog';
+import { limparLoginEmAndamento, marcarLoginEmAndamento, registrarAcesso, verificarAdmin } from './services/accessLog';
 import { AiDisabledDialog } from './components/AiDisabledDialog';
 import { Header, ActiveTab } from './components/Header';
 import { SyncToast, ToastMessage, ToastTone } from './components/SyncToast';
@@ -229,7 +229,6 @@ export default function App() {
 
   const handleLogout = async () => {
     try {
-      if (auth.currentUser) esquecerAcessoDaAba(auth.currentUser.uid);
       await logoutFirebase();
       setCurrentUser(null);
       triggerToast('Desconectado do Firebase. Progresso mantido localmente.', 'info');
