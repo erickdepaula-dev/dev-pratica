@@ -97,7 +97,8 @@ quando mudar comando, variável de ambiente ou o que há para testar).
 | Adicionar trilha **TypeScript** | ✅ Confirmado |
 | UI polida com **gradientes e animações** (referência: coddy.tech) | ✅ Confirmado |
 | Sistema de **certificados** | ❌ Fora de escopo |
-| Uso **pessoal** (não é produto multi-usuário) | ✅ Confirmado |
+| Uso **pessoal** (não é produto multi-usuário) | ✅ Confirmado — aberto para alguns amigos em 2026-11-19 (cada um entra com o próprio Google; as regras do Firestore isolam os dados por usuário) |
+| **IA (Gemini) desligada** por padrão, sem custo (`VITE_AI_ENABLED`, `src/config/ai.ts`); recursos de IA mostram um aviso bem-humorado | ✅ Decidido em 2026-11-19 |
 
 ---
 

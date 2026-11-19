@@ -167,6 +167,10 @@ Para erros da API, veja *Logs* ou *Runtime Logs* em tempo real.
 
 ## A IA (Gemini) está funcionando?
 
+> **Hoje a IA está desligada de propósito** (decisão do usuário, 2026-11-19): o app mostra um aviso
+> bem-humorado nos recursos de IA. Para religar: cadastre `VITE_AI_ENABLED=true` nas Environment
+> Variables da Vercel, troque a `GEMINI_API_KEY` por uma válida (a atual é inválida) e refaça o deploy.
+
 Abra **https://dev-pratica.vercel.app/api/gemini/status**. A resposta (JSON) diz se a `GEMINI_API_KEY`
 está configurada, se algum modelo da cascata responde e, se não, o motivo por modelo (chave inválida,
 sem permissão, cota esgotada, modelo aposentado, demora, rede). A chave nunca aparece. Quando a IA

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { AI_ENABLED, showAiDisabled } from '../config/ai';
 import { AnimatePresence, motion, useAnimate, useReducedMotion } from 'motion/react';
 import { BookOpen, Check, X } from 'lucide-react';
 import { Exercise, ExerciseAttempt, LogicLanguage, UserProgress } from '../types/exercise';
@@ -290,6 +291,10 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
 
   // Request contextual AI hint from Gemini based on user's current code
   const handleRequestAiHint = async () => {
+    if (!AI_ENABLED) {
+      showAiDisabled();
+      return;
+    }
     setAiHintLoading(true);
     setAiHintError(null);
     setShowAiHintBanner(true);
@@ -970,7 +975,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
 
               <button
                 type="button"
-                onClick={() => setShowAiTutorModal(true)}
+                onClick={() => (AI_ENABLED ? setShowAiTutorModal(true) : showAiDisabled())}
                 className={`px-3.5 py-2 rounded-control bg-gradient-accent hover:brightness-110 text-white text-xs font-semibold transition-[filter] flex items-center gap-1.5 shadow-glow cursor-pointer ${FOCUS_RING}`}
                 title="Converse com o Tutor IA ou analise o código linha a linha"
               >

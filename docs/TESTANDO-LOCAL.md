@@ -53,6 +53,7 @@ No PowerShell use `Copy-Item .env.example .env`. Depois edite o arquivo:
 
 ```
 GEMINI_API_KEY="sua-chave-aqui"
+VITE_AI_ENABLED="true"   # a IA vem desligada por padrão
 ```
 
 Só a `GEMINI_API_KEY` precisa ser preenchida. As variáveis `VITE_FIREBASE_*` são opcionais e

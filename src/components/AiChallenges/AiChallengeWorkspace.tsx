@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { AI_ENABLED, showAiDisabled } from '../../config/ai';
 import { UserProgress, Exercise } from '../../types/exercise';
 import {
   AiChallenge,
@@ -97,6 +98,10 @@ export const AiChallengeWorkspace: React.FC<AiChallengeWorkspaceProps> = ({
       return;
     }
 
+    if (!AI_ENABLED) {
+      showAiDisabled();
+      return;
+    }
     setIsEvaluating(true);
     setEvalError(null);
 

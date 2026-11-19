@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AI_ENABLED, showAiDisabled } from '../../config/ai';
 import { UserProgress } from '../../types/exercise';
 import {
   AiChallenge,
@@ -90,6 +91,10 @@ export const AiChallengesHub: React.FC<AiChallengesHubProps> = ({
   });
 
   const handleGenerate = async () => {
+    if (!AI_ENABLED) {
+      showAiDisabled();
+      return;
+    }
     setIsGenerating(true);
     setErrorMsg(null);
 

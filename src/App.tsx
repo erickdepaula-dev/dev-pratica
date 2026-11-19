@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { AiDisabledDialog } from './components/AiDisabledDialog';
 import { Header, ActiveTab } from './components/Header';
 import { SyncToast, ToastMessage, ToastTone } from './components/SyncToast';
 import { PageSkeleton } from './components/PageSkeleton';
@@ -252,6 +253,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-canvas text-primary flex flex-col font-sans selection:bg-accent-from/30 selection:text-primary">
       <SyncToast toast={toast} onDismiss={dismissToast} />
+      <AiDisabledDialog />
 
       {/* Top Bar Header */}
       <Header
