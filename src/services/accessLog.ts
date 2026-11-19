@@ -35,6 +35,11 @@ export function marcarLoginEmAndamento(): void {
   gravarSessao(CHAVE_LOGIN_EM_ANDAMENTO, '1');
 }
 
+/** Ao sair: o próximo acesso nesta aba volta a ser registrado. */
+export function esquecerAcessoDaAba(uid: string): void {
+  gravarSessao(chaveRegistrado(uid), null);
+}
+
 /** O login foi cancelado ou falhou: o próximo acesso não deve contar como 'login'. */
 export function limparLoginEmAndamento(): void {
   gravarSessao(CHAVE_LOGIN_EM_ANDAMENTO, null);
@@ -45,8 +50,12 @@ export function limparLoginEmAndamento(): void {
  * Falhas são ignoradas: o registro nunca pode atrapalhar o uso do app.
  */
 export async function registrarAcesso(user: User): Promise<void> {
-  if (!user.email || lerSessao(chaveRegistrado(user.uid))) return;
-  const tipo: AccessKind = lerSessao(CHAVE_LOGIN_EM_ANDAMENTO) ? 'login' : 'retorno';
+  if (!user.email) return;
+  // Clicar em Entrar sempre registra; voltar já conectado registra uma vez por aba (sem contar
+  // cada recarregamento da página).
+  const emLogin = lerSessao(CHAVE_LOGIN_EM_ANDAMENTO) !== null;
+  if (!emLogin && lerSessao(chaveRegistrado(user.uid))) return;
+  const tipo: AccessKind = emLogin ? 'login' : 'retorno';
   gravarSessao(chaveRegistrado(user.uid), '1');
   gravarSessao(CHAVE_LOGIN_EM_ANDAMENTO, null);
   try {
