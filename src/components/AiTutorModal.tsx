@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import type { AiResponseSource } from '../types/aiSource';
 import { Exercise } from '../types/exercise';
 import {
   requestTutorDialog,
@@ -30,6 +31,7 @@ export const AiTutorModal: React.FC<AiTutorModalProps> = ({
   const [userUnderstanding, setUserUnderstanding] = useState<string>('');
   const [dialogLoading, setDialogLoading] = useState<boolean>(false);
   const [tutorAnswer, setTutorAnswer] = useState<string | null>(null);
+  const [tutorSource, setTutorSource] = useState<AiResponseSource>('gemini');
 
   // Line by line state
   const [explainLoading, setExplainLoading] = useState<boolean>(false);
@@ -64,6 +66,7 @@ export const AiTutorModal: React.FC<AiTutorModalProps> = ({
     setDialogLoading(false);
     if (res.response) {
       setTutorAnswer(res.response);
+      setTutorSource(res.source ?? 'gemini');
     }
   };
 
@@ -288,6 +291,11 @@ export const AiTutorModal: React.FC<AiTutorModalProps> = ({
                     </button>
                   </div>
 
+                  {tutorSource === 'local' && (
+                    <p className="m-0 text-[11px] leading-snug text-warning bg-warning/10 border border-warning/30 rounded-lg px-2.5 py-1.5">
+                      A IA (Gemini) não respondeu agora; esta é uma orientação local de reserva. Diagnóstico em /api/gemini/status.
+                    </p>
+                  )}
                   <div className="text-xs text-primary leading-relaxed font-sans whitespace-pre-line space-y-2">
                     {tutorAnswer}
                   </div>

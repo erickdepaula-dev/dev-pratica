@@ -27,6 +27,33 @@ export function createApiApp(): express.Express {
     },
   });
 
+  /**
+   * Cascata de modelos. Os dois primeiros são aliases mantidos pelo Google (apontam sempre para o
+   * Flash atual), o que evita quebrar quando um modelo específico é aposentado. Conferir quais
+   * respondem em GET /api/gemini/status.
+   */
+  const GEMINI_MODELS = ['gemini-flash-latest', 'gemini-flash-lite-latest', 'gemini-3.1-flash-lite'];
+
+  /** Último erro do Gemini (para o diagnóstico em /api/gemini/status). Nunca contém a chave. */
+  let ultimoErroGemini: { em: string; modelo: string; motivo: string } | null = null;
+
+  /** Remove qualquer coisa com cara de chave de API do Google de uma mensagem antes de logar/expor. */
+  function semChave(texto: string): string {
+    return texto.replace(/AIza[0-9A-Za-z_\-]{20,}/g, '[chave omitida]');
+  }
+
+  /** Traduz o erro do Gemini numa causa que o usuário consegue resolver. */
+  function classificarErroGemini(err: unknown): string {
+    const msg = semChave(err instanceof Error ? err.message : String(err));
+    if (/API key not valid|API_KEY_INVALID|invalid api key/i.test(msg)) return 'Chave do Gemini inválida (GEMINI_API_KEY): gere outra no Google AI Studio e atualize na Vercel.';
+    if (/PERMISSION_DENIED|403/i.test(msg)) return 'A chave não tem permissão para a API do Gemini (403). Confira se a "Generative Language API" está ativa no projeto da chave.';
+    if (/RESOURCE_EXHAUSTED|quota|429/i.test(msg)) return 'Cota do Gemini esgotada no momento (429). Espere alguns minutos ou confira os limites da chave no Google AI Studio.';
+    if (/not found|NOT_FOUND|404|is not supported/i.test(msg)) return 'Modelo não encontrado (404): o nome do modelo pode ter sido aposentado.';
+    if (/Timeout/i.test(msg)) return 'O Gemini demorou demais para responder (mais de 8 s).';
+    if (/fetch failed|ENOTFOUND|ECONNRESET|network/i.test(msg)) return 'Falha de rede ao chamar o Gemini.';
+    return `Erro do Gemini: ${msg.slice(0, 200)}`;
+  }
+
   // Resilient helper to query Gemini with automatic model cascade, retry on 503/429 spikes, and silent fallback
   async function callGeminiResiliently({
     prompt,
@@ -45,12 +72,7 @@ export function createApiApp(): express.Express {
       return null;
     }
 
-    // Cascade: stable workhorse gemini-flash-latest -> fast gemini-3.1-flash-lite -> preview gemini-3.8-flash
-    const modelsToTry = [
-      'gemini-flash-latest',
-      'gemini-3.1-flash-lite',
-      'gemini-3.8-flash',
-    ];
+    const modelsToTry = GEMINI_MODELS;
 
     for (let i = 0; i < modelsToTry.length; i++) {
       const model = modelsToTry[i];
@@ -82,7 +104,8 @@ export function createApiApp(): express.Express {
         }
       } catch (err: any) {
         // Output informative log without spamming stderr
-        console.log(`[DevPrática IA] Modelo ${model} indisponível temporariamente para ${operationName}: ${err?.message || err}. Alternando na cascata...`);
+        ultimoErroGemini = { em: new Date().toISOString(), modelo: model, motivo: classificarErroGemini(err) };
+        console.log(`[DevPrática IA] Modelo ${model} indisponível temporariamente para ${operationName}: ${semChave(err?.message || String(err))}. Alternando na cascata...`);
         if (i < modelsToTry.length - 1) {
           await new Promise(r => setTimeout(r, 250));
         }
@@ -118,6 +141,43 @@ ${blocoDiagnosticos}`;
   }
 
   // Server-side route for contextual AI hints based on user's current code
+  /**
+   * Diagnóstico da IA: diz se a GEMINI_API_KEY está configurada e se cada modelo da cascata
+   * responde. Abrir no navegador: /api/gemini/status. Nunca devolve a chave.
+   */
+  app.get('/api/gemini/status', async (_req, res) => {
+    if (!process.env.GEMINI_API_KEY) {
+      res.json({
+        configurada: false,
+        funcionando: false,
+        motivo: 'GEMINI_API_KEY não está configurada no servidor (na Vercel: Settings → Environment Variables).',
+      });
+      return;
+    }
+    const modelos: { modelo: string; ok: boolean; motivo?: string; ms: number }[] = [];
+    for (const model of GEMINI_MODELS) {
+      const inicio = Date.now();
+      try {
+        const resposta = await Promise.race([
+          ai.models.generateContent({ model, contents: 'Responda apenas com a palavra: ok' }),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Timeout de 8000ms')), 8000)),
+        ]);
+        const ok = Boolean(resposta.text?.trim());
+        modelos.push({ modelo: model, ok, ms: Date.now() - inicio, ...(ok ? {} : { motivo: 'Resposta vazia' }) });
+      } catch (err) {
+        modelos.push({ modelo: model, ok: false, motivo: classificarErroGemini(err), ms: Date.now() - inicio });
+      }
+    }
+    const funcionando = modelos.some(m => m.ok);
+    res.json({
+      configurada: true,
+      funcionando,
+      ...(funcionando ? {} : { motivo: modelos[0]?.motivo }),
+      modelos,
+      ultimoErro: ultimoErroGemini,
+    });
+  });
+
   app.post('/api/gemini/hint', async (req, res) => {
     try {
       const {
@@ -176,16 +236,18 @@ ${typeScriptGuidance(language, exerciseType, compilerDiagnostics)}`;
         operationName: 'dica contextual',
       });
 
+      const fonte = hintText ? 'gemini' : 'local';
       if (!hintText) {
         hintText =
           'Analise a declaração da função e verifique se as variáveis, operadores e tipos de retorno atendem a todos os requisitos do enunciado.';
       }
 
-      res.json({ hint: hintText });
+      res.json({ hint: hintText, source: fonte });
     } catch (error: any) {
       console.log('[DevPrática IA] Exceção tratada em /api/gemini/hint:', error?.message || error);
       res.json({
         hint: 'Analise a declaração da função e verifique se as variáveis, operadores e tipos de retorno atendem aos requisitos.',
+        source: 'local',
       });
     }
   });
@@ -239,6 +301,7 @@ ${typeScriptGuidance(language, exerciseType, compilerDiagnostics)}`;
       });
 
       res.json({
+        source: tutorAnswer ? 'gemini' : 'local',
         response:
           tutorAnswer ||
           generateFallbackTutorResponse({
@@ -253,6 +316,7 @@ ${typeScriptGuidance(language, exerciseType, compilerDiagnostics)}`;
     } catch (error: any) {
       console.log('[DevPrática IA] Exceção tratada em /api/gemini/tutor-dialog:', error?.message || error);
       res.json({
+        source: 'local',
         response: generateFallbackTutorResponse({
           userStatement: req.body?.userStatement,
           dialogType: req.body?.dialogType,

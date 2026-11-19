@@ -11,6 +11,7 @@ import { PredictTypeErrorViewer } from './PredictTypeErrorViewer';
 import { DeskCheckViewer } from './DeskCheckViewer';
 import { QuickGuide } from './QuickGuide';
 import type { QuickGuideLanguage } from '../types/reference';
+import type { AiResponseSource } from '../types/aiSource';
 import { flattenDeskCheck, givenRowCount, runDeskCheck, unflattenDeskCheck } from '../services/deskCheck';
 import {
   evaluateBlanks,
@@ -144,6 +145,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
   // Gemini contextual hint state
   const [aiHintLoading, setAiHintLoading] = useState<boolean>(false);
   const [aiHint, setAiHint] = useState<string | null>(null);
+  const [aiHintSource, setAiHintSource] = useState<AiResponseSource>('gemini');
   const [aiHintError, setAiHintError] = useState<string | null>(null);
   const [showAiHintBanner, setShowAiHintBanner] = useState<boolean>(false);
   const [showAiTutorModal, setShowAiTutorModal] = useState<boolean>(false);
@@ -303,6 +305,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
       setAiHintLoading(false);
       if (res.hint) {
         setAiHint(res.hint);
+        setAiHintSource(res.source ?? 'gemini');
       } else {
         setAiHintError(res.error || 'Não foi possível gerar a dica no momento.');
       }
@@ -812,7 +815,7 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
             <div className="rounded-xl border border-accent-from/50 bg-accent-from/10 p-3.5 shadow-lg space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-accent">
                 <span className="flex items-center gap-1.5">
-                  <span>✨</span> Dica Contextual da IA (Gemini):
+                  <span>✨</span> {aiHintSource === 'local' ? 'Dica local (a IA não respondeu agora):' : 'Dica Contextual da IA (Gemini):'}
                 </span>
                 <button
                   type="button"

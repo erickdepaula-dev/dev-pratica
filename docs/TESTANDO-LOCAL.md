@@ -210,7 +210,7 @@ Você pode zerar de três formas:
 | `npm install` falha com `ERESOLVE` | Conflito de peer deps | Use `npm install --legacy-peer-deps` |
 | Mudança no código não aparece | O servidor não observa arquivos | Pare e rode `npm run dev` de novo |
 | `EADDRINUSE: ... 3000` | Porta ocupada (outro `npm run dev` aberto?) | Feche o outro processo ou use `PORT=4000` |
-| Tutor responde sempre de forma genérica | Sem `GEMINI_API_KEY` (respostas de *fallback*) | Preencha o `.env` e reinicie o servidor |
+| Tutor responde sempre de forma genérica / aparece "Dica local (a IA não respondeu agora)" | Gemini sem chave, chave inválida, cota esgotada ou modelo aposentado | Abra `/api/gemini/status` (local: http://localhost:3000/api/gemini/status; produção: https://dev-pratica.vercel.app/api/gemini/status): ele diz a causa por modelo, sem mostrar a chave |
 | "Login bloqueado: o domínio … não está autorizado" (`auth/unauthorized-domain`) | Domínio fora da lista do Firebase | Adicione `localhost` (e `dev-pratica.vercel.app`) em Firebase → Authentication → Settings → Authorized domains. Use `localhost`, não `127.0.0.1` nem o IP da rede |
 | Erro de sintaxe estranho ao rodar | Node antigo | Atualize para o Node 22 |
 | Primeira verificação de TS demora ~1–2 s | O compilador TS é carregado sob demanda | Normal; as seguintes são rápidas |

@@ -1,4 +1,5 @@
 import { Exercise } from '../types/exercise';
+import type { AiResponseSource } from '../types/aiSource';
 
 export interface ContextualHintRequest {
   exercise: Exercise;
@@ -11,6 +12,8 @@ export interface ContextualHintRequest {
 export interface ContextualHintResponse {
   hint?: string;
   error?: string;
+  /** 'local' = a IA não respondeu e a dica veio do gerador de reserva. */
+  source?: AiResponseSource;
 }
 
 export interface TutorDialogRequest {
@@ -25,6 +28,8 @@ export interface TutorDialogRequest {
 export interface TutorDialogResponse {
   response: string;
   error?: string;
+  /** 'local' = a IA não respondeu e a resposta veio do gerador de reserva. */
+  source?: AiResponseSource;
 }
 
 export interface CodeLineExplanation {
@@ -77,14 +82,14 @@ export async function requestGeminiContextualHint(
     if (res.ok) {
       const data = await res.json();
       if (data.hint) {
-        return { hint: data.hint };
+        return { hint: data.hint, source: data.source === 'gemini' ? 'gemini' : 'local' };
       }
     }
 
-    return getFallbackPedagogicalHint(exercise, userBlanks, currentCode);
+    return { ...getFallbackPedagogicalHint(exercise, userBlanks, currentCode), source: 'local' };
   } catch (err: any) {
     console.warn('Requisição de IA falhou, acionando fallback pedagógico:', err);
-    return getFallbackPedagogicalHint(exercise, userBlanks, currentCode);
+    return { ...getFallbackPedagogicalHint(exercise, userBlanks, currentCode), source: 'local' };
   }
 }
 
@@ -124,14 +129,14 @@ export async function requestTutorDialog(
     if (res.ok) {
       const data = await res.json();
       if (data.response) {
-        return { response: data.response };
+        return { response: data.response, source: data.source === 'gemini' ? 'gemini' : 'local' };
       }
     }
 
-    return { response: getFallbackClientTutorResponse(params) };
+    return { response: getFallbackClientTutorResponse(params), source: 'local' };
   } catch (err: any) {
     console.warn('Falha no diálogo do tutor, usando fallback:', err);
-    return { response: getFallbackClientTutorResponse(params) };
+    return { response: getFallbackClientTutorResponse(params), source: 'local' };
   }
 }
 

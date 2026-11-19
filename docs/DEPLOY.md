@@ -165,6 +165,14 @@ Para erros da API, veja *Logs* ou *Runtime Logs* em tempo real.
 
 ---
 
+## A IA (Gemini) está funcionando?
+
+Abra **https://dev-pratica.vercel.app/api/gemini/status**. A resposta (JSON) diz se a `GEMINI_API_KEY`
+está configurada, se algum modelo da cascata responde e, se não, o motivo por modelo (chave inválida,
+sem permissão, cota esgotada, modelo aposentado, demora, rede). A chave nunca aparece. Quando a IA
+falha, o app continua funcionando com respostas locais — e agora avisa ("Dica local (a IA não
+respondeu agora)" / aviso no Tutor IA) em vez de trocar em silêncio.
+
 ## Mudou a variável de ambiente?
 
 Variáveis novas ou alteradas só valem no **próximo deploy**. Faça um push, ou use *Deployments*
