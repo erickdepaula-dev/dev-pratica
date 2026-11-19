@@ -57,7 +57,7 @@ src/
 │   └── typescript/      # compilação real de TS no navegador (núcleo puro + pipeline)
 ├── styles/              # tokens.css (design tokens)
 ├── types/               # Interfaces compartilhadas
-└── utils/               # Helpers puros (dateUtils, language, track, exerciseTheme)
+└── utils/               # Helpers puros (dateUtils, language, track, exerciseTheme, accessSummary)
 server/                  # apiApp.ts (rotas /api do Gemini) + vercelEntry.ts (função da Vercel)
 scripts/                 # check-ts-exercises.ts, check-gamification.ts, build-vercel.mjs
 ```
@@ -107,4 +107,5 @@ quando mudar comando, variável de ambiente ou o que há para testar).
 - `.env` nunca é commitado. Variáveis novas vão em `.env.example`.
 - Não quebrar os IDs de exercícios existentes — o progresso salvo no Firestore referencia esses IDs.
 - Alterações em `UserProgress` exigem migração defensiva em `src/services/storage.ts` (usuário já tem dados salvos).
-- `firestore.rules` controla o acesso; revisar ao mudar o shape dos documentos.
+- `firestore.rules` controla o acesso; revisar ao mudar o shape dos documentos. Ele tem o marcador
+  `ADMIN_EMAIL_AQUI`: o e-mail do administrador só existe nas regras publicadas no console (repo público).

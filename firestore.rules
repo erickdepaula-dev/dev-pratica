@@ -18,6 +18,28 @@ service cloud.firestore {
       return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
 
+    // 5. Registro de acessos (aba Admin): quem entrou e quando.
+    //    - Qualquer usuário conectado CRIA só o próprio registro (uid e e-mail do token, hora do servidor).
+    //    - Só o administrador LÊ. Ninguém altera nem apaga.
+    //    ATENÇÃO: troque ADMIN_EMAIL_AQUI pelo e-mail do administrador ao colar no console do Firebase.
+    //    O repositório é público, por isso o e-mail real não fica neste arquivo (ver docs/DEPLOY.md).
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email_verified == true
+        && request.auth.token.email == 'ADMIN_EMAIL_AQUI';
+    }
+
+    match /acessos/{acessoId} {
+      allow create: if isSignedIn()
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'nome', 'tipo', 'em'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.nome is string && request.resource.data.nome.size() <= 120
+        && request.resource.data.tipo in ['login', 'retorno']
+        && request.resource.data.em == request.time;
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
     // 2. User profile and progress document
     match /users/{userId} {
       allow get: if isOwner(userId) && isValidId(userId);

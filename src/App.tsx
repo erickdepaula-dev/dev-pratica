@@ -4,6 +4,8 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { AdminPanel } from './components/AdminPanel';
+import { limparLoginEmAndamento, marcarLoginEmAndamento, registrarAcesso, verificarAdmin } from './services/accessLog';
 import { AiDisabledDialog } from './components/AiDisabledDialog';
 import { Header, ActiveTab } from './components/Header';
 import { SyncToast, ToastMessage, ToastTone } from './components/SyncToast';
@@ -69,6 +71,9 @@ export default function App() {
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
   const [activeAiChallenge, setActiveAiChallenge] = useState<AiChallenge | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  // Administrador = consegue ler o registro de acessos (as regras do Firestore decidem; o app não
+  // conhece o e-mail do administrador). Mostra o "Painel do administrador" no menu da conta.
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   // true só enquanto o progresso é baixado do Firestore (mostra o skeleton).
   const [isCloudLoading, setIsCloudLoading] = useState<boolean>(false);
@@ -105,7 +110,13 @@ export default function App() {
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
+      if (!user) {
+        setIsAdmin(false);
+        setActiveTab(tab => (tab === 'admin' ? 'dashboard' : tab));
+      }
       if (user) {
+        void registrarAcesso(user);
+        void verificarAdmin().then(setIsAdmin);
         setIsSyncing(true);
         setIsCloudLoading(true);
         try {
@@ -175,6 +186,7 @@ export default function App() {
   const handleLogin = async () => {
     try {
       setIsSyncing(true);
+      marcarLoginEmAndamento();
       const outcome = await loginWithGoogle();
 
       if (outcome.status === 'redirecionando') {
@@ -186,6 +198,7 @@ export default function App() {
 
       // 'cancelado': o usuário fechou a janela de propósito, não há nada a dizer.
       if (outcome.status !== 'ok') {
+        limparLoginEmAndamento();
         return;
       }
 
@@ -207,6 +220,7 @@ export default function App() {
         setIsCloudLoading(false);
       }
     } catch (error: unknown) {
+      limparLoginEmAndamento();
       triggerToast(descreverErroDeLogin(error), 'error');
     } finally {
       setIsSyncing(false);
@@ -273,6 +287,12 @@ export default function App() {
         onLogin={handleLogin}
         onLogout={handleLogout}
         onManualSync={handleManualSync}
+        isAdmin={isAdmin}
+        onOpenAdmin={() => {
+          setSelectedExerciseId(null);
+          setActiveAiChallenge(null);
+          setActiveTab('admin');
+        }}
         xpSlot={<XpBar xp={totalXp(progress)} />}
       />
 
@@ -338,6 +358,8 @@ export default function App() {
                 onProgressUpdated={handleProgressUpdated}
               />
             )}
+
+            {activeTab === 'admin' && isAdmin && <AdminPanel />}
 
             {activeTab === 'guia' && (
               <StudyGuide

@@ -180,6 +180,10 @@ Marque conforme for testando. Para começar do zero, veja a [seção 7](#7-zerar
 - [ ] No **Guia de Estudos**, a seção **Trilha de Lógica** tem o teste de mesa, os operadores e a
       tabela Portugol × PHP × JavaScript.
 
+### Painel do administrador
+- [ ] Com a conta de administrador: menu **● Conectado → Painel do administrador** mostra quem entrou e quando.
+- [ ] Com outra conta: o item **não** aparece no menu.
+
 ### Sincronização na nuvem (login Google)
 - [ ] Clique em **Entrar** e faça login com Google.
 - [ ] **Pendente de verificação:** conclua um exercício TS, recarregue a página e confira que o

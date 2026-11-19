@@ -9,6 +9,7 @@ import {
   LucideIcon,
   Menu,
   RefreshCw,
+  ShieldCheck,
   Sparkles,
   X,
 } from 'lucide-react';
@@ -17,7 +18,8 @@ import { User } from 'firebase/auth';
 import { calculateEffectiveStreak } from '../services/storage';
 import { TrackPills } from './TrackPills';
 
-export type ActiveTab = 'dashboard' | 'exercicios' | 'desafios_ia' | 'progresso' | 'guia';
+/** 'admin' não fica na barra de navegação: abre pelo menu da conta, só para o administrador. */
+export type ActiveTab = 'dashboard' | 'exercicios' | 'desafios_ia' | 'progresso' | 'guia' | 'admin';
 
 interface NavItem {
   id: ActiveTab;
@@ -54,6 +56,9 @@ interface HeaderProps {
   onManualSync: () => void;
   /** Espaço reservado para a barra de XP (Fase 3). Não renderiza nada se omitido. */
   xpSlot?: React.ReactNode;
+  /** Mostra "Painel do administrador" no menu da conta. */
+  isAdmin?: boolean;
+  onOpenAdmin?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -68,6 +73,8 @@ export const Header: React.FC<HeaderProps> = ({
   onLogout,
   onManualSync,
   xpSlot,
+  isAdmin = false,
+  onOpenAdmin,
 }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -231,6 +238,21 @@ export const Header: React.FC<HeaderProps> = ({
                             aria-hidden="true"
                           />
                         </button>
+
+                        {isAdmin && onOpenAdmin && (
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => {
+                              setShowUserMenu(false);
+                              onOpenAdmin();
+                            }}
+                            className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs font-medium text-success hover:bg-success/10 transition-colors flex items-center justify-between cursor-pointer ${FOCUS_RING}`}
+                          >
+                            <span>Painel do administrador</span>
+                            <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
+                          </button>
+                        )}
 
                         <button
                           type="button"

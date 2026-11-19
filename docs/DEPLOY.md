@@ -165,6 +165,19 @@ Para erros da API, veja *Logs* ou *Runtime Logs* em tempo real.
 
 ---
 
+## Painel do administrador (controle de acessos)
+
+Cada vez que alguém entra no site (clicou em **Entrar** ou voltou já conectado, uma vez por aba), o
+app grava em `acessos/{id}` no Firestore: e-mail, nome, tipo e a hora do servidor. Só o
+administrador lê esses registros; o painel abre pelo menu **● Conectado → Painel do administrador**,
+que só aparece para quem tem permissão de leitura (o app descobre tentando ler, no servidor).
+
+**O e-mail do administrador não fica no repositório** (que é público). No arquivo `firestore.rules`
+está o marcador `ADMIN_EMAIL_AQUI`. Ao publicar as regras no console do Firebase (projeto
+`dev-pratica` → Firestore Database → Regras), cole o arquivo inteiro e **troque o marcador pelo
+e-mail do administrador** antes de clicar em Publicar. Sempre que `firestore.rules` mudar, repita
+isso — o console é a fonte de verdade das regras em uso.
+
 ## A IA (Gemini) está funcionando?
 
 > **Hoje a IA está desligada de propósito** (decisão do usuário, 2026-11-19): o app mostra um aviso
