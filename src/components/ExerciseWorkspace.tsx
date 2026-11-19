@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion, useAnimate, useReducedMotion } from 'motion/react';
-import { Check, X } from 'lucide-react';
+import { BookOpen, Check, X } from 'lucide-react';
 import { Exercise, ExerciseAttempt, LogicLanguage, UserProgress } from '../types/exercise';
 import { getLanguageTheme } from '../utils/exerciseTheme';
 import { LOGIC_LANGUAGES } from '../utils/track';
@@ -9,7 +9,8 @@ import { FreeCodeEditor } from './FreeCodeEditor';
 import { PredictOutputViewer } from './PredictOutputViewer';
 import { PredictTypeErrorViewer } from './PredictTypeErrorViewer';
 import { DeskCheckViewer } from './DeskCheckViewer';
-import { OperatorReference } from './OperatorReference';
+import { QuickGuide } from './QuickGuide';
+import type { QuickGuideLanguage } from '../types/reference';
 import { flattenDeskCheck, givenRowCount, runDeskCheck, unflattenDeskCheck } from '../services/deskCheck';
 import {
   evaluateBlanks,
@@ -146,6 +147,22 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
   const [aiHintError, setAiHintError] = useState<string | null>(null);
   const [showAiHintBanner, setShowAiHintBanner] = useState<boolean>(false);
   const [showAiTutorModal, setShowAiTutorModal] = useState<boolean>(false);
+
+  // Guia rápido (Ctrl / ou Cmd /): abre e fecha pelo mesmo atalho, de qualquer lugar do exercício
+  // (inclusive com o cursor no editor). Esc e clique fora fecham (dentro do QuickGuide).
+  const [showQuickGuide, setShowQuickGuide] = useState<boolean>(false);
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === '/' || e.code === 'Slash')) {
+        e.preventDefault();
+        setShowQuickGuide(open => !open);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+  const quickGuideLanguage: QuickGuideLanguage =
+    exercise.language === 'php' ? 'php' : exercise.language === 'typescript' ? 'ts' : 'js';
   const [sqlCopied, setSqlCopied] = useState<boolean>(false);
 
   // Reconstruct current assembled code for Tutor analysis
@@ -676,16 +693,6 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
                     </div>
                   )}
 
-                  {exercise.track === 'logica' && (
-                    <details className="group rounded-lg border border-subtle bg-canvas/60">
-                      <summary className="cursor-pointer select-none px-3 py-2 text-xs font-semibold text-primary hover:text-accent">
-                        📘 Consulta rápida: operadores e precedência
-                      </summary>
-                      <div className="px-3 pb-3 pt-1">
-                        <OperatorReference compact />
-                      </div>
-                    </details>
-                  )}
                 </div>
               )}
 
@@ -947,6 +954,19 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
+                onClick={() => setShowQuickGuide(true)}
+                aria-haspopup="dialog"
+                aria-keyshortcuts="Control+/"
+                title="Guia rápido de sintaxe (Ctrl /)"
+                className={`px-3 py-2 rounded-lg border border-accent-from/40 bg-accent-from/10 hover:bg-accent-from/20 text-accent text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer ${FOCUS_RING}`}
+              >
+                <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Guia rápido</span>
+                <kbd className="hidden sm:inline px-1.5 py-px rounded border border-subtle bg-canvas font-mono text-[10px] text-muted">Ctrl /</kbd>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setShowAiTutorModal(true)}
                 className={`px-3.5 py-2 rounded-control bg-gradient-accent hover:brightness-110 text-white text-xs font-semibold transition-[filter] flex items-center gap-1.5 shadow-glow cursor-pointer ${FOCUS_RING}`}
                 title="Converse com o Tutor IA ou analise o código linha a linha"
@@ -1141,6 +1161,13 @@ export const ExerciseWorkspace: React.FC<ExerciseWorkspaceProps> = ({
       </AnimatePresence>
 
       {/* Interactive AI Tutor Modal with Dialog & Line-by-Line Code Breakdown */}
+      <QuickGuide
+        open={showQuickGuide}
+        onClose={() => setShowQuickGuide(false)}
+        language={quickGuideLanguage}
+        topic={exercise.topic}
+      />
+
       <AiTutorModal
         isOpen={showAiTutorModal}
         onClose={() => setShowAiTutorModal(false)}

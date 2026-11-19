@@ -25,6 +25,7 @@ Uso **pessoal** — não é um produto comercial, não há multi-tenant nem cert
 | **Níveis** | `basico`, `intermediario`, `avancado`, `dev` |
 | **Modalidades** | `lacunas`, `codigo_livre`, `corrigir_erros`, `prever_saida`, `desafio_pratico` + `prever_erro_de_tipo` (só TS) + `teste_de_mesa` (Lógica; gabarito gerado executando o código, `src/services/deskCheck.ts`) |
 | **Abas** | `dashboard`, `exercicios`, `desafios_ia`, `progresso`, `guia` |
+| **Guia rápido** | Janela de consulta de sintaxe dentro dos exercícios (`Ctrl /`): operadores, precedência, Portugol × PHP × JS × TS, funções prontas, "montar uma função" (`src/components/QuickGuide.tsx`, `src/data/guiaRapido.ts`) |
 | **Tutor IA** | Gemini — dica contextual, explicação do enunciado, análise linha a linha (`src/services/aiHint.ts`, `src/components/AiTutorModal.tsx`) |
 | **Desafios IA** | Hub + workspace gerados dinamicamente (`src/components/AiChallenges/`) |
 | **Ofensiva** | Streak em dias, timezone `America/Fortaleza` (`src/utils/dateUtils.ts`) |
@@ -124,8 +125,8 @@ A trilha de Lógica tem **133 exercícios** em `src/data/logica/`: os 100 princi
 **Teste de mesa (4.5):** modalidade `teste_de_mesa`. O aluno preenche a tabela de variáveis; o
 gabarito é gerado executando o código do exercício (cada `anotar(...)` = uma linha), então não há
 tabela digitada à mão para dessincronizar. Detalhes em "Como ficou (4.5)" no `fase-4-exercicios.md`.
-**Material de referência (4.6):** operadores + precedência (no StudyGuide e como "Consulta rápida"
-em todo exercício de Lógica) e a tabela Portugol × PHP × JavaScript (`src/data/referencia.ts`).
+**Material de referência (4.6):** operadores + precedência (no StudyGuide; dentro dos exercícios,
+no **Guia rápido** — janela com `Ctrl /`, ver abaixo) e a tabela Portugol × PHP × JavaScript (`src/data/referencia.ts`).
 
 **O que falta, tudo do lado do usuário:**
 1. **As 3 verificações manuais** da seção acima (o Firebase está configurado; é entrar no site e testar).
@@ -228,3 +229,4 @@ npm run lint && npm run check:ts && npm run check:xp && npm run build
 | 2026-11-18 | — | Login pelo domínio do site ativado: usuário adicionou o URI de redirecionamento e a origem no cliente OAuth; agente cadastrou `VITE_FIREBASE_AUTH_DOMAIN=dev-pratica.vercel.app` (só Production) e refez o deploy. Para desfazer: apagar a variável e refazer o deploy. |
 | 2026-11-18 | — | Login com Google confirmado pelo usuário em produção (topo em "● Conectado" + "Sair", progresso carregado). Painel passa a cumprimentar pelo primeiro nome da conta Google ("Olá, Desenvolvedor" só para visitante). |
 | 2026-11-18 | 4 | Tabela de equivalência do Guia de Estudos: coluna Python trocada por PHP (pedido do usuário) — agora Portugol × PHP × JavaScript, as linguagens das trilhas. |
+| 2026-11-19 | — | **Guia rápido** nos exercícios (ideia do usuário, protótipo aprovado): botão na barra de ações e atalho `Ctrl /` (abre e fecha pelo mesmo atalho, também com o cursor no editor; `Esc` e clique fora fecham; o foco volta ao editor). Janela no centro com a tela escurecida — é para tirar a dúvida e voltar ao código. Abre em Sintaxe, com "Montar uma função" (anatomia numerada na linguagem do exercício + 5 perguntas para quando dá branco); abas Operadores, Precedência (com conta resolvida), Sintaxe (Portugol × PHP × JS × TS) e Funções prontas (textos, vetores, números); busca em todas as abas; copiar; pegadinhas; linguagem do exercício destacada e primeiro. Sem ligaduras de fonte (=== aparece como três sinais). Substitui a "Consulta rápida" da aba Instruções. Dados em `src/data/guiaRapido.ts`, componente `QuickGuide.tsx`. |

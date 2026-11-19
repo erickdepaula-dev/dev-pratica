@@ -217,7 +217,7 @@ os dois e estranhe.
 `src/types/reference.ts`). Operadores aritméticos, relacionais, lógicos e de atribuição, com o
 equivalente em Portugol, exemplos, pegadinhas (`-7 % 2`, `==` × `===`, `1 <= n <= 10`) e a ordem de
 precedência — componente `OperatorReference.tsx`, usado no StudyGuide e num painel recolhível
-"Consulta rápida" na aba Instruções de todo exercício de Lógica. A tabela Portugol × PHP ×
+"Consulta rápida" na aba Instruções de todo exercício de Lógica (em 2026-11-19 substituída pelo **Guia rápido**, janela com `Ctrl /` em todos os exercícios — ver Changelog do CONTEXT). A tabela Portugol × PHP ×
 JavaScript (16 construções) fica no StudyGuide.
 
 ---

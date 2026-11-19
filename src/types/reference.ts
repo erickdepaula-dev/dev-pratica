@@ -28,3 +28,55 @@ export interface DeskCheckGuideStep {
   title: string;
   text: string;
 }
+
+/* ---------- Guia rápido do workspace (janela com Ctrl /) ---------- */
+
+/** Linguagem destacada no Guia rápido (a do exercício aberto). */
+export type QuickGuideLanguage = 'php' | 'js' | 'ts';
+
+export type QuickGuideTab = 'operadores' | 'precedencia' | 'sintaxe' | 'funcoes';
+
+export interface QuickOperator {
+  id: string;
+  name: string;
+  /** Igual em JavaScript e TypeScript. */
+  jsts: string;
+  php: string;
+  portugol: string;
+  example: string;
+  result: string;
+  pitfall?: string;
+}
+
+export interface QuickSyntax {
+  id: string;
+  group: string;
+  name: string;
+  portugol: string;
+  php: string;
+  js: string;
+  /** Quando igual a `js`, o guia mostra uma linha só "JS / TS". */
+  ts: string;
+  pitfall?: string;
+}
+
+export interface QuickFunction {
+  id: string;
+  group: string;
+  name: string;
+  php: string;
+  jsts: string;
+  pitfall?: string;
+}
+
+/** Trecho colorido da "anatomia" de uma função; `part` (1–7) liga o trecho à legenda. */
+export interface AnatomySegment {
+  text: string;
+  part?: number;
+}
+
+export interface AnatomyLegendItem {
+  part: number;
+  name: string;
+  description: string;
+}

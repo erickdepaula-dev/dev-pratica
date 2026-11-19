@@ -50,7 +50,8 @@ src/
 │   ├── php/             # mesma estrutura
 │   ├── ts/              # mesma estrutura + typeErrors* (modalidade prever_erro_de_tipo)
 │   ├── logica/          # trilha de Lógica (Fase 4), resolvida em JS ou TS (+ teste de mesa em m08)
-│   ├── referencia.ts    # operadores e equivalência Portugol/PHP/JS (StudyGuide e workspace)
+│   ├── referencia.ts    # operadores e equivalência Portugol/PHP/JS (StudyGuide)
+│   ├── guiaRapido.ts    # conteúdo do Guia rápido dos exercícios (Ctrl /, QuickGuide.tsx)
 │   └── index.ts         # agregador + helpers de consulta (getExercisesByLanguage/ByTrack)
 ├── services/            # IO e regras: firebase, firestoreSync, storage, evaluator, deskCheck, aiHint, xp, badges
 │   └── typescript/      # compilação real de TS no navegador (núcleo puro + pipeline)

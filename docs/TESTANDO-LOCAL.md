@@ -171,7 +171,11 @@ Marque conforme for testando. Para começar do zero, veja a [seção 7](#7-zerar
       `anotar(...)` destacadas, e a tabela tem a linha 1 preenchida como exemplo.
 - [ ] Preencha com um valor errado e verifique: a célula fica vermelha e o feedback aponta a linha.
 - [ ] Corrija e verifique: "Tabela correta!", +XP, e a aba **Solução** mostra a tabela completa.
-- [ ] Em qualquer exercício de Lógica, a aba Instruções tem **📘 Consulta rápida: operadores**.
+- [ ] Em qualquer exercício, **Guia rápido** (botão na barra de ações ou `Ctrl /`, também com o cursor
+      no editor) abre uma janela no centro com a tela escurecida, na aba **Sintaxe**, com "Montar uma
+      função" no topo. A linha da linguagem do exercício vem primeiro e destacada.
+- [ ] A busca acha em todas as abas (`elseif`, `tamanho`, `função`); copiar mostra "Copiado".
+- [ ] `Ctrl /` de novo, `Esc` ou clicar fora fecham, e o cursor volta para onde estava.
 - [ ] No **Guia de Estudos**, a seção **Trilha de Lógica** tem o teste de mesa, os operadores e a
       tabela Portugol × PHP × JavaScript.
 
